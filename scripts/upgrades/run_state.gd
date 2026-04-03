@@ -1,10 +1,20 @@
 extends Node
 
+# 信号
+signal wave_changed(wave_index: int)
+signal gold_changed(gold: int)
+signal hp_changed(current: int, maximum: int)
+
+# 局内状态
 var character_id: String = "default"
 var wave_index: int = 0
 var gold: int = 0
 var upgrade_ids: Array[String] = []
 var run_seed: int = 0
+
+# 玩家血量（由 Player 节点自身管理，RunState 仅作镜像用于存档）
+var player_max_hp: int = 100
+var player_current_hp: int = 100
 
 func _ready() -> void:
 	_register_default_input_actions()
@@ -15,6 +25,8 @@ func begin_new_run(p_character_id: String = "default") -> void:
 	gold = 0
 	upgrade_ids.clear()
 	run_seed = randi()
+	player_max_hp = 100
+	player_current_hp = 100
 
 func _register_default_input_actions() -> void:
 	if InputMap.has_action("move_up"):
