@@ -4,6 +4,7 @@ extends Node
 signal wave_changed(wave_index: int)
 signal gold_changed(gold: int)
 signal hp_changed(current: int, maximum: int)
+signal material_changed(current: int, savings: int)  # 阶段二：材料变化
 
 # 局内状态
 var character_id: String = "default"
@@ -16,6 +17,10 @@ var run_seed: int = 0
 var player_max_hp: int = 100
 var player_current_hp: int = 100
 
+# 阶段二：材料（金币）
+var material_current: int = 0   # 本波已拾取材料
+var material_savings: int = 0   # 未拾取储蓄材料（下波拾取时翻倍）
+
 func _ready() -> void:
 	_register_default_input_actions()
 
@@ -27,6 +32,8 @@ func begin_new_run(p_character_id: String = "default") -> void:
 	run_seed = randi()
 	player_max_hp = 100
 	player_current_hp = 100
+	material_current = 0
+	material_savings = 0
 
 func _register_default_input_actions() -> void:
 	if InputMap.has_action("move_up"):
@@ -49,3 +56,19 @@ func _add_key_to_action(action_name: String, keycodes: Array) -> void:
 		var ev: InputEventKey = InputEventKey.new()
 		ev.physical_keycode = keycode as Key
 		InputMap.action_add_event(action_name, ev)
+
+# 阶段二：普通拾取材料
+func collect_material(amount: int) -> void:
+	material_current += amount
+	emit_signal("material_changed", material_current, material_savings)
+
+# 阶段二：波次结束时将未拾取材料转为储蓄
+func on_wave_end_convert_savings(uncollected: int) -> void:
+	material_savings += uncollected
+	emit_signal("material_changed", material_current, material_savings)
+
+# 阶段二：下波开始时拾取储蓄（翻倍）
+func collect_savings() -> void:
+	material_current += material_savings * 2
+	material_savings = 0
+	emit_signal("material_changed", material_current, material_savings)
