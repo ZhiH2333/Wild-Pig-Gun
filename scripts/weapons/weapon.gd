@@ -5,16 +5,10 @@ extends Node2D
 
 const FIRE_INTERVAL: float = 0.5
 
-var projectile_scene: PackedScene = null
+var projectile_scene: PackedScene = preload("res://scenes/projectile.tscn")
 var damage: int = 10
 
 @onready var fire_timer: Timer = $FireTimer
-
-
-func _ready() -> void:
-	# 运行时加载子弹场景
-	if ResourceLoader.exists("res://scenes/projectile.tscn"):
-		projectile_scene = load("res://scenes/projectile.tscn")
 
 
 ## Debug 占位绘制：黄色小矩形代表枪管
@@ -45,24 +39,27 @@ func _on_fire_timer_timeout() -> void:
 
 ## 实例化子弹并朝目标方向发射
 func _fire(target: Node2D) -> void:
-	if projectile_scene == null:
-		return
 	var projectile: Node2D = projectile_scene.instantiate()
-	# 将子弹添加到 ProjectileContainer（由 Arena 提供），否则添加到根节点
 	var container: Node = _get_projectile_container()
 	container.add_child(projectile)
 	projectile.global_position = global_position
-	# 设置子弹方向
+	# 设置子弹方向与伤害
 	var dir: Vector2 = (target.global_position - global_position).normalized()
-	if projectile.has_method("set_direction"):
-		projectile.set_direction(dir)
-	elif "direction" in projectile:
-		projectile.direction = dir
+	projectile.direction = dir
+	projectile.damage = damage
 
 
 ## 获取子弹容器节点；优先使用 Arena 的 ProjectileContainer
 func _get_projectile_container() -> Node:
-	var arena: Node = get_tree().get_first_node_in_group("arena")
-	if arena and arena.has_node("ProjectileContainer"):
-		return arena.get_node("ProjectileContainer")
+	# 尝试通过绝对路径获取
+	var root: Node = get_tree().get_root()
+	var arena: Node = root.get_node_or_null("Arena")
+	if arena:
+		var container: Node = arena.get_node_or_null("ProjectileContainer")
+		if container:
+			return container
+	# 回退：在整棵树中查找
+	var found: Node = root.find_child("ProjectileContainer", true, false)
+	if found:
+		return found
 	return get_tree().current_scene
