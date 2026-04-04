@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://weapon" path="res://scenes/weapon.tscn" id="3_weapon"]
 [ext_resource type="Script" path="res://scripts/ui/debug_overlay.gd" id="4_debug_overlay"]
 [ext_resource type="PackedScene" uid="uid://hud" path="res://scenes/hud.tscn" id="5_hud"]
+[ext_resource type="Script" path="res://scripts/wave/wave_manager.gd" id="6_wave_manager"]
+[ext_resource type="Script" path="res://scripts/wave/enemy_pool.gd" id="7_enemy_pool"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
@@ -59,9 +61,24 @@ position = Vector2(960, 540)
 
 [node name="ProjectileContainer" type="Node2D" parent="."]
 
-[node name="SpawnTimer" type="Timer" parent="."]
-wait_time = 5.0
-autostart = true
+[node name="MaterialContainer" type="Node2D" parent="."]
+
+[node name="SpawnWarningContainer" type="Node2D" parent="."]
+
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("6_wave_manager")
+
+[node name="WaveTimer" type="Timer" parent="WaveManager"]
+one_shot = true
+
+[node name="SpawnTimer" type="Timer" parent="WaveManager"]
+wait_time = 2.0
+
+[node name="EliteCheckTimer" type="Timer" parent="WaveManager"]
+wait_time = 15.0
+
+[node name="EnemyPool" type="Node" parent="."]
+script = ExtResource("7_enemy_pool")
 
 [node name="HUD" parent="." instance=ExtResource("5_hud")]
 
