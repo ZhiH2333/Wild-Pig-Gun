@@ -13,6 +13,7 @@ const EDGE_MARGIN: float = 32.0
 @onready var projectile_container: Node2D = $ProjectileContainer
 @onready var player: CharacterBody2D = $Player
 @onready var hud: CanvasLayer = $HUD
+@onready var spawn_timer: Timer = $SpawnTimer
 
 var enemy_scene: PackedScene = null
 
@@ -32,6 +33,9 @@ func _ready() -> void:
 	if hud and hud.has_method("setup"):
 		hud.setup(player)
 
+	# 连接定时生成计时器
+	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
+
 	# MVP 测试用：生成若干初始敌人（需求 3.4）
 	_spawn_debug_enemies(5)
 
@@ -48,9 +52,15 @@ func get_arena_rect() -> Rect2:
 
 ## Player 死亡：延迟 1 秒后切换到游戏结束界面（需求 6.1）
 func _on_player_died() -> void:
+	spawn_timer.stop()
 	await get_tree().create_timer(1.0).timeout
 	if ResourceLoader.exists("res://scenes/game_over.tscn"):
 		get_tree().change_scene_to_file("res://scenes/game_over.tscn")
+
+
+## 每 5 秒在边缘随机位置生成 4 只敌人
+func _on_spawn_timer_timeout() -> void:
+	_spawn_debug_enemies(4)
 
 
 ## 在 Arena 边缘随机生成若干敌人（MVP 测试用，需求 3.4）
