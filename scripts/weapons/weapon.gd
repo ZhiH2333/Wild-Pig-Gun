@@ -12,9 +12,14 @@ var damage: int = 10
 
 
 func _ready() -> void:
-	# 预加载子弹场景（任务 3.3 创建后生效）
+	# 运行时加载子弹场景
 	if ResourceLoader.exists("res://scenes/projectile.tscn"):
-		projectile_scene = preload("res://scenes/projectile.tscn")
+		projectile_scene = load("res://scenes/projectile.tscn")
+
+
+## Debug 占位绘制：黄色小矩形代表枪管
+func _draw() -> void:
+	draw_rect(Rect2(0, -4, 24, 8), Color(1.0, 0.85, 0.2, 1.0))
 
 
 ## 查找距离 from_pos 最近的敌人节点，列表为空时返回 null

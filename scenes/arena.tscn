@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://rena"]
+
+[ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
+[ext_resource type="PackedScene" uid="uid://player" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://weapon" path="res://scenes/weapon.tscn" id="3_weapon"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
+size = Vector2(1920, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bottom"]
+size = Vector2(1920, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_left"]
+size = Vector2(20, 1080)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_right"]
+size = Vector2(20, 1080)
+
+[node name="Arena" type="Node2D"]
+script = ExtResource("1_arena")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.13, 0.13, 0.15, 1)
+
+[node name="BoundaryTop" type="StaticBody2D" parent="."]
+position = Vector2(960, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryTop"]
+shape = SubResource("RectangleShape2D_top")
+
+[node name="BoundaryBottom" type="StaticBody2D" parent="."]
+position = Vector2(960, 1090)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryBottom"]
+shape = SubResource("RectangleShape2D_bottom")
+
+[node name="BoundaryLeft" type="StaticBody2D" parent="."]
+position = Vector2(-10, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryLeft"]
+shape = SubResource("RectangleShape2D_left")
+
+[node name="BoundaryRight" type="StaticBody2D" parent="."]
+position = Vector2(1930, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryRight"]
+shape = SubResource("RectangleShape2D_right")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(960, 540)
+
+[node name="Weapon" parent="Player" instance=ExtResource("3_weapon")]
+
+[node name="EnemyContainer" type="Node2D" parent="."]
+
+[node name="ProjectileContainer" type="Node2D" parent="."]

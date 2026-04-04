@@ -47,3 +47,13 @@ func _get_arena_rect() -> Rect2:
 ## 受到伤害（完整逻辑在任务 6.1 中实现）
 func take_damage(_amount: int) -> void:
 	pass
+
+
+## Debug 占位绘制：粉色圆形代表野猪
+func _draw() -> void:
+	draw_circle(Vector2.ZERO, 20.0, Color(0.9, 0.4, 0.5, 1.0))
+	# 眼睛
+	draw_circle(Vector2(-7, -6), 4.0, Color(1, 1, 1, 1))
+	draw_circle(Vector2(7, -6), 4.0, Color(1, 1, 1, 1))
+	draw_circle(Vector2(-7, -6), 2.0, Color(0.1, 0.1, 0.1, 1))
+	draw_circle(Vector2(7, -6), 2.0, Color(0.1, 0.1, 0.1, 1))

@@ -71,4 +71,19 @@ offset_right = 268.0
 offset_bottom = -28.0
 text = "返回主菜单"
 
+[node name="DebugButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = 20.0
+offset_right = 140.0
+offset_bottom = 64.0
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "🐛 Debug：直接进入战斗"
+
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="DebugButton" to="." method="_on_debug_button_pressed"]
