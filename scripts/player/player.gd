@@ -11,9 +11,11 @@ var current_hp: int = 100
 var is_invincible: bool = false
 
 @onready var invincibility_timer: Timer = $InvincibilityTimer
+@onready var coord_label: Label = $CoordLabel
 
 
 func _physics_process(_delta: float) -> void:
+	coord_label.text = "(%.0f, %.0f)" % [position.x, position.y]
 	var direction := _get_input_direction()
 	velocity = direction * SPEED
 	move_and_slide()

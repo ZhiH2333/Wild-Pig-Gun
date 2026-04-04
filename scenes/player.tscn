@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://player"]
+[gd_scene format=3 uid="uid://player"]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
 
@@ -19,3 +19,13 @@ shape = SubResource("CapsuleShape2D_1")
 [node name="InvincibilityTimer" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = true
+
+[node name="CoordLabel" type="Label" parent="."]
+offset_top = 28.0
+offset_left = -60.0
+offset_right = 60.0
+offset_bottom = 48.0
+horizontal_alignment = 1
