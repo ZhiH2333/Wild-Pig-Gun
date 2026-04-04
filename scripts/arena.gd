@@ -60,6 +60,13 @@ func _ready() -> void:
 	# 启动第 1 波（需求 7.1）
 	wave_manager.start_run()
 
+	# 每 2 秒全局拾取一次：强制所有掉落物开始向玩家飞
+	var collect_timer := Timer.new()
+	collect_timer.wait_time = 2.0
+	collect_timer.autostart = true
+	collect_timer.timeout.connect(_on_global_collect_tick)
+	add_child(collect_timer)
+
 
 ## 预加载所有敌人场景和预警场景
 func _preload_scenes() -> void:
@@ -114,6 +121,17 @@ func _on_spawn_warning_shown(position: Vector2) -> void:
 	warning.global_position = position
 
 
+## 材料被拾取时的回调（需求 10.1）
+## drop_node 由 bind() 传入，用于检查是否为储蓄材料
+func _on_material_collected(material_id: String, amount: int, drop_node: Node) -> void:
+	if not is_instance_valid(drop_node):
+		return
+	if drop_node.get_meta("is_savings", false):
+		RunState.collect_savings()
+	else:
+		RunState.collect_material(amount)
+
+
 ## 波次结束：将未拾取材料转为储蓄（需求 10.1）
 func _on_wave_ended(wave_index: int) -> void:
 	var uncollected := material_container.get_child_count()
@@ -155,3 +173,10 @@ func _on_player_died() -> void:
 ## 宝藏怪逃跑（不触发 died）
 func _on_enemy_escaped(_enemy: Node2D) -> void:
 	pass
+
+
+## 每 2 秒强制所有掉落物跳过弹跳阶段，立即开始向玩家飞
+func _on_global_collect_tick() -> void:
+	for drop in material_container.get_children():
+		if drop.has_method("force_attract"):
+			drop.force_attract()
