@@ -27,8 +27,10 @@ func _ready() -> void:
 	# 连接 Player 信号（需求 4.4）
 	if player:
 		player.died.connect(_on_player_died)
-		# 将 hp_changed 信号转发给 HUD（需求 4.5、5.1）
-		player.hp_changed.connect(_on_player_hp_changed)
+
+	# 初始化 HUD（需求 5.1、5.2、5.3）
+	if hud and hud.has_method("setup"):
+		hud.setup(player)
 
 	# MVP 测试用：生成若干初始敌人（需求 3.4）
 	_spawn_debug_enemies(5)
@@ -49,12 +51,6 @@ func _on_player_died() -> void:
 	await get_tree().create_timer(1.0).timeout
 	if ResourceLoader.exists("res://scenes/game_over.tscn"):
 		get_tree().change_scene_to_file("res://scenes/game_over.tscn")
-
-
-## 将 Player 的 hp_changed 信号转发给 HUD（需求 4.5、5.3）
-func _on_player_hp_changed(current: int, maximum: int) -> void:
-	if hud and hud.has_method("_on_hp_changed"):
-		hud._on_hp_changed(current, maximum)
 
 
 ## 在 Arena 边缘随机生成若干敌人（MVP 测试用，需求 3.4）

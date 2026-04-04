@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://hud"]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="HUDContainer" type="VBoxContainer" parent="."]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 300.0
+offset_bottom = 80.0
+theme_override_constants/separation = 8
+
+[node name="HPLabel" type="Label" parent="HUDContainer"]
+text = "HP: 100/100"
+theme_override_font_sizes/font_size = 24
+
+[node name="WaveLabel" type="Label" parent="HUDContainer"]
+text = "第 0 波"
+theme_override_font_sizes/font_size = 24
