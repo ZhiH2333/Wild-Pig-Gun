@@ -1,16 +1,20 @@
 extends CanvasLayer
 
 ## HUD 抬头显示脚本
-## 需求：4.5、5.1、5.2、5.3
+## 需求：4.5、5.1、5.2、5.3、10.2
 
 @onready var hp_label: Label = $HUDContainer/HPLabel
 @onready var wave_label: Label = $HUDContainer/WaveLabel
 @onready var timer_label: Label = $HUDContainer/TimerLabel
+@onready var material_label: Label = $HUDContainer/MaterialLabel
+@onready var savings_label: Label = $HUDContainer/SavingsLabel
 
 
 func _ready() -> void:
 	RunState.wave_changed.connect(_on_wave_changed)
+	RunState.material_changed.connect(_on_material_changed)
 	_on_wave_changed(RunState.wave_index)
+	_on_material_changed(RunState.material_current, RunState.material_savings)
 	timer_label.visible = false
 
 
@@ -43,3 +47,13 @@ func on_wave_timer_tick(remaining: float) -> void:
 ## 波次结束时隐藏倒计时
 func on_wave_ended() -> void:
 	timer_label.visible = false
+
+
+## 更新金币与储蓄显示（需求 10.2）
+func _on_material_changed(current: int, savings: int) -> void:
+	material_label.text = "金币: %d" % current
+	if savings > 0:
+		savings_label.text = "储蓄: %d (x2)" % savings
+		savings_label.visible = true
+	else:
+		savings_label.visible = false

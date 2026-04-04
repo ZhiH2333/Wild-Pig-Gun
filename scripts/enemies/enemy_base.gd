@@ -84,22 +84,35 @@ func _on_death() -> void:
 	queue_free()
 
 
-## 生成掉落物（子类可覆盖以自定义掉落）
+## 生成掉落物，添加到 Arena 的 MaterialContainer（需求 10.1）
 func _spawn_drops() -> void:
-	# 必掉金币（通过 RunState 记录，暂用信号通知）
+	# 必掉金币
+	_spawn_material("gold", gold_reward)
 	# 概率掉落回血果子
 	if randf() < drop_heal_chance:
-		_spawn_heal_item()
+		_spawn_material("heal", 1)
 	# 概率掉落绿箱子
 	if randf() < drop_box_chance:
-		_spawn_green_box()
+		_spawn_material("box", 1)
 
 
-## 生成回血果子（占位，阶段二 MaterialDrop 实现后替换）
-func _spawn_heal_item() -> void:
-	pass
+## 实例化 MaterialDrop 节点并添加到 Arena 的 MaterialContainer
+func _spawn_material(mat_id: String, mat_amount: int) -> void:
+	var drop_scene: PackedScene = load("res://scenes/material_drop.tscn")
+	if drop_scene == null:
+		return
+	var drop: MaterialDrop = drop_scene.instantiate()
+	drop.material_id = mat_id
+	drop.amount = mat_amount
 
-
-## 生成绿箱子（占位，阶段二 MaterialDrop 实现后替换）
-func _spawn_green_box() -> void:
-	pass
+	var arena: Node = get_tree().get_first_node_in_group("arena")
+	if arena and "material_container" in arena:
+		arena.material_container.add_child(drop)
+		# add_child 之后再设置 global_position，确保节点已入树
+		drop.global_position = global_position
+		# 连接拾取信号到 Arena
+		if arena.has_method("_on_material_collected"):
+			drop.collected.connect(arena._on_material_collected.bind(drop))
+	else:
+		get_tree().current_scene.add_child(drop)
+		drop.global_position = global_position

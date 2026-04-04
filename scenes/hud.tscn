@@ -23,3 +23,12 @@ theme_override_font_sizes/font_size = 24
 [node name="TimerLabel" type="Label" parent="HUDContainer"]
 text = "本波剩余 -- 秒"
 theme_override_font_sizes/font_size = 24
+
+[node name="MaterialLabel" type="Label" parent="HUDContainer"]
+text = "金币: 0"
+theme_override_font_sizes/font_size = 24
+
+[node name="SavingsLabel" type="Label" parent="HUDContainer"]
+text = "储蓄: 0 (x2)"
+theme_override_font_sizes/font_size = 20
+visible = false
