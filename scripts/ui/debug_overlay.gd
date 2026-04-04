@@ -89,7 +89,7 @@ func _build_text(delta: float) -> String:
 	lines.append(C_TITLE + "[ 每步数据 ]" + C_END)
 	lines.append(_kv("物理帧", str(Engine.get_physics_frames())))
 	lines.append(_kv("进程帧", str(Engine.get_process_frames())))
-	lines.append(_kv("运行时间", "%.1f s" % Time.get_ticks_msec() * 0.001))
+	lines.append(_kv("运行时间", "%.1f s" % (Time.get_ticks_msec() * 0.001)))
 
 	return "\n".join(lines)
 
