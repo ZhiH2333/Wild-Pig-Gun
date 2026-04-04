@@ -58,6 +58,8 @@ position = Vector2(960, 540)
 
 [node name="ProjectileContainer" type="Node2D" parent="."]
 
+[node name="HUD" type="CanvasLayer" parent="."]
+
 [node name="DebugOverlay" type="CanvasLayer" parent="."]
 layer = 100
 script = ExtResource("4_debug_overlay")
