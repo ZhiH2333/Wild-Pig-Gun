@@ -59,6 +59,10 @@ position = Vector2(960, 540)
 
 [node name="ProjectileContainer" type="Node2D" parent="."]
 
+[node name="SpawnTimer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
 [node name="HUD" parent="." instance=ExtResource("5_hud")]
 
 [node name="DebugOverlay" type="CanvasLayer" parent="."]
