@@ -19,3 +19,7 @@ theme_override_font_sizes/font_size = 24
 [node name="WaveLabel" type="Label" parent="HUDContainer"]
 text = "第 0 波"
 theme_override_font_sizes/font_size = 24
+
+[node name="TimerLabel" type="Label" parent="HUDContainer"]
+text = "本波剩余 -- 秒"
+theme_override_font_sizes/font_size = 24

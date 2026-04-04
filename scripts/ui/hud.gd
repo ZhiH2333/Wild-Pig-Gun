@@ -5,13 +5,13 @@ extends CanvasLayer
 
 @onready var hp_label: Label = $HUDContainer/HPLabel
 @onready var wave_label: Label = $HUDContainer/WaveLabel
+@onready var timer_label: Label = $HUDContainer/TimerLabel
 
 
 func _ready() -> void:
-	# 连接 RunState 的 wave_changed 信号（需求 5.2）
 	RunState.wave_changed.connect(_on_wave_changed)
-	# 初始化波次显示
 	_on_wave_changed(RunState.wave_index)
+	timer_label.visible = false
 
 
 ## 连接 Player 的 hp_changed 信号（需求 5.1、5.3）
@@ -32,3 +32,14 @@ func _on_hp_changed(current: int, maximum: int) -> void:
 ## 更新波次显示（需求 5.2）
 func _on_wave_changed(wave_index: int) -> void:
 	wave_label.text = "第 %d 波" % wave_index
+
+
+## 更新倒计时显示，由 WaveManager.wave_timer_tick 信号驱动
+func on_wave_timer_tick(remaining: float) -> void:
+	timer_label.visible = true
+	timer_label.text = "本波剩余 %d 秒" % int(ceil(remaining))
+
+
+## 波次结束时隐藏倒计时
+func on_wave_ended() -> void:
+	timer_label.visible = false
