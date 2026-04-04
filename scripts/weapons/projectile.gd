@@ -18,6 +18,11 @@ func _physics_process(delta: float) -> void:
 	position += direction * SPEED * delta
 
 
+## Debug 占位绘制：白色小圆点
+func _draw() -> void:
+	draw_circle(Vector2.ZERO, 5.0, Color(1, 1, 0.4, 1.0))
+
+
 ## 命中物体时：若为敌人则造成伤害并销毁自身
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemies"):
