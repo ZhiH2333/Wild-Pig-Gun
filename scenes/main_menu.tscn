@@ -114,7 +114,7 @@ text = "退出"
 stream = ExtResource("4_bgm")
 bus = &"Music"
 
-[node name="PlaceholderDialog" type="AcceptDialog" parent="."]
+[node name="InfoDialog" type="AcceptDialog" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
