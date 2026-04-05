@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bmjhqtrbrvx41"]
+[gd_scene load_steps=2 format=3 uid="uid://bmjhqtrbrvx41"]
 
 [ext_resource type="Script" path="res://scripts/ui/char_select.gd" id="1_cs"]
 
@@ -23,40 +23,38 @@ color = Color(0.11, 0.11, 0.13, 1)
 
 [node name="TitleLabel" type="Label" parent="."]
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.5
+anchor_top = 0.0
 anchor_right = 0.5
-anchor_bottom = 0.5
+anchor_bottom = 0.0
 offset_left = -200.0
-offset_top = -120.0
+offset_top = 36.0
 offset_right = 200.0
-offset_bottom = -40.0
+offset_bottom = 84.0
 grow_horizontal = 2
-grow_vertical = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
 theme_override_font_sizes/font_size = 28
-text = "角色选择（占位）"
+text = "选择角色"
 horizontal_alignment = 1
 
-[node name="HintLabel" type="Label" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -40.0
-offset_right = 260.0
-offset_bottom = 48.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = 100.0
+offset_right = -80.0
+offset_bottom = -100.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.65, 0.62, 0.58, 1)
-theme_override_font_sizes/font_size = 16
-text = "下一阶段将在此选择野猪并进入战斗。"
-horizontal_alignment = 1
-autowrap_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="CharacterVBox" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
 
 [node name="BackButton" type="Button" parent="."]
 layout_mode = 1
@@ -71,19 +69,4 @@ offset_right = 268.0
 offset_bottom = -28.0
 text = "返回主菜单"
 
-[node name="DebugButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = 4
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -140.0
-offset_top = 20.0
-offset_right = 140.0
-offset_bottom = 64.0
-theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-text = "🐛 Debug：直接进入战斗"
-
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
-[connection signal="pressed" from="DebugButton" to="." method="_on_debug_button_pressed"]
