@@ -44,12 +44,17 @@ func _draw() -> void:
 
 
 func _draw_hill_silhouette(origin: Vector2, width: float, height: float, col: Color, freq: float) -> void:
+	## 山脊 local y 必须恒 ≤ height（底边），否则顶点落到底边下方会自交，triangulation 失败
+	var bottom_y: float = height
+	var ridge_min_y: float = maxf(4.0, height * 0.12)
 	var pts: PackedVector2Array = PackedVector2Array()
-	pts.append(origin + Vector2(0.0, height))
+	pts.append(origin + Vector2(0.0, bottom_y))
 	var seg: int = 48
 	for i in range(seg + 1):
 		var xf: float = float(i) / float(seg) * width
 		var wave: float = sin(xf * freq + _t * 0.4) * 18.0 + sin(xf * freq * 2.3) * 8.0
-		pts.append(origin + Vector2(xf, height - wave * 0.35))
-	pts.append(origin + Vector2(width, height))
+		var ridge_y: float = height - wave * 0.35
+		ridge_y = clampf(ridge_y, ridge_min_y, bottom_y - 2.0)
+		pts.append(origin + Vector2(xf, ridge_y))
+	pts.append(origin + Vector2(width, bottom_y))
 	draw_colored_polygon(pts, col)
