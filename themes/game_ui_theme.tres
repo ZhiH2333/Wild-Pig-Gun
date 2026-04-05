@@ -127,7 +127,6 @@ shadow_color = Color(0, 0, 0, 0.45)
 shadow_size = 6
 shadow_offset = Vector2(0, 4)
 
-
 [sub_resource type="StyleBoxFlat" id="sb_progress_bg"]
 content_margin_left = 0.0
 content_margin_top = 4.0
@@ -146,17 +145,6 @@ corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="sb_progress_fill"]
 bg_color = Color(0.82, 0.28, 0.32, 1)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="sb_progress_fill_time"]
-bg_color = Color(0.92, 0.72, 0.28, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -192,7 +180,6 @@ Label/colors/font_outline_color = Color(0.02, 0.03, 0.06, 0.92)
 Label/constants/outline_size = 2
 Label/font_sizes/font_size = 24
 PanelContainer/styles/panel = SubResource("sb_panel")
-
 ProgressBar/font_sizes/font_size = 16
 ProgressBar/styles/background = SubResource("sb_progress_bg")
 ProgressBar/styles/fill = SubResource("sb_progress_fill")

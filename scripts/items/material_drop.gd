@@ -4,10 +4,14 @@ class_name MaterialDrop
 ## 材料掉落节点：弹出后自动吸附到玩家
 ## 需求：10.1
 
+const COIN_TEXTURE: Texture2D = preload("res://assets/sprites/coins.png")
+
 signal collected(material_id: String, amount: int)
 
 var material_id: String = "gold"
 var amount: int = 1
+
+@onready var _coin_sprite: Sprite2D = $CoinSprite
 
 const COLORS: Dictionary = {
 	"gold": Color(1.0, 0.85, 0.1),
@@ -47,7 +51,21 @@ func _ready() -> void:
 	if players.size() > 0:
 		_player = players[0]
 
+	_apply_gold_sprite()
 	queue_redraw()
+
+
+func _apply_gold_sprite() -> void:
+	if _coin_sprite == null:
+		return
+	if material_id == "gold":
+		_coin_sprite.texture = COIN_TEXTURE
+		var th: float = float(COIN_TEXTURE.get_height())
+		_coin_sprite.scale = Vector2.ONE * (30.0 / maxf(1.0, th))
+		_coin_sprite.visible = true
+	else:
+		_coin_sprite.texture = null
+		_coin_sprite.visible = false
 
 
 func _process(delta: float) -> void:
@@ -102,8 +120,6 @@ func _draw() -> void:
 	var s := _scale_out
 	match material_id:
 		"gold":
-			draw_circle(Vector2.ZERO, 8.0 * s, color)
-			draw_circle(Vector2(-2, -2) * s, 3.0 * s, Color(1, 1, 0.7, 0.6))
 			if amount > 1:
 				var font := ThemeDB.fallback_font
 				draw_string(font, Vector2(-6, 18), "x%d" % amount,

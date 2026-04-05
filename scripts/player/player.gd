@@ -13,6 +13,8 @@ const SPEED: float = 200.0
 var max_hp: int = 100
 var current_hp: int = 100
 var is_invincible: bool = false
+## 调试：无敌（不受伤害）
+var debug_god_mode: bool = false
 ## 构筑加成（升级/商店）
 var stat_damage_mult: float = 1.0
 var stat_move_speed_mult: float = 1.0
@@ -202,6 +204,8 @@ func recompute_weapon_synergy() -> void:
 
 ## 受到伤害（需求 4.2、4.3、4.4）
 func take_damage(amount: int) -> void:
+	if debug_god_mode:
+		return
 	# 无敌帧期间忽略所有伤害（需求 4.3）
 	if is_invincible:
 		_debug_action = "受伤免疫(无敌帧)"
