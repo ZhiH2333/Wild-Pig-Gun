@@ -100,9 +100,17 @@ func take_damage(amount: int) -> void:
 	var actual := int(amount * (1.0 - armor))
 	actual = max(1, actual)  # 至少造成 1 点伤害
 	GameAudio.play_hit_enemy()
+	_play_hit_flash()
 	current_hp = max(0, current_hp - actual)
 	if current_hp <= 0:
 		_on_death()
+
+
+func _play_hit_flash() -> void:
+	var tw: Tween = create_tween()
+	modulate = Color(1.75, 1.75, 1.85, 1.0)
+	tw.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(self, "modulate", Color.WHITE, 0.1)
 
 
 ## 死亡处理：生成掉落物、发出信号、销毁自身
