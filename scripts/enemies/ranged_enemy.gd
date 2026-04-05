@@ -4,7 +4,7 @@ extends EnemyBase
 
 const PREFERRED_DISTANCE: float = 200.0
 const SHOOT_INTERVAL: float = 2.0
-const BULLET_SPEED: float = 150.0
+const ENEMY_BULLET_SPEED: float = 150.0
 const RETALIATION_BULLET_COUNT: int = 8
 const MAX_RETALIATIONS_PER_ENEMY: int = 5
 
@@ -86,11 +86,29 @@ func _fire_retaliation_burst() -> void:
 func _spawn_bullet(dir: Vector2) -> void:
 	if _bullet_scene == null:
 		return
-	var bullet = _bullet_scene.instantiate()
-	bullet.direction = dir
-	bullet.damage = 8
-	get_tree().current_scene.add_child(bullet)
+	var bullet: Node = _bullet_scene.instantiate()
+	var container: Node = _get_projectile_container()
+	container.add_child(bullet)
 	bullet.global_position = global_position
+	if bullet is Projectile:
+		var p: Projectile = bullet as Projectile
+		p.direction = dir
+		p.damage = 8
+		p.team = Projectile.TEAM_ENEMY
+		p.speed = ENEMY_BULLET_SPEED
+
+
+func _get_projectile_container() -> Node:
+	var arena: Node = get_tree().get_first_node_in_group("arena")
+	if arena != null:
+		var c: Node = arena.get_node_or_null("ProjectileContainer")
+		if c != null:
+			return c
+	var root: Node = get_tree().get_root()
+	var found: Node = root.find_child("ProjectileContainer", true, false)
+	if found != null:
+		return found
+	return get_tree().current_scene
 
 
 ## 外观：紫色菱形 + 魔法眼 + 类型标签

@@ -92,6 +92,10 @@ func _fire(target: Node2D) -> void:
 	var dir: Vector2 = (target.global_position - global_position).normalized()
 	projectile.direction = dir
 	projectile.damage = _effective_damage()
+	var proj: Projectile = projectile as Projectile
+	if proj != null:
+		proj.team = Projectile.TEAM_PLAYER
+		proj.speed = Projectile.DEFAULT_SPEED
 	GameAudio.play_shoot()
 
 
