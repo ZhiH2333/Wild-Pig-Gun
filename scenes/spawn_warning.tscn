@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://spawn_warning"]
+
+[ext_resource type="Script" path="res://scripts/ui/spawn_warning.gd" id="1_sw"]
+
+[node name="SpawnWarning" type="Node2D"]
+script = ExtResource("1_sw")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -12.0
+offset_top = -12.0
+offset_right = 12.0
+offset_bottom = 12.0
+text = "✕"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(1, 0.1, 0.1, 1)

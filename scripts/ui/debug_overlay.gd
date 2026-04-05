@@ -80,7 +80,8 @@ func _build_text(delta: float) -> String:
 	var rs := _get_run_state()
 	if rs:
 		lines.append(_kv("波次", str(rs.get("wave_index") if "wave_index" in rs else "—")))
-		lines.append(_kv("金币", str(rs.get("gold")       if "gold"       in rs else "—")))
+		lines.append(_kv("材料", str(rs.get("material_current") if "material_current" in rs else "—")))
+		lines.append(_kv("元进度金币", str(rs.get("gold") if "gold" in rs else "—")))
 	else:
 		lines.append(C_DIM + "  RunState 未加载" + C_END)
 	lines.append("")

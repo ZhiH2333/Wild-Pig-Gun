@@ -1,0 +1,6 @@
+将 Godot Asset Library、Kenney.nl 等授权素材放入子目录，例如：
+  sprites/   角色与敌人贴图
+  audio/     BGM 与音效
+  fonts/     字体
+
+请在各包内保留许可证或作者说明文件。
