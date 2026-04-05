@@ -4,6 +4,7 @@
   {"id": "shop_dmg", "title": "磨刀石", "desc": "伤害 +8%", "short_desc": "伤害 +8%", "base_price": 12, "tier": 2, "kind": "damage_pct", "value": 0.08, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_move", "title": "轻靴", "desc": "移速 +6%", "short_desc": "移速 +6%", "base_price": 10, "tier": 1, "kind": "move_pct", "value": 0.06, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_fire", "title": "扳机簧", "desc": "攻速 +8%", "short_desc": "攻速 +8%", "base_price": 11, "tier": 2, "kind": "fire_pct", "value": 0.08, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "shop_regen", "title": "再生芯片", "desc": "每秒回复 0.35 生命", "short_desc": "回复 +0.35/s", "base_price": 15, "tier": 2, "kind": "hp_regen_flat", "value": 0.35, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_mag", "title": "小磁石", "desc": "拾取范围 +18", "short_desc": "拾取 +18", "base_price": 7, "tier": 1, "kind": "pickup", "value": 18.0, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_luck", "title": "四叶草", "desc": "幸运 +3（商店高阶权重）", "short_desc": "幸运 +3", "base_price": 14, "tier": 3, "kind": "luck_flat", "value": 3, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_harvest", "title": "园艺铲", "desc": "收获 +1.2（每波结束额外材料）", "short_desc": "收获 +1.2", "base_price": 13, "tier": 2, "kind": "harvest_flat", "value": 1.2, "icon": "res://assets/sprites/icon.png", "stackable": true},

@@ -257,6 +257,7 @@ func build_run_snapshot() -> Dictionary:
 			"shop_price_mult": player.shop_price_mult,
 			"material_to_damage_kv": player.material_to_damage_kv,
 			"stat_synergy_damage_mult": player.stat_synergy_damage_mult,
+			"stat_hp_regen_per_sec": player.stat_hp_regen_per_sec,
 			"pos_x": player.global_position.x,
 			"pos_y": player.global_position.y,
 		}

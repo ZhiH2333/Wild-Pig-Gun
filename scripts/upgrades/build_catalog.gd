@@ -208,6 +208,9 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 				var dd2: Dictionary = value as Dictionary
 				player.stat_fire_rate_mult *= 1.0 + float(dd2.get("fire", 0.0))
 				player.stat_move_speed_mult *= 1.0 + float(dd2.get("move", 0.0))
+		"hp_regen_flat":
+			if "stat_hp_regen_per_sec" in player:
+				player.stat_hp_regen_per_sec += float(value)
 		"add_weapon":
 			var wid: String = str(value)
 			var lo: Node = player.get_node_or_null("WeaponLoadout")
@@ -296,6 +299,10 @@ static func shop_purchase_preview_text(
 			var wdef: Dictionary = WeaponCatalog.find_def(wid)
 			var nm: String = str(wdef.get("display_name", wdef.get("id", wid)))
 			lines.append("· 获得武器：%s（未满 6 槽时加入）" % nm)
+		"hp_regen_flat":
+			var rg: float = float(player.stat_hp_regen_per_sec) if "stat_hp_regen_per_sec" in player else 0.0
+			var add_r: float = float(value)
+			lines.append("· 生命回复：每秒 %.2f → %.2f" % [rg, rg + add_r])
 		_:
 			lines.append("· %s" % str(def.get("desc", "参见物品说明")))
 	return "\n".join(lines)
