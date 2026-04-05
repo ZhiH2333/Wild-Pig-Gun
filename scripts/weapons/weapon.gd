@@ -6,6 +6,8 @@ var projectile_scene: PackedScene = preload("res://scenes/projectile.tscn")
 var weapon_id: String = "rifle"
 var damage: int = 10
 var _base_fire_interval: float = 0.5
+var _pellet_count: int = 1
+var _spread_deg: float = 0.0
 
 @onready var fire_timer: Timer = $FireTimer
 
@@ -21,6 +23,8 @@ func setup_from_catalog(wid: String) -> void:
 	var def: Dictionary = WeaponCatalog.find_def(wid)
 	damage = int(def.get("damage", 10))
 	_base_fire_interval = float(def.get("fire_interval", 0.5))
+	_pellet_count = maxi(1, int(def.get("pellet_count", 1)))
+	_spread_deg = maxf(0.0, float(def.get("spread_deg", 0.0)))
 	set_meta("catalog_applied", true)
 	if fire_timer != null:
 		_sync_fire_timer_wait()
@@ -85,18 +89,32 @@ func _on_fire_timer_timeout() -> void:
 
 
 func _fire(target: Node2D) -> void:
-	var projectile: Node2D = projectile_scene.instantiate()
 	var container: Node = _get_projectile_container()
+	var base_dir: Vector2 = (target.global_position - global_position).normalized()
+	var total_dmg: int = _effective_damage()
+	var n: int = maxi(1, _pellet_count)
+	var per_pellet: int = maxi(1, int(round(float(total_dmg) / float(n))))
+	var half_spread: float = deg_to_rad(_spread_deg) * 0.5
+	GameAudio.play_shoot()
+	for i in range(n):
+		var ang: float = 0.0
+		if n > 1:
+			var u: float = float(i) / float(n - 1)
+			ang = lerpf(-half_spread, half_spread, u)
+		var dir: Vector2 = base_dir.rotated(ang)
+		_spawn_projectile(container, dir, per_pellet)
+
+
+func _spawn_projectile(container: Node, dir: Vector2, dmg: int) -> void:
+	var projectile: Node2D = projectile_scene.instantiate()
 	container.add_child(projectile)
 	projectile.global_position = global_position
-	var dir: Vector2 = (target.global_position - global_position).normalized()
 	projectile.direction = dir
-	projectile.damage = _effective_damage()
+	projectile.damage = dmg
 	var proj: Projectile = projectile as Projectile
 	if proj != null:
 		proj.team = Projectile.TEAM_PLAYER
 		proj.speed = Projectile.DEFAULT_SPEED
-	GameAudio.play_shoot()
 
 
 func _get_projectile_container() -> Node:
