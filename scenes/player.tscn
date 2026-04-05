@@ -1,6 +1,7 @@
-[gd_scene format=3 uid="uid://player"]
+[gd_scene load_steps=4 format=3 uid="uid://player"]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/ui/player_hurt_feedback.gd" id="2_hurt_fb"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1"]
 radius = 16.0
@@ -20,3 +21,18 @@ one_shot = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = false
+
+[node name="HurtFeedback" type="CanvasLayer" parent="."]
+script = ExtResource("2_hurt_fb")
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="HurtFeedback"]
+copy_mode = 2
+
+[node name="EffectRect" type="ColorRect" parent="HurtFeedback"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
