@@ -19,6 +19,7 @@ const ENEMY_SCENE_MAP: Dictionary = {
 	"splitter": "res://scenes/enemies/splitter_enemy.tscn",
 	"charger": "res://scenes/enemies/charger_enemy.tscn",
 	"shield": "res://scenes/enemies/shield_enemy.tscn",
+	"boss_pig": "res://scenes/enemies/boss_enemy.tscn",
 }
 
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
