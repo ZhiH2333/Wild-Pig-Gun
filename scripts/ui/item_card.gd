@@ -27,6 +27,7 @@ func _ready() -> void:
 
 
 func setup_card(def: Dictionary, mode: String, price: int = -1, can_afford: bool = true) -> void:
+	modulate = Color.WHITE
 	var rarity: int = clampi(int(def.get("rarity", 1)), 1, 3)
 	_apply_rarity_style(rarity)
 	var title_text: String = str(def.get("title", "?"))
@@ -37,10 +38,12 @@ func setup_card(def: Dictionary, mode: String, price: int = -1, can_afford: bool
 	if mode == "shop":
 		_price.visible = true
 		_price.text = "%d 材料" % maxi(0, price)
-		disabled = not can_afford
+		disabled = false
+		modulate = Color(0.65, 0.65, 0.72, 1) if not can_afford else Color.WHITE
 	else:
 		_price.visible = false
 		disabled = false
+		modulate = Color.WHITE
 
 
 func _apply_icon(path: String) -> void:
