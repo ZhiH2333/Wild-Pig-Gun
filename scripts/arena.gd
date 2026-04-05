@@ -264,6 +264,9 @@ func build_run_snapshot() -> Dictionary:
 			"stat_burn_dps_flat": player.stat_burn_dps_flat,
 			"stat_ice_damage_mult": player.stat_ice_damage_mult,
 			"stat_ice_duration_bonus": player.stat_ice_duration_bonus,
+			"stat_poison_damage_mult": player.stat_poison_damage_mult,
+			"stat_poison_dps_flat": player.stat_poison_dps_flat,
+			"stat_poison_duration_pct": player.stat_poison_duration_pct,
 			"pos_x": player.global_position.x,
 			"pos_y": player.global_position.y,
 		}

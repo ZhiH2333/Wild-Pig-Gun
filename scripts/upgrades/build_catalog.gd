@@ -226,6 +226,15 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 		"ice_duration_flat":
 			if "stat_ice_duration_bonus" in player:
 				player.stat_ice_duration_bonus += float(value)
+		"poison_damage_pct":
+			if "stat_poison_damage_mult" in player:
+				player.stat_poison_damage_mult *= 1.0 + float(value)
+		"poison_dps_flat":
+			if "stat_poison_dps_flat" in player:
+				player.stat_poison_dps_flat += float(value)
+		"poison_duration_pct":
+			if "stat_poison_duration_pct" in player:
+				player.stat_poison_duration_pct += float(value)
 		"hp_regen_flat":
 			if "stat_hp_regen_per_sec" in player:
 				player.stat_hp_regen_per_sec += float(value)
@@ -343,6 +352,16 @@ static func shop_purchase_preview_text(
 		"ice_duration_flat":
 			var ib: float = float(player.stat_ice_duration_bonus) if "stat_ice_duration_bonus" in player else 0.0
 			lines.append("· 冰冻持续时间加成：%.2f → %.2f 秒" % [ib, ib + float(value)])
+		"poison_damage_pct":
+			var pm: float = float(player.stat_poison_damage_mult) if "stat_poison_damage_mult" in player else 1.0
+			var pp: float = float(value)
+			lines.append("· 毒素直伤乘数：×%.2f → ×%.2f" % [pm, pm * (1.0 + pp)])
+		"poison_dps_flat":
+			var pd: float = float(player.stat_poison_dps_flat) if "stat_poison_dps_flat" in player else 0.0
+			lines.append("· 中毒 DPS 加成：%.2f → %.2f" % [pd, pd + float(value)])
+		"poison_duration_pct":
+			var pt: float = float(player.stat_poison_duration_pct) if "stat_poison_duration_pct" in player else 0.0
+			lines.append("· 中毒时长加成：%.0f%% → %.0f%%" % [pt * 100.0, (pt + float(value)) * 100.0])
 		_:
 			lines.append("· %s" % str(def.get("desc", "参见物品说明")))
 	return "\n".join(lines)

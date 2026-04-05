@@ -18,5 +18,8 @@
   {"id": "ember", "rarity": 2, "title": "余烬", "desc": "火焰伤害 +10%", "short_desc": "火伤 +10%", "kind": "fire_damage_pct", "value": 0.10, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "wildfire", "rarity": 2, "title": "野火", "desc": "燃烧 DPS +1.5", "short_desc": "燃烧 +1.5", "kind": "burn_dps_flat", "value": 1.5, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "frost", "rarity": 2, "title": "霜冻", "desc": "冰霜伤害 +10%", "short_desc": "冰伤 +10%", "kind": "ice_damage_pct", "value": 0.10, "icon": "res://assets/sprites/icon.png", "stackable": true},
-  {"id": "permafrost", "rarity": 2, "title": "永冻", "desc": "冰冻时长 +0.4 秒", "short_desc": "冰缓 +0.4s", "kind": "ice_duration_flat", "value": 0.4, "icon": "res://assets/sprites/icon.png", "stackable": true}
+  {"id": "permafrost", "rarity": 2, "title": "永冻", "desc": "冰冻时长 +0.4 秒", "short_desc": "冰缓 +0.4s", "kind": "ice_duration_flat", "value": 0.4, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "venom", "rarity": 2, "title": "毒牙", "desc": "毒素直伤 +8%", "short_desc": "毒伤 +8%", "kind": "poison_damage_pct", "value": 0.08, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "plague", "rarity": 2, "title": "瘟疫", "desc": "中毒 DPS +0.8", "short_desc": "毒 DOT +0.8", "kind": "poison_dps_flat", "value": 0.8, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "lingering_tox", "rarity": 2, "title": "滞留毒", "desc": "中毒时长 +12%", "short_desc": "毒时长 +12%", "kind": "poison_duration_pct", "value": 0.12, "icon": "res://assets/sprites/icon.png", "stackable": true}
 ]

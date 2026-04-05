@@ -63,6 +63,8 @@ func _on_body_entered(body: Node2D) -> void:
 				dmg_base = maxi(1, int(round(float(damage) * float(pl.stat_fire_damage_mult))))
 			elif damage_element == &"ice" and pl != null and "stat_ice_damage_mult" in pl:
 				dmg_base = maxi(1, int(round(float(damage) * float(pl.stat_ice_damage_mult))))
+			elif damage_element == &"poison" and pl != null and "stat_poison_damage_mult" in pl:
+				dmg_base = maxi(1, int(round(float(damage) * float(pl.stat_poison_damage_mult))))
 			var final_dmg: int = dmg_base
 			var is_crit: bool = false
 			if pl != null and "stat_crit_chance" in pl and "stat_crit_mult" in pl:
@@ -86,6 +88,16 @@ func _on_body_entered(body: Node2D) -> void:
 				if pl3 != null and "stat_ice_duration_bonus" in pl3:
 					dur += float(pl3.stat_ice_duration_bonus)
 				body.call("apply_status_slow", 0.68, dur)
+			elif damage_element == &"poison" and body.has_method("apply_status_poison"):
+				var pl4: Node = get_tree().get_first_node_in_group("player")
+				var pdps: float = 1.1
+				var pdur: float = 4.0
+				if pl4 != null:
+					if "stat_poison_dps_flat" in pl4:
+						pdps += float(pl4.stat_poison_dps_flat)
+					if "stat_poison_duration_pct" in pl4:
+						pdur *= 1.0 + float(pl4.stat_poison_duration_pct)
+				body.call("apply_status_poison", pdps, pdur)
 		_hits_remaining -= 1
 		if _hits_remaining <= 0:
 			queue_free()
