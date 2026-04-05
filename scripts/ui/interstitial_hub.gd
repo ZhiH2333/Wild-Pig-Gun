@@ -3,6 +3,7 @@ extends CanvasLayer
 ## 波间：三选一升级 + 商店 + 下一波（幸运加权商店、物价随波次）
 signal continue_pressed
 
+const SHOP_OFFER_COUNT: int = 5
 const REFRESH_SHOP_COST: int = 3
 const REFRESH_UPGRADE_COST: int = 8
 const ITEM_CARD_SCENE: PackedScene = preload("res://scenes/ui/item_card.tscn")
@@ -65,7 +66,7 @@ func show_for_finished_wave(finished_wave_index: int) -> void:
 		upgrade_row.add_child(card)
 		card.setup_card(def, "upgrade")
 		card.pressed.connect(_on_upgrade_button_pressed.bind(def))
-	_shop_offers = BuildCatalog.pick_shop_offer(4, _rng, luck)
+	_shop_offers = BuildCatalog.pick_shop_offer(SHOP_OFFER_COUNT, _rng, luck)
 	_rebuild_shop_rows()
 	refresh_upgrade_btn.disabled = false
 	RunState.enter_interstitial_pause()
@@ -126,7 +127,7 @@ func _on_refresh_shop_pressed() -> void:
 	var luck: int = 0
 	if _player != null and "stat_luck" in _player:
 		luck = int(_player.stat_luck)
-	_shop_offers = BuildCatalog.pick_shop_offer(4, _rng, luck)
+	_shop_offers = BuildCatalog.pick_shop_offer(SHOP_OFFER_COUNT, _rng, luck)
 	_rebuild_shop_rows()
 
 
