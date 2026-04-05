@@ -23,6 +23,7 @@ const ENEMY_SCENE_MAP: Dictionary = {
 }
 
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
+const BOSS_SPAWN_WARNING_SEC: float = 0.8
 const RUN_SNAPSHOT_VERSION: int = 1
 
 @onready var enemy_container: Node2D = $EnemyContainer
@@ -216,6 +217,18 @@ func _on_wave_started(wave_index: int, duration_sec: float = 30.0) -> void:
 	RunState.wave_changed.emit(wave_index)
 	if hud != null and hud.has_method("on_wave_timer_reset"):
 		hud.on_wave_timer_reset(duration_sec)
+	var boss_type: String = WaveData.get_boss_type(_wave_cfg, wave_index)
+	if not boss_type.is_empty():
+		_begin_boss_spawn_async(boss_type)
+
+
+func _begin_boss_spawn_async(boss_type: String) -> void:
+	await get_tree().create_timer(0.55).timeout
+	var center: Vector2 = get_arena_rect().get_center()
+	_on_spawn_warning_shown(center)
+	await get_tree().create_timer(BOSS_SPAWN_WARNING_SEC).timeout
+	var cfg: Dictionary = {"type": boss_type}
+	_on_enemy_spawn_requested(cfg, center)
 
 
 ## 通关（需求 7.5）

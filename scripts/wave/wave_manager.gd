@@ -70,19 +70,23 @@ func _start_wave(wave_index: int) -> void:
 	wave_timer.start()
 
 	spawn_timer.stop()
-	_schedule_next_spawn_tick()
-
-	var elite_cfg: Dictionary = WaveData.get_elite_focus_settings(_wave_file_config, wave_index)
-	_elite_chance_bonus = float(elite_cfg.get("chance_bonus", 0.0))
-	if wave_index >= 10 or bool(elite_cfg.get("active", false)):
-		elite_check_timer.wait_time = float(elite_cfg.get("interval", 15.0))
-		elite_check_timer.start()
+	var boss_t: String = WaveData.get_boss_type(_wave_file_config, wave_index)
+	if boss_t.is_empty():
+		_schedule_next_spawn_tick()
 	else:
 		elite_check_timer.stop()
 
+	var elite_cfg: Dictionary = WaveData.get_elite_focus_settings(_wave_file_config, wave_index)
+	_elite_chance_bonus = float(elite_cfg.get("chance_bonus", 0.0))
+	if boss_t.is_empty() and (wave_index >= 10 or bool(elite_cfg.get("active", false))):
+		elite_check_timer.wait_time = float(elite_cfg.get("interval", 15.0))
+		elite_check_timer.start()
+	elif boss_t.is_empty():
+		elite_check_timer.stop()
+
 	emit_signal("wave_started", wave_index, duration)
-	# 波次开始时立刻刷一批
-	_try_spawn_batch()
+	if boss_t.is_empty():
+		_try_spawn_batch()
 
 
 ## 结束当前波次
@@ -216,6 +220,8 @@ func _try_spawn_batch() -> void:
 	if not is_wave_active:
 		return
 	var batch_size: int = _resolve_batch_size()
+	if batch_size <= 0:
+		return
 	var type_ids: Array = _get_batch_enemy_types(batch_size)
 	var slots: Array = []
 	for j in range(batch_size):

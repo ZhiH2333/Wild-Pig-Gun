@@ -52,7 +52,16 @@ static func has_modifier(entry: Dictionary, mod_name: String) -> bool:
 	return false
 
 
+static func get_boss_type(config: Dictionary, wave_index: int) -> String:
+	var e: Dictionary = get_wave_entry(config, wave_index)
+	if e.has("boss_type"):
+		return str(e["boss_type"])
+	return ""
+
+
 static func get_effective_batch_cap(config: Dictionary, wave_index: int) -> int:
+	if not get_boss_type(config, wave_index).is_empty():
+		return 0
 	var e: Dictionary = get_wave_entry(config, wave_index)
 	var cap: int
 	if e.has("batch_cap"):
