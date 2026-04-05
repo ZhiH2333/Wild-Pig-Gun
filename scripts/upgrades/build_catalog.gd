@@ -235,6 +235,12 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 		"poison_duration_pct":
 			if "stat_poison_duration_pct" in player:
 				player.stat_poison_duration_pct += float(value)
+		"shock_damage_pct":
+			if "stat_shock_damage_mult" in player:
+				player.stat_shock_damage_mult *= 1.0 + float(value)
+		"shock_vuln_flat":
+			if "stat_shock_vuln_apply_flat" in player:
+				player.stat_shock_vuln_apply_flat += float(value)
 		"hp_regen_flat":
 			if "stat_hp_regen_per_sec" in player:
 				player.stat_hp_regen_per_sec += float(value)
@@ -362,6 +368,13 @@ static func shop_purchase_preview_text(
 		"poison_duration_pct":
 			var pt: float = float(player.stat_poison_duration_pct) if "stat_poison_duration_pct" in player else 0.0
 			lines.append("· 中毒时长加成：%.0f%% → %.0f%%" % [pt * 100.0, (pt + float(value)) * 100.0])
+		"shock_damage_pct":
+			var sm: float = float(player.stat_shock_damage_mult) if "stat_shock_damage_mult" in player else 1.0
+			var sp: float = float(value)
+			lines.append("· 电击伤害乘数：×%.2f → ×%.2f" % [sm, sm * (1.0 + sp)])
+		"shock_vuln_flat":
+			var sv: float = float(player.stat_shock_vuln_apply_flat) if "stat_shock_vuln_apply_flat" in player else 0.0
+			lines.append("· 感电易伤施加：%.2f → %.2f" % [sv, sv + float(value)])
 		_:
 			lines.append("· %s" % str(def.get("desc", "参见物品说明")))
 	return "\n".join(lines)

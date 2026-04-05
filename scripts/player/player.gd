@@ -41,6 +41,8 @@ var stat_ice_duration_bonus: float = 0.0
 var stat_poison_damage_mult: float = 1.0
 var stat_poison_dps_flat: float = 0.0
 var stat_poison_duration_pct: float = 0.0
+var stat_shock_damage_mult: float = 1.0
+var stat_shock_vuln_apply_flat: float = 0.0
 ## 当前帧的操作描述（供调试覆盖层读取）
 var _debug_action: String = "待机"
 var _walk_sfx_cooldown: float = 0.0
@@ -165,6 +167,8 @@ func apply_run_snapshot_stats(d: Dictionary) -> void:
 	stat_poison_damage_mult = maxf(0.05, float(d.get("stat_poison_damage_mult", 1.0)))
 	stat_poison_dps_flat = maxf(0.0, float(d.get("stat_poison_dps_flat", 0.0)))
 	stat_poison_duration_pct = maxf(0.0, float(d.get("stat_poison_duration_pct", 0.0)))
+	stat_shock_damage_mult = maxf(0.05, float(d.get("stat_shock_damage_mult", 1.0)))
+	stat_shock_vuln_apply_flat = maxf(0.0, float(d.get("stat_shock_vuln_apply_flat", 0.0)))
 	global_position = Vector2(float(d.get("pos_x", 960.0)), float(d.get("pos_y", 540.0)))
 	emit_signal("hp_changed", current_hp, max_hp)
 
