@@ -12,5 +12,7 @@
   {"id": "titan", "rarity": 3, "title": "泰坦", "desc": "最大生命 +40，伤害 +15%", "short_desc": "生命+40 伤+15%", "kind": "combo_hp_dmg_big", "value": 40, "icon": "res://assets/sprites/icon.png", "stackable": false},
   {"id": "overclock", "rarity": 3, "title": "超频", "desc": "攻速 +22%", "short_desc": "攻速 +22%", "kind": "fire_pct", "value": 0.22, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "glass_cannon", "rarity": 2, "title": "玻璃炮", "desc": "伤害 +14%，最大生命 -12", "short_desc": "伤+14% HP-12", "kind": "dmg_for_hp", "value": {"dmg": 0.14, "hp": 12}, "icon": "res://assets/sprites/icon.png", "stackable": false},
-  {"id": "reckless", "rarity": 2, "title": "莽夫", "desc": "攻速 +15%，移速 -8%", "short_desc": "速+15% 移-8%", "kind": "fire_for_move", "value": {"fire": 0.15, "move": -0.08}, "icon": "res://assets/sprites/icon.png", "stackable": true}
+  {"id": "reckless", "rarity": 2, "title": "莽夫", "desc": "攻速 +15%，移速 -8%", "short_desc": "速+15% 移-8%", "kind": "fire_for_move", "value": {"fire": 0.15, "move": -0.08}, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "eagle_eye", "rarity": 2, "title": "鹰眼", "desc": "暴击率 +6%", "short_desc": "暴击 +6%", "kind": "crit_chance_flat", "value": 0.06, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "executioner", "rarity": 3, "title": "行刑", "desc": "暴击伤害 +0.25 倍率", "short_desc": "暴伤 +0.25", "kind": "crit_mult_flat", "value": 0.25, "icon": "res://assets/sprites/icon.png", "stackable": true}
 ]
