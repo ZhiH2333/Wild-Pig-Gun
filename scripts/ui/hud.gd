@@ -51,7 +51,7 @@ func on_wave_ended() -> void:
 
 ## 更新金币与储蓄显示（需求 10.2）
 func _on_material_changed(current: int, savings: int) -> void:
-	material_label.text = "金币: %d" % current
+	material_label.text = "材料: %d" % current
 	if savings > 0:
 		savings_label.text = "储蓄: %d (x2)" % savings
 		savings_label.visible = true

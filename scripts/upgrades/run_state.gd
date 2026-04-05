@@ -15,6 +15,7 @@ signal material_changed(current: int, savings: int)  # 阶段二：材料变化
 # 局内状态
 var character_id: String = "default"
 var wave_index: int = 0
+## 元进度货币（通关解锁等，局内购物只用 material_current）
 var gold: int = 0
 ## 本局开始时的系统滴答（毫秒），用于结算用时
 var run_start_ticks_msec: int = 0
@@ -115,3 +116,11 @@ func collect_savings() -> void:
 	material_current += material_savings * 2
 	material_savings = 0
 	emit_signal("material_changed", material_current, material_savings)
+
+
+func try_spend_material(cost: int) -> bool:
+	if material_current < cost:
+		return false
+	material_current -= cost
+	emit_signal("material_changed", material_current, material_savings)
+	return true

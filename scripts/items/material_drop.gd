@@ -77,8 +77,10 @@ func _process(delta: float) -> void:
 		global_position += dir * speed * delta
 		queue_redraw()
 
-		# 到达玩家时拾取
-		if dist < COLLECT_RADIUS:
+		var collect_r: float = COLLECT_RADIUS
+		if _player.has_method("get_pickup_collect_radius"):
+			collect_r = _player.get_pickup_collect_radius()
+		if dist < collect_r:
 			_do_collect()
 
 
