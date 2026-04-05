@@ -208,9 +208,11 @@ func _on_wave_timer_tick(remaining: float) -> void:
 
 
 ## 新波次开始时更新 HUD 波次显示
-func _on_wave_started(wave_index: int) -> void:
+func _on_wave_started(wave_index: int, duration_sec: float = 30.0) -> void:
 	RunState.wave_index = wave_index
 	RunState.wave_changed.emit(wave_index)
+	if hud != null and hud.has_method("on_wave_timer_reset"):
+		hud.on_wave_timer_reset(duration_sec)
 
 
 ## 通关（需求 7.5）
@@ -342,6 +344,8 @@ func _restore_weapon_loadout(weapon_ids: Array) -> void:
 			lo.add_weapon_slot_by_id(wid)
 	if player != null and player.has_method("recompute_weapon_synergy"):
 		player.recompute_weapon_synergy()
+	if hud != null and hud.has_method("refresh_weapon_slots"):
+		hud.refresh_weapon_slots()
 
 
 func _on_pause_resume_pressed() -> void:

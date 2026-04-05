@@ -4,6 +4,7 @@ extends CanvasLayer
 signal finished
 
 const REFRESH_LEVEL_COST: int = 6
+const ITEM_CARD_SCENE: PackedScene = preload("res://scenes/ui/item_card.tscn")
 
 @onready var title_label: Label = $CenterContainer/Panel/MarginContainer/VBox/TitleLabel
 @onready var upgrade_row: HBoxContainer = $CenterContainer/Panel/MarginContainer/VBox/UpgradeRow
@@ -62,13 +63,10 @@ func _rebuild_offers(lv: int) -> void:
 	var offers: Array = BuildCatalog.pick_level_upgrades(3, RunState.upgrade_ids, _rng, lv)
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(268, 116)
-		var r: int = int(def.get("rarity", 1))
-		var tag: String = ["", "[蓝] ", "[红] "][mini(r - 1, 2)]
-		b.text = "%s%s\n%s" % [tag, def["title"], def["desc"]]
-		b.pressed.connect(_on_pick.bind(def))
-		upgrade_row.add_child(b)
+		var card: ItemCard = ITEM_CARD_SCENE.instantiate() as ItemCard
+		upgrade_row.add_child(card)
+		card.setup_card(def, "upgrade")
+		card.pressed.connect(_on_pick.bind(def))
 
 
 func _on_pick(def: Dictionary) -> void:
@@ -81,8 +79,8 @@ func _on_pick(def: Dictionary) -> void:
 		RunState.upgrade_ids.append(id)
 	_picked_for_active = true
 	for c in upgrade_row.get_children():
-		if c is Button:
-			(c as Button).disabled = true
+		if c is ItemCard:
+			(c as ItemCard).disabled = true
 	refresh_btn.disabled = true
 	visible = false
 	RunState.leave_level_up_pause()

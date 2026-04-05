@@ -7,6 +7,7 @@ class_name StatStrip
 @onready var _fire: Label = $FireLabel
 @onready var _move: Label = $MoveLabel
 @onready var _luck: Label = $LuckLabel
+@onready var _syn: Label = $SynLabel
 
 
 func refresh_from_player(p: Node) -> void:
@@ -16,6 +17,7 @@ func refresh_from_player(p: Node) -> void:
 	var fr: float = 1.0
 	var mv: float = 1.0
 	var lk: int = 0
+	var sy: float = 1.0
 	if "stat_damage_mult" in p:
 		dm = float(p.stat_damage_mult)
 	if "stat_fire_rate_mult" in p:
@@ -24,7 +26,14 @@ func refresh_from_player(p: Node) -> void:
 		mv = float(p.stat_move_speed_mult)
 	if "stat_luck" in p:
 		lk = int(p.stat_luck)
+	if "stat_synergy_damage_mult" in p:
+		sy = float(p.stat_synergy_damage_mult)
 	_dmg.text = "伤×%.2f" % dm
 	_fire.text = "速×%.2f" % fr
 	_move.text = "移×%.2f" % mv
 	_luck.text = "幸 %d" % lk
+	if sy > 1.001:
+		_syn.visible = true
+		_syn.text = "羁×%.2f" % sy
+	else:
+		_syn.visible = false

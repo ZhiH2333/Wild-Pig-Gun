@@ -6,6 +6,7 @@ extends CharacterBody2D
 # 信号
 signal hp_changed(current: int, maximum: int)
 signal died
+signal synergy_changed(multiplier: float, tags: Array)
 
 # 属性
 const SPEED: float = 200.0
@@ -131,11 +132,17 @@ func recompute_weapon_synergy() -> void:
 			continue
 		for t in WeaponCatalog.tags_for(wid):
 			counts[t] = int(counts.get(t, 0)) + 1
-	var m: float = 1.0
+	var active_tags: Array[String] = []
 	for k in counts.keys():
 		if int(counts[k]) >= 2:
-			m *= 1.1
+			active_tags.append(str(k))
+	var m: float = 1.0
+	for _i in range(active_tags.size()):
+		m *= 1.1
+	var prev: float = stat_synergy_damage_mult
 	stat_synergy_damage_mult = m
+	if absf(m - prev) > 0.0001 and active_tags.size() > 0:
+		emit_signal("synergy_changed", m, active_tags)
 
 
 ## 受到伤害（需求 4.2、4.3、4.4）
