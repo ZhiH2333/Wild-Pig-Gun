@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://hud" path="res://scenes/hud.tscn" id="5_hud"]
 [ext_resource type="Script" path="res://scripts/wave/wave_manager.gd" id="6_wave_manager"]
 [ext_resource type="Script" path="res://scripts/wave/enemy_pool.gd" id="7_enemy_pool"]
+[ext_resource type="Script" path="res://scripts/ui/interstitial_hub.gd" id="8_interstitial"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
@@ -81,6 +82,73 @@ wait_time = 15.0
 script = ExtResource("7_enemy_pool")
 
 [node name="HUD" parent="." instance=ExtResource("5_hud")]
+
+[node name="PauseOverlay" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 40
+visible = false
+
+[node name="Dim" type="ColorRect" parent="PauseOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0, 0, 0, 0.55)
+
+[node name="CenterContainer" type="CenterContainer" parent="PauseOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PauseVBox" type="VBoxContainer" parent="PauseOverlay/CenterContainer"]
+theme_override_constants/separation = 12
+
+[node name="PauseTitle" type="Label" parent="PauseOverlay/CenterContainer/PauseVBox"]
+theme_override_font_sizes/font_size = 36
+text = "游戏暂停"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PauseOverlay/CenterContainer/PauseVBox"]
+custom_minimum_size = Vector2(280, 44)
+text = "继续游戏 (ESC)"
+
+[node name="InterstitialHub" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 50
+visible = false
+script = ExtResource("8_interstitial")
+
+[node name="CenterContainer" type="CenterContainer" parent="InterstitialHub"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="InterstitialHub/CenterContainer"]
+custom_minimum_size = Vector2(480, 220)
+
+[node name="MarginContainer" type="MarginContainer" parent="InterstitialHub/CenterContainer/Panel"]
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer"]
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+theme_override_font_sizes/font_size = 28
+text = "波次结束"
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 48)
+text = "下一波"
 
 [node name="DebugOverlay" type="CanvasLayer" parent="."]
 layer = 100

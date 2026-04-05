@@ -1,4 +1,5 @@
 extends Node
+class_name WaveManager
 ## WaveManager 波次管理器
 ## 负责波次倒计时、敌人分批刷新、精英怪随机出现和通关判定
 ## 需求：7.1、7.2、7.3、7.4、7.5
@@ -17,6 +18,8 @@ const SPAWN_INTERVAL_START: float = 2.0
 const SPAWN_INTERVAL_MIN: float = 0.5
 const SPAWN_WARNING_DURATION: float = 0.8
 const MIN_SPAWN_DISTANCE_FROM_PLAYER: float = 80.0
+## 玩家站在预警点半径内时取消该次生成（站位挡刷新）
+const SPAWN_BLOCK_RADIUS: float = 36.0
 
 var current_wave: int = 0
 var is_wave_active: bool = false
@@ -110,47 +113,64 @@ func _get_spawn_interval() -> float:
 	return lerpf(SPAWN_INTERVAL_START, SPAWN_INTERVAL_MIN, progress)
 
 
-## 分批刷新：先发预警信号，延迟后发实际生成信号
+## 分批刷新：预警坐标与生成坐标一致；玩家占点则跳过该格
 func _try_spawn_batch() -> void:
 	if not is_wave_active:
 		return
-	# 每批生成数量随波次递增（需求 7.3）
 	var batch_size: int = 1 + int(current_wave * 0.5)
 	batch_size = mini(batch_size, 5)
-
-	for _i in range(batch_size):
-		var pos := _get_safe_spawn_position()
-		emit_signal("spawn_warning_shown", pos)
-
-	# 延迟后实际生成
+	var slots: Array = []
+	for _j in range(batch_size):
+		slots.append({
+			"pos": _get_safe_spawn_position(),
+			"config": _get_spawn_config(),
+		})
+	for s in slots:
+		emit_signal("spawn_warning_shown", s["pos"] as Vector2)
 	await get_tree().create_timer(SPAWN_WARNING_DURATION).timeout
-
 	if not is_wave_active:
 		return
+	for s in slots:
+		var pos: Vector2 = s["pos"] as Vector2
+		if _is_spawn_blocked_by_player(pos):
+			continue
+		emit_signal("enemy_spawn_requested", s["config"] as Dictionary, pos)
 
-	for _i in range(batch_size):
-		var pos := _get_safe_spawn_position()
-		var config := _get_spawn_config()
-		emit_signal("enemy_spawn_requested", config, pos)
 
-
-## 精英怪生成逻辑（需求 7.3）
-## 第 10 波前不出现，第 20 波必出现，10-19 波按概率
+## 精英怪生成逻辑（需求 7.3）；与批次相同：预警后同坐标生成，可挡刷新
 func _try_spawn_elite() -> void:
-	if current_wave < 10:
-		return
+	_spawn_elite_sequence()
 
+
+func _spawn_elite_sequence() -> void:
+	if current_wave < 10 or not is_wave_active:
+		return
 	if current_wave >= MAX_WAVES:
-		# 第 20 波必出现 Boss 级精英
-		var pos := _get_safe_spawn_position()
-		emit_signal("enemy_spawn_requested", {"type": "elite", "is_boss": true}, pos)
+		var pos_boss := _get_safe_spawn_position()
+		emit_signal("spawn_warning_shown", pos_boss)
+		await get_tree().create_timer(SPAWN_WARNING_DURATION).timeout
+		if not is_wave_active:
+			return
+		if not _is_spawn_blocked_by_player(pos_boss):
+			emit_signal("enemy_spawn_requested", {"type": "elite", "is_boss": true}, pos_boss)
 		return
-
-	# 10-19 波：概率随波次线性增加（10波30%，19波75%）
 	var chance := 0.3 + (current_wave - 10) * 0.05
-	if randf() < chance:
-		var pos := _get_safe_spawn_position()
-		emit_signal("enemy_spawn_requested", {"type": "elite"}, pos)
+	if randf() >= chance:
+		return
+	var pos := _get_safe_spawn_position()
+	emit_signal("spawn_warning_shown", pos)
+	await get_tree().create_timer(SPAWN_WARNING_DURATION).timeout
+	if not is_wave_active:
+		return
+	if _is_spawn_blocked_by_player(pos):
+		return
+	emit_signal("enemy_spawn_requested", {"type": "elite"}, pos)
+
+
+func _is_spawn_blocked_by_player(pos: Vector2) -> bool:
+	if player == null:
+		return false
+	return player.global_position.distance_to(pos) < SPAWN_BLOCK_RADIUS
 
 
 ## 在 Arena 边缘选取安全生成位置（距玩家 > 80 像素，最多重试 5 次）
