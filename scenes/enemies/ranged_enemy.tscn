@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://ranged_enemy"]
+
+[ext_resource type="Script" path="res://scripts/enemies/ranged_enemy.gd" id="1_ranged"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 16.0
+
+[node name="RangedEnemy" type="CharacterBody2D"]
+script = ExtResource("1_ranged")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="DamageTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="RetaliationCooldown" type="Timer" parent="."]
+wait_time = 1.35
+one_shot = true

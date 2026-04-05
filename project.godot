@@ -13,12 +13,24 @@ config_version=5
 config/name="WildPigGun"
 run/main_scene="uid://dctlwroemrtu0"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://assets/sprites/icon.png"
 
 [autoload]
 
 SaveManager="*res://scripts/save/save_manager.gd"
 RunState="*res://scripts/upgrades/run_state.gd"
+GameSettings="*res://scripts/settings/game_settings.gd"
+GameFlow="*res://scripts/game_flow.gd"
+GameAudio="*res://scripts/audio/game_audio.gd"
+UiSoundFeedback="*res://scripts/ui/ui_sound_feedback.gd"
+
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
+
+[gui]
+
+theme/custom="res://themes/game_ui_theme.tres"
 
 [physics]
 

@@ -1,0 +1,8 @@
+[
+  {"id": "rifle", "display_name": "步枪", "tags": ["heavy"], "kind": "projectile", "damage": 11, "fire_interval": 0.46, "pierce": 1, "element": "shock", "icon": "res://assets/sprites/icon.png", "short_desc": "重型单发，穿透与感电"},
+  {"id": "smg", "display_name": "冲锋枪", "tags": ["light"], "kind": "projectile", "damage": 6, "fire_interval": 0.28, "element": "fire", "icon": "res://assets/sprites/icon.png", "short_desc": "轻型高射速（火）"},
+  {"id": "hammer", "display_name": "工地铁锤", "tags": ["heavy", "melee"], "kind": "melee", "damage": 16, "fire_interval": 0.55, "melee_radius": 78.0, "icon": "res://assets/sprites/icon.png", "short_desc": "近战范围，重型羁绊"},
+  {"id": "pistol", "display_name": "手枪", "tags": ["light"], "kind": "projectile", "damage": 9, "fire_interval": 0.38, "element": "ice", "icon": "res://assets/sprites/icon.png", "short_desc": "轻便快射（冰）"},
+  {"id": "shotgun", "display_name": "霰弹枪", "tags": ["heavy"], "kind": "projectile", "damage": 8, "fire_interval": 0.68, "pellet_count": 6, "spread_deg": 38, "icon": "res://assets/sprites/icon.png", "short_desc": "扇形多发"},
+  {"id": "minigun", "display_name": "转管机枪", "tags": ["light"], "kind": "projectile", "damage": 4, "fire_interval": 0.16, "element": "poison", "icon": "res://assets/sprites/icon.png", "short_desc": "极限射速（毒）"}
+]

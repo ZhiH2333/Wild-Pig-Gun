@@ -1,21 +1,94 @@
-[gd_scene format=3 uid="uid://hud"]
+[gd_scene load_steps=4 format=3 uid="uid://hud"]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="PackedScene" uid="uid://statstripwp" path="res://scenes/ui/stat_strip.tscn" id="3_stat"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
-[node name="HUDContainer" type="VBoxContainer" parent="."]
-offset_left = 16.0
+[node name="HUDRoot" type="VBoxContainer" parent="."]
+offset_left = 20.0
 offset_top = 16.0
-offset_right = 300.0
-offset_bottom = 80.0
+offset_right = 720.0
+offset_bottom = 420.0
+theme = ExtResource("2_ui")
+theme_override_constants/separation = 10
+
+[node name="TopRow" type="HBoxContainer" parent="HUDRoot"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="WaveLabel" type="Label" parent="HUDRoot/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 30
+text = "第 0 波"
+
+[node name="WaveTimerBar" type="ProgressBar" parent="HUDRoot/TopRow"]
+custom_minimum_size = Vector2(220, 22)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 30.0
+value = 30.0
+show_percentage = false
+
+[node name="TimerLabel" type="Label" parent="HUDRoot/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.92, 0.75, 1)
+theme_override_font_sizes/font_size = 24
+text = "剩余 -- 秒"
+
+[node name="HPBar" type="ProgressBar" parent="HUDRoot"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HPLabel" type="Label" parent="HUDRoot"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.96, 0.92, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+text = "100 / 100"
+
+[node name="StatStrip" parent="HUDRoot" instance=ExtResource("3_stat")]
+layout_mode = 2
+
+[node name="WeaponRow" type="HBoxContainer" parent="HUDRoot"]
+layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HPLabel" type="Label" parent="HUDContainer"]
-text = "HP: 100/100"
-theme_override_font_sizes/font_size = 24
+[node name="MaterialLabel" type="Label" parent="HUDRoot"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 1, 0.75, 1)
+theme_override_font_sizes/font_size = 26
+text = "材料 0"
 
-[node name="WaveLabel" type="Label" parent="HUDContainer"]
-text = "第 0 波"
+[node name="SavingsLabel" type="Label" parent="HUDRoot"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "储蓄 0 (下波×2)"
+
+[node name="LevelXpLabel" type="Label" parent="HUDRoot"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Lv.1  XP 0/38"
+
+[node name="ToastLabel" type="Label" parent="HUDRoot"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.55, 1)
 theme_override_font_sizes/font_size = 24
+text = ""

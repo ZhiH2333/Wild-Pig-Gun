@@ -1,0 +1,51 @@
+{
+  "characters": [
+    {
+      "id": "default",
+      "display_name": "标准野猪",
+      "description": "平衡型：步枪开局。",
+      "sprite_path": "res://assets/sprites/wildpig.png",
+      "max_hp": 100,
+      "speed_mult": 1.0,
+      "damage_mult": 1.0,
+      "starting_weapons": ["rifle"]
+    },
+    {
+      "id": "bruiser",
+      "display_name": "重装野猪",
+      "description": "更高生命，移速略慢，双重重型羁绊起手。",
+      "sprite_path": "res://assets/sprites/wildpig.png",
+      "max_hp": 130,
+      "speed_mult": 0.92,
+      "damage_mult": 1.0,
+      "starting_weapons": ["rifle", "hammer"]
+    },
+    {
+      "id": "scout",
+      "display_name": "迅捷野猪",
+      "description": "移速更快，SMG 开局。（最高波次 ≥5 解锁）",
+      "sprite_path": "res://assets/sprites/wildpig.png",
+      "max_hp": 85,
+      "speed_mult": 1.12,
+      "damage_mult": 1.0,
+      "unlock_wave": 5,
+      "starting_weapons": ["smg"]
+    },
+    {
+      "id": "miser",
+      "display_name": "节俭者·猪",
+      "description": "商店更贵；材料越多伤害越高；自带收获。通关波次 ≥8 解锁。",
+      "sprite_path": "res://assets/sprites/wildpig.png",
+      "max_hp": 95,
+      "speed_mult": 1.0,
+      "damage_mult": 1.0,
+      "unlock_wave": 8,
+      "shop_price_mult": 1.25,
+      "material_to_damage_kv": 0.0018,
+      "starting_weapons": ["rifle"],
+      "traits": [
+        {"kind": "stat_harvest", "value": 1.1}
+      ]
+    }
+  ]
+}
