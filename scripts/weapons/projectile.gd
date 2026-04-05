@@ -40,7 +40,7 @@ func _setup_visual() -> void:
 	if team == TEAM_ENEMY:
 		_sprite.texture = ENEMY_BULLET_TEXTURE
 		var th: float = float(ENEMY_BULLET_TEXTURE.get_height())
-		var target_h: float = 14.0
+		var target_h: float = 34.0
 		_sprite.scale = Vector2.ONE * (target_h / maxf(1.0, th))
 		_sprite.rotation = direction.angle()
 	else:
