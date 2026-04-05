@@ -65,6 +65,8 @@ func _on_body_entered(body: Node2D) -> void:
 				dmg_base = maxi(1, int(round(float(damage) * float(pl.stat_ice_damage_mult))))
 			elif damage_element == &"poison" and pl != null and "stat_poison_damage_mult" in pl:
 				dmg_base = maxi(1, int(round(float(damage) * float(pl.stat_poison_damage_mult))))
+			elif damage_element == &"shock" and pl != null and "stat_shock_damage_mult" in pl:
+				dmg_base = maxi(1, int(round(float(damage) * float(pl.stat_shock_damage_mult))))
 			var final_dmg: int = dmg_base
 			var is_crit: bool = false
 			if pl != null and "stat_crit_chance" in pl and "stat_crit_mult" in pl:
@@ -98,6 +100,12 @@ func _on_body_entered(body: Node2D) -> void:
 					if "stat_poison_duration_pct" in pl4:
 						pdur *= 1.0 + float(pl4.stat_poison_duration_pct)
 				body.call("apply_status_poison", pdps, pdur)
+			elif damage_element == &"shock" and body.has_method("apply_status_shock_vuln"):
+				var pl5: Node = get_tree().get_first_node_in_group("player")
+				var sv: float = 0.14
+				if pl5 != null and "stat_shock_vuln_apply_flat" in pl5:
+					sv += float(pl5.stat_shock_vuln_apply_flat)
+				body.call("apply_status_shock_vuln", sv, 4.5)
 		_hits_remaining -= 1
 		if _hits_remaining <= 0:
 			queue_free()
