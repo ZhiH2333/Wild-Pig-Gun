@@ -60,7 +60,10 @@ func _show_overlay_for_level(lv: int) -> void:
 func _rebuild_offers(lv: int) -> void:
 	for c in upgrade_row.get_children():
 		c.queue_free()
-	var offers: Array = BuildCatalog.pick_level_upgrades(3, RunState.upgrade_ids, _rng, lv)
+	var luck: int = 0
+	if _player != null and "stat_luck" in _player:
+		luck = int(_player.stat_luck)
+	var offers: Array = BuildCatalog.pick_level_upgrades(3, RunState.upgrade_ids, _rng, lv, RunState.wave_index, luck)
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
 		var card: ItemCard = ITEM_CARD_SCENE.instantiate() as ItemCard

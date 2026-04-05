@@ -93,6 +93,15 @@ func add_max_hp(amount: int) -> void:
 	emit_signal("hp_changed", current_hp, max_hp)
 
 
+func penalties_max_hp(amount: int) -> void:
+	var loss: int = maxi(0, amount)
+	if loss <= 0:
+		return
+	max_hp = maxi(1, max_hp - loss)
+	current_hp = mini(current_hp, max_hp)
+	emit_signal("hp_changed", current_hp, max_hp)
+
+
 func heal_flat(amount: int) -> void:
 	current_hp = mini(max_hp, current_hp + amount)
 	emit_signal("hp_changed", current_hp, max_hp)

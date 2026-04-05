@@ -10,5 +10,7 @@
   {"id": "green_thumb", "rarity": 2, "title": "老农", "desc": "收获 +1.0", "short_desc": "收获 +1.0", "kind": "harvest_flat", "value": 1.0, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "rabbit_foot", "rarity": 2, "title": "兔脚", "desc": "幸运 +2", "short_desc": "幸运 +2", "kind": "luck_flat", "value": 2, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "titan", "rarity": 3, "title": "泰坦", "desc": "最大生命 +40，伤害 +15%", "short_desc": "生命+40 伤+15%", "kind": "combo_hp_dmg_big", "value": 40, "icon": "res://assets/sprites/icon.png", "stackable": false},
-  {"id": "overclock", "rarity": 3, "title": "超频", "desc": "攻速 +22%", "short_desc": "攻速 +22%", "kind": "fire_pct", "value": 0.22, "icon": "res://assets/sprites/icon.png", "stackable": true}
+  {"id": "overclock", "rarity": 3, "title": "超频", "desc": "攻速 +22%", "short_desc": "攻速 +22%", "kind": "fire_pct", "value": 0.22, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "glass_cannon", "rarity": 2, "title": "玻璃炮", "desc": "伤害 +14%，最大生命 -12", "short_desc": "伤+14% HP-12", "kind": "dmg_for_hp", "value": {"dmg": 0.14, "hp": 12}, "icon": "res://assets/sprites/icon.png", "stackable": false},
+  {"id": "reckless", "rarity": 2, "title": "莽夫", "desc": "攻速 +15%，移速 -8%", "short_desc": "速+15% 移-8%", "kind": "fire_for_move", "value": {"fire": 0.15, "move": -0.08}, "icon": "res://assets/sprites/icon.png", "stackable": true}
 ]
