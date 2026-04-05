@@ -220,6 +220,12 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 		"burn_dps_flat":
 			if "stat_burn_dps_flat" in player:
 				player.stat_burn_dps_flat += float(value)
+		"ice_damage_pct":
+			if "stat_ice_damage_mult" in player:
+				player.stat_ice_damage_mult *= 1.0 + float(value)
+		"ice_duration_flat":
+			if "stat_ice_duration_bonus" in player:
+				player.stat_ice_duration_bonus += float(value)
 		"hp_regen_flat":
 			if "stat_hp_regen_per_sec" in player:
 				player.stat_hp_regen_per_sec += float(value)
@@ -330,6 +336,13 @@ static func shop_purchase_preview_text(
 		"burn_dps_flat":
 			var bd: float = float(player.stat_burn_dps_flat) if "stat_burn_dps_flat" in player else 0.0
 			lines.append("· 燃烧 DPS 加成：%.2f → %.2f" % [bd, bd + float(value)])
+		"ice_damage_pct":
+			var im: float = float(player.stat_ice_damage_mult) if "stat_ice_damage_mult" in player else 1.0
+			var ip: float = float(value)
+			lines.append("· 冰霜伤害乘数：×%.2f → ×%.2f" % [im, im * (1.0 + ip)])
+		"ice_duration_flat":
+			var ib: float = float(player.stat_ice_duration_bonus) if "stat_ice_duration_bonus" in player else 0.0
+			lines.append("· 冰冻持续时间加成：%.2f → %.2f 秒" % [ib, ib + float(value)])
 		_:
 			lines.append("· %s" % str(def.get("desc", "参见物品说明")))
 	return "\n".join(lines)
