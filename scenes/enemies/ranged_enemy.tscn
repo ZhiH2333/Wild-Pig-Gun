@@ -14,3 +14,7 @@ shape = SubResource("CircleShape2D_1")
 [node name="DamageTimer" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="RetaliationCooldown" type="Timer" parent="."]
+wait_time = 1.35
+one_shot = true

@@ -17,6 +17,16 @@ var stat_damage_mult: float = 1.0
 var stat_move_speed_mult: float = 1.0
 var stat_fire_rate_mult: float = 1.0
 var stat_pickup_radius_bonus: float = 0.0
+## 每波结束额外材料系数（收获 Harvest）
+var stat_harvest: float = 0.0
+## 影响商店高 tier 权重
+var stat_luck: int = 0
+## 角色词条：商店标价倍率（>1 更贵）
+var shop_price_mult: float = 1.0
+## 材料转伤害系数（节俭者-like：材料越多武器伤害越高）
+var material_to_damage_kv: float = 0.0
+## 同标签武器 ≥2 时的全局伤害乘数（由 WeaponLoadout 重算）
+var stat_synergy_damage_mult: float = 1.0
 ## 当前帧的操作描述（供调试覆盖层读取）
 var _debug_action: String = "待机"
 
@@ -82,6 +92,27 @@ func heal_flat(amount: int) -> void:
 
 func get_pickup_collect_radius() -> float:
 	return 12.0 + stat_pickup_radius_bonus
+
+
+func recompute_weapon_synergy() -> void:
+	var loadout: Node = get_node_or_null("WeaponLoadout")
+	if loadout == null:
+		stat_synergy_damage_mult = 1.0
+		return
+	var counts: Dictionary = {}
+	for c in loadout.get_children():
+		if not ("weapon_id" in c):
+			continue
+		var wid: String = str(c.weapon_id)
+		if wid.is_empty():
+			continue
+		for t in WeaponCatalog.tags_for(wid):
+			counts[t] = int(counts.get(t, 0)) + 1
+	var m: float = 1.0
+	for k in counts.keys():
+		if int(counts[k]) >= 2:
+			m *= 1.1
+	stat_synergy_damage_mult = m
 
 
 ## 受到伤害（需求 4.2、4.3、4.4）

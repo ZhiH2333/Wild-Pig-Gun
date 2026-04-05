@@ -1,0 +1,5 @@
+[
+  {"id": "rifle", "tags": ["heavy"], "kind": "projectile", "damage": 11, "fire_interval": 0.52},
+  {"id": "smg", "tags": ["light"], "kind": "projectile", "damage": 6, "fire_interval": 0.3},
+  {"id": "hammer", "tags": ["heavy", "melee"], "kind": "melee", "damage": 16, "fire_interval": 0.55, "melee_radius": 78.0}
+]

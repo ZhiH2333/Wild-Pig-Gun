@@ -12,8 +12,6 @@ signal enemy_spawn_requested(config: Dictionary, position: Vector2)
 signal spawn_warning_shown(position: Vector2)
 
 const MAX_WAVES: int = 20
-const BASE_WAVE_DURATION: float = 30.0
-const MAX_WAVE_DURATION: float = 60.0
 const SPAWN_INTERVAL_START: float = 2.0
 const SPAWN_INTERVAL_MIN: float = 0.5
 const SPAWN_WARNING_DURATION: float = 0.8
@@ -25,6 +23,7 @@ var current_wave: int = 0
 var is_wave_active: bool = false
 var _spawn_elapsed: float = 0.0
 var _wave_file_config: Dictionary = {}
+var _elite_chance_bonus: float = 0.0
 
 ## 外部依赖（由 Arena 注入）
 var player: Node2D = null
@@ -74,9 +73,10 @@ func _start_wave(wave_index: int) -> void:
 	spawn_timer.wait_time = SPAWN_INTERVAL_START
 	spawn_timer.start()
 
-	# 10 波以上启动精英检查（每 15 秒检查一次）
-	if wave_index >= 10:
-		elite_check_timer.wait_time = 15.0
+	var elite_cfg: Dictionary = WaveData.get_elite_focus_settings(_wave_file_config, wave_index)
+	_elite_chance_bonus = float(elite_cfg.get("chance_bonus", 0.0))
+	if wave_index >= 10 or bool(elite_cfg.get("active", false)):
+		elite_check_timer.wait_time = float(elite_cfg.get("interval", 15.0))
 		elite_check_timer.start()
 	else:
 		elite_check_timer.stop()
@@ -102,10 +102,10 @@ func start_next_wave() -> void:
 	_start_wave(current_wave + 1)
 
 
-## 波次时长：线性增长，上限 60 秒（需求 7.2）
+## 波次时长：优先 data 表 duration_sec，否则回退公式
 func _get_wave_duration(wave_index: int) -> float:
-	var duration := BASE_WAVE_DURATION + wave_index * 1.5
-	return minf(duration, MAX_WAVE_DURATION)
+	var d: float = WaveData.get_wave_duration_sec(_wave_file_config, wave_index)
+	return clampf(d, 15.0, 120.0)
 
 
 ## 刷新间隔：随波次内时间流逝从 2.0 线性降至 0.5
@@ -155,7 +155,10 @@ func _spawn_elite_sequence() -> void:
 		if not _is_spawn_blocked_by_player(pos_boss):
 			emit_signal("enemy_spawn_requested", {"type": "elite", "is_boss": true}, pos_boss)
 		return
-	var chance := 0.3 + (current_wave - 10) * 0.05
+	var base_chance: float = 0.3 + maxf(0.0, float(current_wave - 10)) * 0.05
+	if current_wave < 10:
+		base_chance = 0.38
+	var chance: float = clampf(base_chance + _elite_chance_bonus, 0.08, 0.92)
 	if randf() >= chance:
 		return
 	var pos := _get_safe_spawn_position()
@@ -216,11 +219,7 @@ func _random_edge_position() -> Vector2:
 
 
 func _resolve_batch_size() -> int:
-	var entry: Dictionary = WaveData.get_wave_entry(_wave_file_config, current_wave)
-	if entry.has("batch_cap"):
-		return clampi(int(entry["batch_cap"]), 1, 8)
-	var batch_size: int = 1 + int(current_wave * 0.5)
-	return mini(batch_size, 5)
+	return WaveData.get_effective_batch_cap(_wave_file_config, current_wave)
 
 
 func _roll_weighted_type(weights: Dictionary) -> String:

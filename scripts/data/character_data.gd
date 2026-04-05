@@ -43,6 +43,14 @@ static func find_character(character_id: String) -> Dictionary:
 	return _builtin_default()
 
 
+static func get_starting_weapon_ids(character_id: String) -> Array:
+	var d: Dictionary = find_character(character_id)
+	var w: Variant = d.get("starting_weapons", [])
+	if w is Array and not (w as Array).is_empty():
+		return w as Array
+	return ["rifle"]
+
+
 static func apply_to_player(player: Node, character_id: String) -> void:
 	var d: Dictionary = find_character(character_id)
 	var hp: int = int(d.get("max_hp", 100))
@@ -52,7 +60,38 @@ static func apply_to_player(player: Node, character_id: String) -> void:
 	player.current_hp = hp
 	player.stat_move_speed_mult *= sm
 	player.stat_damage_mult *= dm
+	player.shop_price_mult = float(d.get("shop_price_mult", 1.0))
+	player.material_to_damage_kv = float(d.get("material_to_damage_kv", 0.0))
+	_apply_traits(player, d)
 	player.emit_signal("hp_changed", player.current_hp, player.max_hp)
+	var lo: Node = player.get_node_or_null("WeaponLoadout")
+	if lo != null and lo.has_method("equip_default_start"):
+		lo.equip_default_start(get_starting_weapon_ids(character_id))
+
+
+static func _apply_traits(player: Node, d: Dictionary) -> void:
+	var traits: Variant = d.get("traits", [])
+	if not traits is Array:
+		return
+	for tv in traits as Array:
+		if not tv is Dictionary:
+			continue
+		var t: Dictionary = tv as Dictionary
+		var kind: String = str(t.get("kind", ""))
+		var val = t.get("value", 0)
+		match kind:
+			"stat_harvest":
+				if "stat_harvest" in player:
+					player.stat_harvest += float(val)
+			"stat_luck":
+				if "stat_luck" in player:
+					player.stat_luck += int(val)
+			"shop_price_mult":
+				if "shop_price_mult" in player:
+					player.shop_price_mult *= float(val)
+			"material_to_damage_kv":
+				if "material_to_damage_kv" in player:
+					player.material_to_damage_kv += float(val)
 
 
 static func _builtin_default() -> Dictionary:

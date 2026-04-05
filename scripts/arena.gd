@@ -14,6 +14,9 @@ const ENEMY_SCENE_MAP: Dictionary = {
 	"elite":   "res://scenes/enemies/elite_enemy.tscn",
 	"tree":    "res://scenes/enemies/tree_enemy.tscn",
 	"looter":  "res://scenes/enemies/looter_enemy.tscn",
+	"buff":    "res://scenes/enemies/buff_enemy.tscn",
+	"trap":    "res://scenes/enemies/trap_enemy.tscn",
+	"splitter": "res://scenes/enemies/splitter_enemy.tscn",
 }
 
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
@@ -26,6 +29,7 @@ const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
 @onready var hud: CanvasLayer = $HUD
 @onready var pause_overlay: CanvasLayer = $PauseOverlay
 @onready var interstitial_hub: CanvasLayer = $InterstitialHub
+@onready var level_up_overlay: CanvasLayer = $LevelUpOverlay
 @onready var wave_manager: WaveManager = $WaveManager
 @onready var enemy_pool: Node = $EnemyPool
 
@@ -68,6 +72,8 @@ func _ready() -> void:
 			interstitial_hub.set_player(player)
 		if interstitial_hub.has_signal("continue_pressed"):
 			interstitial_hub.continue_pressed.connect(_on_interstitial_continue_pressed)
+	if level_up_overlay != null and level_up_overlay.has_method("set_player"):
+		level_up_overlay.set_player(player)
 	var resume_btn: Button = pause_overlay.get_node_or_null("CenterContainer/PauseVBox/ResumeButton") as Button
 	if resume_btn != null:
 		resume_btn.pressed.connect(_on_pause_resume_pressed)
@@ -137,6 +143,8 @@ func _on_enemy_spawn_requested(config: Dictionary, position: Vector2) -> void:
 
 	# 注册到 EnemyPool（超出上限时自动替换最旧敌人）
 	enemy_pool.register_enemy(enemy)
+	if enemy.has_signal("died"):
+		enemy.died.connect(_on_enemy_died_xp)
 
 
 ## 显示红叉预警（需求 7.4）
@@ -176,6 +184,11 @@ func _on_material_collected(material_id: String, amount: int, drop_node: Node) -
 func _on_wave_ended(wave_index: int) -> void:
 	var uncollected := material_container.get_child_count()
 	RunState.on_wave_end_convert_savings(uncollected)
+	var hb: int = _compute_harvest_bonus(wave_index)
+	if hb > 0:
+		RunState.collect_material(hb)
+		if hud != null and hud.has_method("show_harvest_toast"):
+			hud.show_harvest_toast(hb)
 	for drop in material_container.get_children():
 		drop.set_meta("is_savings", true)
 	if hud and hud.has_method("on_wave_ended"):
@@ -241,3 +254,22 @@ func _on_global_collect_tick() -> void:
 	for drop in material_container.get_children():
 		if drop.has_method("force_attract"):
 			drop.force_attract()
+
+
+func _compute_harvest_bonus(finished_wave: int) -> int:
+	if player == null or not ("stat_harvest" in player):
+		return 0
+	var h: float = float(player.stat_harvest)
+	if h <= 0.0001:
+		return 0
+	return int(round(h * (8.0 + float(finished_wave) * 2.5)))
+
+
+func spawn_enemy_at(type: String, position: Vector2) -> void:
+	var cfg: Dictionary = {"type": type}
+	_on_enemy_spawn_requested(cfg, position)
+
+
+func _on_enemy_died_xp(_dead_enemy: Node2D) -> void:
+	var gain: int = 2 + RunState.wave_index / 2
+	RunState.add_xp(gain)
