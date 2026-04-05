@@ -36,13 +36,16 @@ var material_current: int = 0   # 本波已拾取材料
 var material_savings: int = 0   # 未拾取储蓄材料（下波拾取时翻倍）
 var player_level: int = 1
 var player_xp: int = 0
+## 困难倍率：放大受击伤害并略增材料拾取（≥1）
+var run_risk_mult: float = 1.0
 
 func _ready() -> void:
 	_register_default_input_actions()
 
-func begin_new_run(p_character_id: String = "default") -> void:
+func begin_new_run(p_character_id: String = "default", risk_mult: float = 1.0) -> void:
 	SaveManager.clear_pending_run()
 	character_id = p_character_id
+	run_risk_mult = clampf(risk_mult, 1.0, 1.5)
 	wave_index = 0
 	gold = 0
 	upgrade_ids.clear()
@@ -113,7 +116,10 @@ func _add_key_to_action(action_name: String, keycodes: Array) -> void:
 
 # 阶段二：普通拾取材料
 func collect_material(amount: int) -> void:
-	material_current += amount
+	var gain: float = float(amount)
+	if run_risk_mult > 1.001:
+		gain *= 1.0 + (run_risk_mult - 1.0) * 0.7
+	material_current += maxi(1, int(round(gain)))
 	emit_signal("material_changed", material_current, material_savings)
 
 # 阶段二：波次结束时将未拾取材料转为储蓄
@@ -178,6 +184,7 @@ func to_snapshot_dict() -> Dictionary:
 		"material_savings": material_savings,
 		"player_level": player_level,
 		"player_xp": player_xp,
+		"run_risk_mult": run_risk_mult,
 	}
 
 
@@ -193,6 +200,7 @@ func apply_snapshot_dict(d: Dictionary) -> void:
 	material_savings = int(d.get("material_savings", 0))
 	player_level = int(d.get("player_level", 1))
 	player_xp = int(d.get("player_xp", 0))
+	run_risk_mult = clampf(float(d.get("run_risk_mult", 1.0)), 1.0, 1.5)
 	upgrade_ids.clear()
 	var raw_up: Variant = d.get("upgrade_ids", [])
 	if raw_up is Array:
