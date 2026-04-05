@@ -24,6 +24,7 @@ const SPAWN_BLOCK_RADIUS: float = 36.0
 var current_wave: int = 0
 var is_wave_active: bool = false
 var _spawn_elapsed: float = 0.0
+var _wave_file_config: Dictionary = {}
 
 ## 外部依赖（由 Arena 注入）
 var player: Node2D = null
@@ -36,6 +37,7 @@ var arena_rect: Rect2 = Rect2()
 
 
 func _ready() -> void:
+	_wave_file_config = WaveData.load_config()
 	wave_timer.timeout.connect(_on_wave_timer_timeout)
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 	elite_check_timer.timeout.connect(_on_elite_check_timer_timeout)
@@ -117,8 +119,7 @@ func _get_spawn_interval() -> float:
 func _try_spawn_batch() -> void:
 	if not is_wave_active:
 		return
-	var batch_size: int = 1 + int(current_wave * 0.5)
-	batch_size = mini(batch_size, 5)
+	var batch_size: int = _resolve_batch_size()
 	var slots: Array = []
 	for _j in range(batch_size):
 		slots.append({
@@ -214,8 +215,36 @@ func _random_edge_position() -> Vector2:
 			)
 
 
+func _resolve_batch_size() -> int:
+	var entry: Dictionary = WaveData.get_wave_entry(_wave_file_config, current_wave)
+	if entry.has("batch_cap"):
+		return clampi(int(entry["batch_cap"]), 1, 8)
+	var batch_size: int = 1 + int(current_wave * 0.5)
+	return mini(batch_size, 5)
+
+
+func _roll_weighted_type(weights: Dictionary) -> String:
+	var sum: float = 0.0
+	for k in weights.keys():
+		sum += float(weights[k])
+	if sum <= 0.0:
+		return "basic"
+	var r: float = randf() * sum
+	var acc: float = 0.0
+	for k in weights.keys():
+		acc += float(weights[k])
+		if r <= acc:
+			return str(k)
+	return "basic"
+
+
 ## 根据当前波次决定生成的敌人类型配置
 func _get_spawn_config() -> Dictionary:
+	var entry: Dictionary = WaveData.get_wave_entry(_wave_file_config, current_wave)
+	if entry.has("weights"):
+		var wobj: Variant = entry["weights"]
+		if wobj is Dictionary:
+			return {"type": _roll_weighted_type(wobj as Dictionary)}
 	if current_wave <= 3:
 		return {"type": "basic"}
 	elif current_wave <= 7:

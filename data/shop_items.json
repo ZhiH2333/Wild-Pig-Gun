@@ -1,0 +1,8 @@
+[
+  {"id": "shop_heal", "title": "治疗包", "desc": "回复 22 生命", "price": 5, "kind": "heal_flat", "value": 22},
+  {"id": "shop_hp5", "title": "体能训练", "desc": "最大生命 +8", "price": 8, "kind": "max_hp", "value": 8},
+  {"id": "shop_dmg", "title": "磨刀石", "desc": "伤害 +8%", "price": 12, "kind": "damage_pct", "value": 0.08},
+  {"id": "shop_move", "title": "轻靴", "desc": "移速 +6%", "price": 10, "kind": "move_pct", "value": 0.06},
+  {"id": "shop_fire", "title": "扳机簧", "desc": "攻速 +8%", "price": 11, "kind": "fire_pct", "value": 0.08},
+  {"id": "shop_mag", "title": "小磁石", "desc": "拾取范围 +18", "price": 7, "kind": "pickup", "value": 18.0}
+]

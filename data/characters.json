@@ -1,0 +1,28 @@
+{
+  "characters": [
+    {
+      "id": "default",
+      "display_name": "标准野猪",
+      "description": "平衡型：无特殊修正。",
+      "max_hp": 100,
+      "speed_mult": 1.0,
+      "damage_mult": 1.0
+    },
+    {
+      "id": "bruiser",
+      "display_name": "重装野猪",
+      "description": "更高生命，移速略慢。",
+      "max_hp": 130,
+      "speed_mult": 0.92,
+      "damage_mult": 1.0
+    },
+    {
+      "id": "scout",
+      "display_name": "迅捷野猪",
+      "description": "移速更快，生命略低。",
+      "max_hp": 85,
+      "speed_mult": 1.12,
+      "damage_mult": 1.0
+    }
+  ]
+}

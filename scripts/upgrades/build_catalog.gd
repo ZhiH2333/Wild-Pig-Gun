@@ -1,8 +1,40 @@
 extends RefCounted
 class_name BuildCatalog
 
-## 局内升级池（波次三选一）；id 用于去重
+const UPGRADES_JSON: String = "res://data/upgrades.json"
+const SHOP_JSON: String = "res://data/shop_items.json"
+
+
+static func _load_dict_array_from_file(path: String) -> Array:
+	if not FileAccess.file_exists(path):
+		return []
+	var txt: String = FileAccess.get_file_as_string(path)
+	var parser: JSON = JSON.new()
+	if parser.parse(txt) != OK:
+		push_error("BuildCatalog: JSON 解析失败 %s" % path)
+		return []
+	var root: Variant = parser.data
+	var out: Array = []
+	if root is Array:
+		for item in root:
+			if item is Dictionary:
+				out.append(item)
+	return out
+
+
+static func _to_typed_dict_array(raw: Array) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for item in raw:
+		if item is Dictionary:
+			out.append(item as Dictionary)
+	return out
+
+
+## 局内升级池；优先 data/upgrades.json
 static func all_upgrade_defs() -> Array[Dictionary]:
+	var loaded: Array = _load_dict_array_from_file(UPGRADES_JSON)
+	if not loaded.is_empty():
+		return _to_typed_dict_array(loaded)
 	return [
 		{"id": "vitality_s", "title": "强壮 I", "desc": "最大生命 +15", "kind": "max_hp", "value": 15},
 		{"id": "vitality_m", "title": "强壮 II", "desc": "最大生命 +25", "kind": "max_hp", "value": 25},
@@ -54,7 +86,11 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 			player.stat_damage_mult *= 1.06
 
 
+## 商店池；优先 data/shop_items.json
 static func default_shop_items() -> Array[Dictionary]:
+	var loaded: Array = _load_dict_array_from_file(SHOP_JSON)
+	if not loaded.is_empty():
+		return _to_typed_dict_array(loaded)
 	return [
 		{"id": "shop_heal", "title": "治疗包", "desc": "回复 22 生命", "price": 5, "kind": "heal_flat", "value": 22},
 		{"id": "shop_hp5", "title": "体能训练", "desc": "最大生命 +8", "price": 8, "kind": "max_hp", "value": 8},
