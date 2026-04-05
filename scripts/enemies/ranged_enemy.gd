@@ -60,8 +60,8 @@ func _fire_at_player() -> void:
 
 
 ## 被攻击时触发反制（Fly-like，数值收口）
-func take_damage(amount: int, is_crit: bool = false) -> void:
-	super.take_damage(amount, is_crit)
+func take_damage(amount: int, is_crit: bool = false, damage_element: StringName = &"physical") -> void:
+	super.take_damage(amount, is_crit, damage_element)
 	if current_hp <= 0:
 		return
 	if _retaliation_count >= MAX_RETALIATIONS_PER_ENEMY:
