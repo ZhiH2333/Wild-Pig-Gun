@@ -47,14 +47,19 @@ func _physics_process(_delta: float) -> void:
 	queue_redraw()
 
 
-## 读取 WASD 输入并返回归一化方向向量（需求 1.1、1.2、1.3）
+## 读取 WASD / 虚拟摇杆并返回归一化方向向量（需求 1.1、1.2、1.3）
 func _get_input_direction() -> Vector2:
 	var dir := Vector2.ZERO
 	dir.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
 	dir.y = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
-	if dir.length_squared() > 0.0:
-		dir = dir.normalized()
-	return dir
+	if dir.length_squared() > 0.001:
+		return dir.normalized()
+	var vj: Node = get_tree().get_first_node_in_group("virtual_joystick")
+	if vj != null and vj.has_method("get_output"):
+		var joy: Vector2 = vj.get_output() as Vector2
+		if joy.length_squared() > 0.001:
+			return joy
+	return Vector2.ZERO
 
 
 ## 将位置限制在 Arena 矩形内（需求 1.4）

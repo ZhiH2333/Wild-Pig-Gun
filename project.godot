@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 SaveManager="*res://scripts/save/save_manager.gd"
 RunState="*res://scripts/upgrades/run_state.gd"
+GameSettings="*res://scripts/settings/game_settings.gd"
 GameFlow="*res://scripts/game_flow.gd"
 
 [physics]
