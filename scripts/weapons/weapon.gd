@@ -11,6 +11,26 @@ var damage: int = 10
 @onready var fire_timer: Timer = $FireTimer
 
 
+func _ready() -> void:
+	_sync_fire_timer_wait()
+
+
+func _sync_fire_timer_wait() -> void:
+	var mult: float = 1.0
+	var p: Node = get_parent()
+	if p != null and "stat_fire_rate_mult" in p:
+		mult = maxf(0.2, p.stat_fire_rate_mult as float)
+	fire_timer.wait_time = FIRE_INTERVAL / mult
+
+
+func _effective_damage() -> int:
+	var mult: float = 1.0
+	var p: Node = get_parent()
+	if p != null and "stat_damage_mult" in p:
+		mult = p.stat_damage_mult as float
+	return maxi(1, int(round(damage * mult)))
+
+
 ## Debug 占位绘制：黄色小矩形代表枪管
 func _draw() -> void:
 	draw_rect(Rect2(0, -4, 24, 8), Color(1.0, 0.85, 0.2, 1.0))
@@ -30,6 +50,7 @@ func find_nearest_enemy(enemies: Array, from_pos: Vector2) -> Node2D:
 
 ## FireTimer 超时回调：查询 enemies 组，找到目标后发射子弹
 func _on_fire_timer_timeout() -> void:
+	_sync_fire_timer_wait()
 	var enemies: Array = get_tree().get_nodes_in_group("enemies")
 	var target: Node2D = find_nearest_enemy(enemies, global_position)
 	if target == null:
@@ -46,7 +67,7 @@ func _fire(target: Node2D) -> void:
 	# 设置子弹方向与伤害
 	var dir: Vector2 = (target.global_position - global_position).normalized()
 	projectile.direction = dir
-	projectile.damage = damage
+	projectile.damage = _effective_damage()
 
 
 ## 获取子弹容器节点；优先使用 Arena 的 ProjectileContainer

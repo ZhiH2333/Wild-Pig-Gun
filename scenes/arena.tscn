@@ -130,25 +130,56 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="InterstitialHub/CenterContainer"]
-custom_minimum_size = Vector2(480, 220)
+custom_minimum_size = Vector2(920, 640)
 
 [node name="MarginContainer" type="MarginContainer" parent="InterstitialHub/CenterContainer/Panel"]
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
 [node name="VBox" type="VBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer"]
-theme_override_constants/separation = 20
+theme_override_constants/separation = 12
 
 [node name="TitleLabel" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 26
 text = "波次结束"
 horizontal_alignment = 1
 
-[node name="ContinueButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-custom_minimum_size = Vector2(0, 48)
-text = "下一波"
+[node name="UpgradeHint" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+theme_override_font_sizes/font_size = 18
+text = "选择一项升级（必选）"
+horizontal_alignment = 1
+
+[node name="UpgradeRow" type="HBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ShopLabel" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+theme_override_font_sizes/font_size = 18
+text = "商店（消耗材料）"
+horizontal_alignment = 1
+
+[node name="ShopScroll" type="ScrollContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 200)
+horizontal_scroll_mode = 0
+
+[node name="ShopVBox" type="VBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/ShopScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BottomRow" type="HBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="RefreshShopButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/BottomRow"]
+custom_minimum_size = Vector2(200, 44)
+text = "刷新商店 (3)"
+
+[node name="ContinueButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/BottomRow"]
+custom_minimum_size = Vector2(240, 44)
+disabled = true
+text = "开始下一波"
 
 [node name="DebugOverlay" type="CanvasLayer" parent="."]
 layer = 100

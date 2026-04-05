@@ -59,8 +59,11 @@ func _ready() -> void:
 	wave_manager.wave_timer_tick.connect(_on_wave_timer_tick)
 	wave_manager.wave_started.connect(_on_wave_started)
 
-	if interstitial_hub != null and interstitial_hub.has_signal("continue_pressed"):
-		interstitial_hub.continue_pressed.connect(_on_interstitial_continue_pressed)
+	if interstitial_hub != null:
+		if interstitial_hub.has_method("set_player"):
+			interstitial_hub.set_player(player)
+		if interstitial_hub.has_signal("continue_pressed"):
+			interstitial_hub.continue_pressed.connect(_on_interstitial_continue_pressed)
 	var resume_btn: Button = pause_overlay.get_node_or_null("CenterContainer/PauseVBox/ResumeButton") as Button
 	if resume_btn != null:
 		resume_btn.pressed.connect(_on_pause_resume_pressed)
@@ -132,6 +135,19 @@ func _on_spawn_warning_shown(position: Vector2) -> void:
 ## 材料被拾取时的回调（需求 10.1）
 ## drop_node 由 bind() 传入，用于检查是否为储蓄材料
 func _on_material_collected(material_id: String, amount: int, drop_node: Node) -> void:
+	if material_id == "heal":
+		if player != null and player.has_method("heal_flat"):
+			player.heal_flat(32)
+		return
+	if material_id == "box":
+		if player != null:
+			var box_rng := RandomNumberGenerator.new()
+			box_rng.randomize()
+			var gifts: Array = BuildCatalog.pick_shop_offer(1, box_rng)
+			if gifts.size() > 0:
+				BuildCatalog.apply_shop_def(player, gifts[0] as Dictionary)
+		RunState.collect_material(maxi(amount * 6, 8))
+		return
 	if not is_instance_valid(drop_node):
 		return
 	if drop_node.get_meta("is_savings", false):

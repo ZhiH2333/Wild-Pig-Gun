@@ -12,6 +12,11 @@ const SPEED: float = 200.0
 var max_hp: int = 100
 var current_hp: int = 100
 var is_invincible: bool = false
+## 构筑加成（升级/商店）
+var stat_damage_mult: float = 1.0
+var stat_move_speed_mult: float = 1.0
+var stat_fire_rate_mult: float = 1.0
+var stat_pickup_radius_bonus: float = 0.0
 ## 当前帧的操作描述（供调试覆盖层读取）
 var _debug_action: String = "待机"
 
@@ -27,7 +32,7 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	var direction := _get_input_direction()
-	velocity = direction * SPEED
+	velocity = direction * SPEED * stat_move_speed_mult
 	move_and_slide()
 	# 边界约束（需求 1.4）
 	var arena_rect := _get_arena_rect()
@@ -57,6 +62,21 @@ func _apply_boundary_clamp(pos: Vector2, arena_rect: Rect2) -> Vector2:
 	pos.x = clamp(pos.x, arena_rect.position.x, arena_rect.position.x + arena_rect.size.x)
 	pos.y = clamp(pos.y, arena_rect.position.y, arena_rect.position.y + arena_rect.size.y)
 	return pos
+
+
+func add_max_hp(amount: int) -> void:
+	max_hp += amount
+	current_hp += amount
+	emit_signal("hp_changed", current_hp, max_hp)
+
+
+func heal_flat(amount: int) -> void:
+	current_hp = mini(max_hp, current_hp + amount)
+	emit_signal("hp_changed", current_hp, max_hp)
+
+
+func get_pickup_collect_radius() -> float:
+	return 12.0 + stat_pickup_radius_bonus
 
 
 ## 受到伤害（需求 4.2、4.3、4.4）
