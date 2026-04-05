@@ -208,6 +208,12 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 				var dd2: Dictionary = value as Dictionary
 				player.stat_fire_rate_mult *= 1.0 + float(dd2.get("fire", 0.0))
 				player.stat_move_speed_mult *= 1.0 + float(dd2.get("move", 0.0))
+		"crit_chance_flat":
+			if "stat_crit_chance" in player:
+				player.stat_crit_chance = clampf(float(player.stat_crit_chance) + float(value), 0.0, 1.0)
+		"crit_mult_flat":
+			if "stat_crit_mult" in player:
+				player.stat_crit_mult = maxf(1.0, float(player.stat_crit_mult) + float(value))
 		"hp_regen_flat":
 			if "stat_hp_regen_per_sec" in player:
 				player.stat_hp_regen_per_sec += float(value)
@@ -303,6 +309,14 @@ static func shop_purchase_preview_text(
 			var rg: float = float(player.stat_hp_regen_per_sec) if "stat_hp_regen_per_sec" in player else 0.0
 			var add_r: float = float(value)
 			lines.append("· 生命回复：每秒 %.2f → %.2f" % [rg, rg + add_r])
+		"crit_chance_flat":
+			var cc: float = float(player.stat_crit_chance) if "stat_crit_chance" in player else 0.0
+			var ac: float = float(value)
+			lines.append("· 暴击率：%.0f%% → %.0f%%" % [cc * 100.0, clampf(cc + ac, 0.0, 1.0) * 100.0])
+		"crit_mult_flat":
+			var cm: float = float(player.stat_crit_mult) if "stat_crit_mult" in player else 1.5
+			var am: float = float(value)
+			lines.append("· 暴击倍率：×%.2f → ×%.2f" % [cm, maxf(1.0, cm + am)])
 		_:
 			lines.append("· %s" % str(def.get("desc", "参见物品说明")))
 	return "\n".join(lines)
