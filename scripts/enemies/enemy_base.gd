@@ -94,16 +94,32 @@ func _on_damage_timer_timeout() -> void:
 
 
 ## 受到伤害，考虑护甲减伤（需求 3.5）
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, is_crit: bool = false) -> void:
 	if current_hp <= 0:
 		return
 	var actual := int(amount * (1.0 - armor))
 	actual = max(1, actual)  # 至少造成 1 点伤害
 	GameAudio.play_hit_enemy()
 	_play_hit_flash()
+	_spawn_damage_popup(actual, is_crit)
 	current_hp = max(0, current_hp - actual)
 	if current_hp <= 0:
 		_on_death()
+
+
+func _spawn_damage_popup(hits: int, is_crit: bool) -> void:
+	var path: String = "res://scenes/ui/damage_popup.tscn"
+	if not ResourceLoader.exists(path):
+		return
+	var scene: PackedScene = load(path) as PackedScene
+	var pop: Node2D = scene.instantiate() as Node2D
+	var par: Node = get_parent()
+	if par == null:
+		return
+	par.add_child(pop)
+	pop.global_position = global_position + Vector2(randf_range(-14.0, 14.0), randf_range(-38.0, -18.0))
+	if pop.has_method("setup"):
+		pop.call("setup", hits, is_crit)
 
 
 func _play_hit_flash() -> void:
