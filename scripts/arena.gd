@@ -24,7 +24,9 @@ const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
 @onready var spawn_warning_container: Node2D = $SpawnWarningContainer
 @onready var player: CharacterBody2D = $Player
 @onready var hud: CanvasLayer = $HUD
-@onready var wave_manager: Node = $WaveManager
+@onready var pause_overlay: CanvasLayer = $PauseOverlay
+@onready var interstitial_hub: CanvasLayer = $InterstitialHub
+@onready var wave_manager: WaveManager = $WaveManager
 @onready var enemy_pool: Node = $EnemyPool
 
 ## 预加载的敌人场景缓存
@@ -56,6 +58,12 @@ func _ready() -> void:
 	wave_manager.all_waves_cleared.connect(_on_all_waves_cleared)
 	wave_manager.wave_timer_tick.connect(_on_wave_timer_tick)
 	wave_manager.wave_started.connect(_on_wave_started)
+
+	if interstitial_hub != null and interstitial_hub.has_signal("continue_pressed"):
+		interstitial_hub.continue_pressed.connect(_on_interstitial_continue_pressed)
+	var resume_btn: Button = pause_overlay.get_node_or_null("CenterContainer/PauseVBox/ResumeButton") as Button
+	if resume_btn != null:
+		resume_btn.pressed.connect(_on_pause_resume_pressed)
 
 	# 启动第 1 波（需求 7.1）
 	wave_manager.start_run()
@@ -132,7 +140,7 @@ func _on_material_collected(material_id: String, amount: int, drop_node: Node) -
 		RunState.collect_material(amount)
 
 
-## 波次结束：将未拾取材料转为储蓄（需求 10.1）
+## 波次结束：将未拾取材料转为储蓄（需求 10.1）；非最终波进入波间
 func _on_wave_ended(wave_index: int) -> void:
 	var uncollected := material_container.get_child_count()
 	RunState.on_wave_end_convert_savings(uncollected)
@@ -140,6 +148,10 @@ func _on_wave_ended(wave_index: int) -> void:
 		drop.set_meta("is_savings", true)
 	if hud and hud.has_method("on_wave_ended"):
 		hud.on_wave_ended()
+	if wave_index >= wave_manager.MAX_WAVES:
+		return
+	if interstitial_hub != null and interstitial_hub.has_method("show_for_finished_wave"):
+		interstitial_hub.show_for_finished_wave(wave_index)
 
 
 ## 倒计时 tick 转发给 HUD
@@ -157,9 +169,26 @@ func _on_wave_started(wave_index: int) -> void:
 ## 通关（需求 7.5）
 func _on_all_waves_cleared() -> void:
 	await get_tree().create_timer(1.0).timeout
-	# TODO: 切换到通关结算界面（阶段二后续实现）
-	if ResourceLoader.exists("res://scenes/game_over.tscn"):
+	if ResourceLoader.exists("res://scenes/victory.tscn"):
+		get_tree().change_scene_to_file("res://scenes/victory.tscn")
+	elif ResourceLoader.exists("res://scenes/game_over.tscn"):
 		get_tree().change_scene_to_file("res://scenes/game_over.tscn")
+
+
+func show_pause_overlay() -> void:
+	pause_overlay.visible = true
+
+
+func hide_pause_overlay() -> void:
+	pause_overlay.visible = false
+
+
+func _on_pause_resume_pressed() -> void:
+	RunState.try_toggle_user_pause(self)
+
+
+func _on_interstitial_continue_pressed() -> void:
+	wave_manager.start_next_wave()
 
 
 ## 玩家死亡（需求 4.4、6.1）

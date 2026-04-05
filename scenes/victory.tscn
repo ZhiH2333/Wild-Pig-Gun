@@ -1,0 +1,49 @@
+[gd_scene load_steps=2 format=3 uid="uid://victory_screen"]
+
+[ext_resource type="Script" path="res://scripts/ui/victory_screen.gd" id="1_victory"]
+
+[node name="Victory" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_victory")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.06, 0.14, 0.1, 1)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -100.0
+offset_right = 240.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="StatsLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.98, 0.9, 1)
+theme_override_font_sizes/font_size = 28
+text = "通关"
+horizontal_alignment = 1
+
+[node name="MainMenuButton" type="Button" parent="VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "返回主菜单"
