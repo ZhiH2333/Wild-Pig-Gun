@@ -1,0 +1,28 @@
+{
+  "scaling": {
+    "hp_per_wave": 0.08,
+    "damage_per_wave": 0.05
+  },
+  "waves": [
+    {"wave": 1, "batch_cap": 2, "weights": {"basic": 1.0}},
+    {"wave": 2, "batch_cap": 2, "weights": {"basic": 1.0}},
+    {"wave": 3, "batch_cap": 3, "weights": {"basic": 1.0}},
+    {"wave": 4, "batch_cap": 3, "weights": {"basic": 0.75, "dash": 0.25}},
+    {"wave": 5, "batch_cap": 3, "weights": {"basic": 0.7, "dash": 0.3}},
+    {"wave": 6, "batch_cap": 3, "weights": {"basic": 0.65, "dash": 0.35}},
+    {"wave": 7, "batch_cap": 4, "weights": {"basic": 0.6, "dash": 0.4}},
+    {"wave": 8, "batch_cap": 4, "weights": {"basic": 0.55, "dash": 0.25, "ranged": 0.2}},
+    {"wave": 9, "batch_cap": 5, "weights": {"basic": 0.85, "dash": 0.15}},
+    {"wave": 10, "batch_cap": 4, "weights": {"basic": 0.5, "dash": 0.2, "ranged": 0.3}},
+    {"wave": 11, "batch_cap": 4, "weights": {"basic": 0.45, "dash": 0.2, "ranged": 0.25, "tree": 0.1}},
+    {"wave": 12, "batch_cap": 4, "weights": {"basic": 0.4, "dash": 0.2, "ranged": 0.3, "tree": 0.1}},
+    {"wave": 13, "batch_cap": 4, "weights": {"basic": 0.35, "dash": 0.2, "ranged": 0.25, "tree": 0.1, "looter": 0.1}},
+    {"wave": 14, "batch_cap": 5, "weights": {"basic": 0.35, "dash": 0.2, "ranged": 0.25, "tree": 0.1, "looter": 0.1}},
+    {"wave": 15, "batch_cap": 5, "weights": {"basic": 0.3, "dash": 0.25, "ranged": 0.35, "tree": 0.05, "looter": 0.05}},
+    {"wave": 16, "batch_cap": 5, "weights": {"basic": 0.3, "dash": 0.2, "ranged": 0.3, "tree": 0.1, "looter": 0.1}},
+    {"wave": 17, "batch_cap": 5, "weights": {"basic": 0.25, "dash": 0.25, "ranged": 0.3, "tree": 0.1, "looter": 0.1}},
+    {"wave": 18, "batch_cap": 5, "weights": {"basic": 0.25, "dash": 0.2, "ranged": 0.35, "tree": 0.1, "looter": 0.1}},
+    {"wave": 19, "batch_cap": 5, "weights": {"basic": 0.2, "dash": 0.25, "ranged": 0.35, "tree": 0.1, "looter": 0.1}},
+    {"wave": 20, "batch_cap": 5, "weights": {"basic": 0.25, "dash": 0.25, "ranged": 0.35, "tree": 0.05, "looter": 0.1}}
+  ]
+}

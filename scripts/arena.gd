@@ -32,17 +32,21 @@ const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
 ## 预加载的敌人场景缓存
 var _loaded_enemy_scenes: Dictionary = {}
 var _spawn_warning_scene: PackedScene = null
+var _wave_cfg: Dictionary = {}
 
 
 func _ready() -> void:
 	add_to_group("arena")
+	_wave_cfg = WaveData.load_config()
 	_preload_scenes()
 
 	# 连接玩家信号
 	if player:
 		player.died.connect(_on_player_died)
 
-	# 连接 HUD
+	if player != null:
+		CharacterData.apply_to_player(player, RunState.character_id)
+	# 连接 HUD（在角色初始属性应用之后）
 	if hud and hud.has_method("setup"):
 		hud.setup(player)
 
@@ -98,6 +102,17 @@ func get_arena_rect() -> Rect2:
 	return Rect2(0.0, 0.0, ARENA_WIDTH, ARENA_HEIGHT)
 
 
+func _apply_wave_scaling_before_enter_tree(enemy: Node2D) -> void:
+	var sc: Dictionary = WaveData.get_scaling(_wave_cfg)
+	var w: int = RunState.wave_index
+	var hp_m: float = 1.0 + w * float(sc.get("hp_per_wave", 0.08))
+	var dmg_m: float = 1.0 + w * float(sc.get("damage_per_wave", 0.05))
+	if "max_hp" in enemy:
+		enemy.max_hp = maxi(1, int(round(enemy.max_hp * hp_m)))
+	if "contact_damage" in enemy:
+		enemy.contact_damage = maxi(1, int(round(enemy.contact_damage * dmg_m)))
+
+
 ## WaveManager 请求生成敌人（需求 7.3）
 func _on_enemy_spawn_requested(config: Dictionary, position: Vector2) -> void:
 	var type: String = config.get("type", "basic")
@@ -109,6 +124,7 @@ func _on_enemy_spawn_requested(config: Dictionary, position: Vector2) -> void:
 		return
 
 	var enemy: Node2D = scene.instantiate()
+	_apply_wave_scaling_before_enter_tree(enemy)
 	enemy_container.add_child(enemy)
 	enemy.global_position = position
 
