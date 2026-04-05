@@ -281,6 +281,7 @@ func build_run_snapshot() -> Dictionary:
 			"stat_move_speed_mult": player.stat_move_speed_mult,
 			"stat_fire_rate_mult": player.stat_fire_rate_mult,
 			"stat_pickup_radius_bonus": player.stat_pickup_radius_bonus,
+			"stat_attack_range_bonus": player.stat_attack_range_bonus,
 			"stat_harvest": player.stat_harvest,
 			"stat_luck": player.stat_luck,
 			"shop_price_mult": player.shop_price_mult,

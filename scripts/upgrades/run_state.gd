@@ -93,20 +93,27 @@ func get_run_elapsed_seconds() -> float:
 	return (Time.get_ticks_msec() - run_start_ticks_msec) / 1000.0
 
 func _register_default_input_actions() -> void:
-	if InputMap.has_action("move_up"):
+	if not InputMap.has_action("move_up"):
+		InputMap.add_action("move_up", 0.2)
+		InputMap.add_action("move_down", 0.2)
+		InputMap.add_action("move_left", 0.2)
+		InputMap.add_action("move_right", 0.2)
+		InputMap.add_action("pause_game", 0.2)
+		InputMap.add_action("confirm", 0.2)
+		_add_key_to_action("move_up", [KEY_W, KEY_UP])
+		_add_key_to_action("move_down", [KEY_S, KEY_DOWN])
+		_add_key_to_action("move_left", [KEY_A, KEY_LEFT])
+		_add_key_to_action("move_right", [KEY_D, KEY_RIGHT])
+		_add_key_to_action("pause_game", [KEY_ESCAPE])
+		_add_key_to_action("confirm", [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE])
+	_ensure_attack_range_preview_action()
+
+
+func _ensure_attack_range_preview_action() -> void:
+	if InputMap.has_action("show_attack_range"):
 		return
-	InputMap.add_action("move_up", 0.2)
-	InputMap.add_action("move_down", 0.2)
-	InputMap.add_action("move_left", 0.2)
-	InputMap.add_action("move_right", 0.2)
-	InputMap.add_action("pause_game", 0.2)
-	InputMap.add_action("confirm", 0.2)
-	_add_key_to_action("move_up", [KEY_W, KEY_UP])
-	_add_key_to_action("move_down", [KEY_S, KEY_DOWN])
-	_add_key_to_action("move_left", [KEY_A, KEY_LEFT])
-	_add_key_to_action("move_right", [KEY_D, KEY_RIGHT])
-	_add_key_to_action("pause_game", [KEY_ESCAPE])
-	_add_key_to_action("confirm", [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE])
+	InputMap.add_action("show_attack_range", 0.2)
+	_add_key_to_action("show_attack_range", [KEY_R])
 
 func _add_key_to_action(action_name: String, keycodes: Array) -> void:
 	for keycode in keycodes:

@@ -16,6 +16,7 @@
   {"id": "shop_shock_vuln", "title": "接地线", "desc": "感电易伤施加 +0.05", "short_desc": "感电 +0.05", "base_price": 14, "tier": 2, "kind": "shock_vuln_flat", "value": 0.05, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_regen", "title": "再生芯片", "desc": "每秒回复 0.35 生命", "short_desc": "回复 +0.35/s", "base_price": 15, "tier": 2, "kind": "hp_regen_flat", "value": 0.35, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_mag", "title": "小磁石", "desc": "拾取范围 +18", "short_desc": "拾取 +18", "base_price": 7, "tier": 1, "kind": "pickup", "value": 18.0, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "shop_attack_range", "title": "瞄准线圈", "desc": "攻击范围半径 +52（玩家子弹超出即消失）", "short_desc": "射程 +52", "base_price": 12, "tier": 2, "kind": "attack_range_flat", "value": 52.0, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_luck", "title": "四叶草", "desc": "幸运 +3（商店高阶权重）", "short_desc": "幸运 +3", "base_price": 14, "tier": 3, "kind": "luck_flat", "value": 3, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_harvest", "title": "园艺铲", "desc": "收获 +1.2（每波结束额外材料）", "short_desc": "收获 +1.2", "base_price": 13, "tier": 2, "kind": "harvest_flat", "value": 1.2, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_add_rifle", "title": "军用步枪", "desc": "增加一把步枪（穿透）", "short_desc": "+步枪", "base_price": 18, "tier": 2, "kind": "add_weapon", "value": "rifle", "icon": "res://assets/sprites/icon.png", "stackable": false},
