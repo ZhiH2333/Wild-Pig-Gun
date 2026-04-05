@@ -121,7 +121,15 @@ func _apply_wave_scaling_before_enter_tree(enemy: Node2D) -> void:
 
 
 ## WaveManager 请求生成敌人（需求 7.3）
+## 必须延后执行：若在 projectile body_entered / take_damage 等物理回调里同步 add_child，
+## 会触发 “Can't change this state while flushing queries”。
 func _on_enemy_spawn_requested(config: Dictionary, position: Vector2) -> void:
+	call_deferred("_execute_enemy_spawn_requested", config.duplicate(), position)
+
+
+func _execute_enemy_spawn_requested(config: Dictionary, position: Vector2) -> void:
+	if not is_instance_valid(enemy_container):
+		return
 	var type: String = config.get("type", "basic")
 	var scene: PackedScene = _loaded_enemy_scenes.get(type, null)
 	if scene == null:
