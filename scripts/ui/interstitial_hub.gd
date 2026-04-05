@@ -48,7 +48,7 @@ func show_for_finished_wave(finished_wave_index: int) -> void:
 	var luck: int = 0
 	if _player != null and "stat_luck" in _player:
 		luck = int(_player.stat_luck)
-	var offers: Array = BuildCatalog.pick_random_upgrades(3, RunState.upgrade_ids, _rng)
+	var offers: Array = BuildCatalog.pick_random_upgrades(3, RunState.upgrade_ids, _rng, _next_wave_for_shop, luck)
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
 		var card: ItemCard = ITEM_CARD_SCENE.instantiate() as ItemCard
@@ -105,7 +105,7 @@ func _on_refresh_upgrades_pressed() -> void:
 	if not RunState.try_spend_material(REFRESH_UPGRADE_COST):
 		return
 	_clear_children(upgrade_row)
-	var offers: Array = BuildCatalog.pick_random_upgrades(3, RunState.upgrade_ids, _rng)
+	var offers: Array = BuildCatalog.pick_random_upgrades(3, RunState.upgrade_ids, _rng, _next_wave_for_shop, luck)
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
 		var card: ItemCard = ITEM_CARD_SCENE.instantiate() as ItemCard
