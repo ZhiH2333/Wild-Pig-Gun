@@ -77,6 +77,7 @@ one_shot = true
 
 [node name="SpawnTimer" type="Timer" parent="WaveManager"]
 wait_time = 2.0
+one_shot = true
 
 [node name="EliteCheckTimer" type="Timer" parent="WaveManager"]
 wait_time = 15.0

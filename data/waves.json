@@ -4,9 +4,9 @@
     "damage_per_wave": 0.05
   },
   "waves": [
-    {"wave": 1, "duration_sec": 26, "batch_cap": 2, "weights": {"basic": 1.0}},
-    {"wave": 2, "duration_sec": 28, "batch_cap": 2, "weights": {"basic": 1.0}},
-    {"wave": 3, "duration_sec": 30, "batch_cap": 3, "weights": {"basic": 1.0}},
+    {"wave": 1, "duration_sec": 26, "batch_cap": 2, "weights": {"basic": 0.82, "dash": 0.18}},
+    {"wave": 2, "duration_sec": 28, "batch_cap": 2, "weights": {"basic": 0.75, "dash": 0.25}},
+    {"wave": 3, "duration_sec": 30, "batch_cap": 3, "weights": {"basic": 0.7, "dash": 0.22, "ranged": 0.08}},
     {"wave": 4, "duration_sec": 32, "batch_cap": 3, "weights": {"basic": 0.75, "dash": 0.25}},
     {"wave": 5, "duration_sec": 35, "batch_cap": 3, "weights": {"basic": 0.7, "dash": 0.3}},
     {"wave": 6, "duration_sec": 38, "batch_cap": 3, "weights": {"basic": 0.65, "dash": 0.35}},
