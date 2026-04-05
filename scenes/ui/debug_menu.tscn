@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://pj45vpcaojac"]
+
+[ext_resource type="Script" path="res://scripts/ui/debug_menu.gd" id="1_dbg"]
+
+[node name="DebugMenu" type="CanvasLayer"]
+layer = 110
+script = ExtResource("1_dbg")
