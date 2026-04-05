@@ -14,6 +14,9 @@ signal spawn_warning_shown(position: Vector2)
 const MAX_WAVES: int = 20
 const SPAWN_INTERVAL_START: float = 2.0
 const SPAWN_INTERVAL_MIN: float = 0.5
+## 随机刷怪：在中心值附近抖动（秒）
+const SPAWN_JITTER_LOW: float = 0.62
+const SPAWN_JITTER_HIGH: float = 1.38
 const SPAWN_WARNING_DURATION: float = 0.8
 const MIN_SPAWN_DISTANCE_FROM_PLAYER: float = 80.0
 ## 玩家站在预警点半径内时取消该次生成（站位挡刷新）
@@ -37,6 +40,7 @@ var arena_rect: Rect2 = Rect2()
 
 func _ready() -> void:
 	_wave_file_config = WaveData.load_config()
+	spawn_timer.one_shot = true
 	wave_timer.timeout.connect(_on_wave_timer_timeout)
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 	elite_check_timer.timeout.connect(_on_elite_check_timer_timeout)
@@ -46,11 +50,6 @@ func _process(delta: float) -> void:
 	if not is_wave_active:
 		return
 	_spawn_elapsed += delta
-	# 动态调整刷新间隔
-	var new_interval := _get_spawn_interval()
-	if abs(spawn_timer.wait_time - new_interval) > 0.05:
-		spawn_timer.wait_time = new_interval
-	# 发出倒计时 tick
 	emit_signal("wave_timer_tick", wave_timer.time_left)
 
 
@@ -70,8 +69,8 @@ func _start_wave(wave_index: int) -> void:
 	wave_timer.wait_time = duration
 	wave_timer.start()
 
-	spawn_timer.wait_time = SPAWN_INTERVAL_START
-	spawn_timer.start()
+	spawn_timer.stop()
+	_schedule_next_spawn_tick()
 
 	var elite_cfg: Dictionary = WaveData.get_elite_focus_settings(_wave_file_config, wave_index)
 	_elite_chance_bonus = float(elite_cfg.get("chance_bonus", 0.0))
@@ -108,11 +107,61 @@ func _get_wave_duration(wave_index: int) -> float:
 	return clampf(d, 15.0, 120.0)
 
 
-## 刷新间隔：随波次内时间流逝从 2.0 线性降至 0.5
-func _get_spawn_interval() -> float:
-	var wave_duration := _get_wave_duration(current_wave)
-	var progress := clampf(_spawn_elapsed / wave_duration, 0.0, 1.0)
+## 基础刷怪间隔中心值：随波次内时间从慢到快
+func _get_spawn_interval_center() -> float:
+	var wave_duration: float = _get_wave_duration(current_wave)
+	var progress: float = clampf(_spawn_elapsed / maxf(0.001, wave_duration), 0.0, 1.0)
 	return lerpf(SPAWN_INTERVAL_START, SPAWN_INTERVAL_MIN, progress)
+
+
+## 下一次刷怪随机等待时间（秒）
+func _roll_random_spawn_delay() -> float:
+	var center: float = _get_spawn_interval_center()
+	var lo: float = maxf(0.35, center * SPAWN_JITTER_LOW)
+	var hi: float = maxf(lo + 0.08, center * SPAWN_JITTER_HIGH)
+	return randf_range(lo, hi)
+
+
+func _schedule_next_spawn_tick() -> void:
+	if not is_wave_active:
+		return
+	spawn_timer.wait_time = _roll_random_spawn_delay()
+	spawn_timer.start()
+
+
+## 本批各只怪的类型（尽量在同一批里出现多种类型）
+func _get_batch_enemy_types(batch_size: int) -> Array:
+	var entry: Dictionary = WaveData.get_wave_entry(_wave_file_config, current_wave)
+	var weights: Dictionary = {}
+	if entry.has("weights") and entry["weights"] is Dictionary:
+		weights = entry["weights"] as Dictionary
+	var types: Array = []
+	if weights.is_empty():
+		for _i in range(batch_size):
+			types.append(_get_spawn_config()["type"])
+		return types
+	for _j in range(batch_size):
+		types.append(_roll_weighted_type(weights))
+	if batch_size >= 2 and weights.size() >= 2:
+		var first: String = str(types[0])
+		var all_same: bool = true
+		for t in types:
+			if str(t) != first:
+				all_same = false
+				break
+		if all_same:
+			types[batch_size - 1] = _roll_weighted_type_excluding(weights, first)
+	return types
+
+
+func _roll_weighted_type_excluding(weights: Dictionary, exclude: String) -> String:
+	var w2: Dictionary = {}
+	for k in weights.keys():
+		if str(k) != exclude:
+			w2[str(k)] = float(weights[k])
+	if w2.is_empty():
+		return _roll_weighted_type(weights)
+	return _roll_weighted_type(w2)
 
 
 ## 分批刷新：预警坐标与生成坐标一致；玩家占点则跳过该格
@@ -120,11 +169,12 @@ func _try_spawn_batch() -> void:
 	if not is_wave_active:
 		return
 	var batch_size: int = _resolve_batch_size()
+	var type_ids: Array = _get_batch_enemy_types(batch_size)
 	var slots: Array = []
-	for _j in range(batch_size):
+	for j in range(batch_size):
 		slots.append({
 			"pos": _get_safe_spawn_position(),
-			"config": _get_spawn_config(),
+			"config": {"type": str(type_ids[j])},
 		})
 	for s in slots:
 		emit_signal("spawn_warning_shown", s["pos"] as Vector2)
@@ -278,9 +328,12 @@ func _on_wave_timer_timeout() -> void:
 	_end_wave()
 
 
-## 定时刷新批次
+## 定时刷新批次（随机间隔由每次 timeout 后重新调度）
 func _on_spawn_timer_timeout() -> void:
-	_try_spawn_batch()
+	await _try_spawn_batch()
+	if not is_wave_active:
+		return
+	_schedule_next_spawn_tick()
 
 
 ## 精英怪检查

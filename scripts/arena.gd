@@ -185,6 +185,8 @@ func _on_material_collected(material_id: String, amount: int, drop_node: Node) -
 
 ## 波次结束：将未拾取材料转为储蓄（需求 10.1）；非最终波进入波间
 func _on_wave_ended(wave_index: int) -> void:
+	if enemy_pool != null and enemy_pool.has_method("clear_all"):
+		enemy_pool.clear_all()
 	var uncollected := material_container.get_child_count()
 	RunState.on_wave_end_convert_savings(uncollected)
 	var hb: int = _compute_harvest_bonus(wave_index)
