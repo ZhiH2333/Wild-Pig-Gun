@@ -188,6 +188,8 @@ HSlider/styles/grabber_area_highlight = SubResource("sb_hslider_fill")
 HSlider/styles/grabber_highlight = SubResource("sb_hslider_grabber_hi")
 HSlider/styles/slider = SubResource("sb_hslider_track")
 Label/colors/font_color = Color(0.94, 0.92, 0.88, 1)
+Label/colors/font_outline_color = Color(0.02, 0.03, 0.06, 0.92)
+Label/constants/outline_size = 2
 Label/font_sizes/font_size = 24
 PanelContainer/styles/panel = SubResource("sb_panel")
 
