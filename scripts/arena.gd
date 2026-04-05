@@ -17,6 +17,8 @@ const ENEMY_SCENE_MAP: Dictionary = {
 	"buff":    "res://scenes/enemies/buff_enemy.tscn",
 	"trap":    "res://scenes/enemies/trap_enemy.tscn",
 	"splitter": "res://scenes/enemies/splitter_enemy.tscn",
+	"charger": "res://scenes/enemies/charger_enemy.tscn",
+	"shield": "res://scenes/enemies/shield_enemy.tscn",
 }
 
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
