@@ -47,7 +47,18 @@ func _on_body_entered(body: Node2D) -> void:
 			return
 		_damaged_ids[bid] = true
 		if body.has_method("take_damage"):
-			body.take_damage(damage)
+			var final_dmg: int = damage
+			var is_crit: bool = false
+			var pl: Node = get_tree().get_first_node_in_group("player")
+			if pl != null and "stat_crit_chance" in pl and "stat_crit_mult" in pl:
+				var roll: Dictionary = CombatMath.roll_damage_with_crit(
+					damage,
+					float(pl.stat_crit_chance),
+					float(pl.stat_crit_mult)
+				)
+				final_dmg = int(roll["damage"])
+				is_crit = bool(roll["is_crit"])
+			body.take_damage(final_dmg, is_crit)
 		_hits_remaining -= 1
 		if _hits_remaining <= 0:
 			queue_free()

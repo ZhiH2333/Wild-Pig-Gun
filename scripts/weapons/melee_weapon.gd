@@ -64,12 +64,23 @@ func _effective_damage() -> int:
 func _melee_strike() -> void:
 	_sync_wait()
 	var amt: int = _effective_damage()
+	var p: Node = _find_player()
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if e == null or not is_instance_valid(e):
 			continue
 		if global_position.distance_to(e.global_position) <= melee_radius:
 			if e.has_method("take_damage"):
-				e.take_damage(amt)
+				var fd: int = amt
+				var ic: bool = false
+				if p != null and "stat_crit_chance" in p and "stat_crit_mult" in p:
+					var roll: Dictionary = CombatMath.roll_damage_with_crit(
+						amt,
+						float(p.stat_crit_chance),
+						float(p.stat_crit_mult)
+					)
+					fd = int(roll["damage"])
+					ic = bool(roll["is_crit"])
+				e.take_damage(fd, ic)
 
 
 func _on_fire_timer_timeout() -> void:

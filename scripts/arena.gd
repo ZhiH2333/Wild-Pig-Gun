@@ -258,6 +258,8 @@ func build_run_snapshot() -> Dictionary:
 			"material_to_damage_kv": player.material_to_damage_kv,
 			"stat_synergy_damage_mult": player.stat_synergy_damage_mult,
 			"stat_hp_regen_per_sec": player.stat_hp_regen_per_sec,
+			"stat_crit_chance": player.stat_crit_chance,
+			"stat_crit_mult": player.stat_crit_mult,
 			"pos_x": player.global_position.x,
 			"pos_y": player.global_position.y,
 		}

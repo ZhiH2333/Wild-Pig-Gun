@@ -30,6 +30,9 @@ var material_to_damage_kv: float = 0.0
 var stat_synergy_damage_mult: float = 1.0
 ## 每秒生命回复（构筑）
 var stat_hp_regen_per_sec: float = 0.0
+## 暴击率 0~1、暴击伤害倍率
+var stat_crit_chance: float = 0.05
+var stat_crit_mult: float = 1.5
 ## 当前帧的操作描述（供调试覆盖层读取）
 var _debug_action: String = "待机"
 var _walk_sfx_cooldown: float = 0.0
@@ -145,6 +148,8 @@ func apply_run_snapshot_stats(d: Dictionary) -> void:
 	material_to_damage_kv = maxf(0.0, float(d.get("material_to_damage_kv", 0.0)))
 	stat_synergy_damage_mult = maxf(0.05, float(d.get("stat_synergy_damage_mult", 1.0)))
 	stat_hp_regen_per_sec = maxf(0.0, float(d.get("stat_hp_regen_per_sec", 0.0)))
+	stat_crit_chance = clampf(float(d.get("stat_crit_chance", 0.05)), 0.0, 1.0)
+	stat_crit_mult = maxf(1.0, float(d.get("stat_crit_mult", 1.5)))
 	global_position = Vector2(float(d.get("pos_x", 960.0)), float(d.get("pos_y", 540.0)))
 	emit_signal("hp_changed", current_hp, max_hp)
 
