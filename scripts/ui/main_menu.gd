@@ -1,8 +1,14 @@
 extends Control
 
 @onready var placeholder_dialog: AcceptDialog = $PlaceholderDialog
+@onready var music_player: AudioStreamPlayer = $MusicPlayer
+
 
 func _ready() -> void:
+	var stream: AudioStream = music_player.stream
+	if stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
+	music_player.play()
 	$ButtonColumn/StartButton.pressed.connect(_on_start_pressed)
 	$ButtonColumn/SettingsButton.pressed.connect(_on_settings_pressed)
 	$ButtonColumn/ProgressButton.pressed.connect(_on_progress_pressed)

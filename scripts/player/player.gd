@@ -29,6 +29,7 @@ var material_to_damage_kv: float = 0.0
 var stat_synergy_damage_mult: float = 1.0
 ## 当前帧的操作描述（供调试覆盖层读取）
 var _debug_action: String = "待机"
+var _walk_sfx_cooldown: float = 0.0
 
 @onready var invincibility_timer: Timer = $InvincibilityTimer
 
@@ -40,10 +41,17 @@ func _ready() -> void:
 	emit_signal("hp_changed", current_hp, max_hp)
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var direction := _get_input_direction()
 	velocity = direction * SPEED * stat_move_speed_mult
 	move_and_slide()
+	if direction.length_squared() > 0.001:
+		_walk_sfx_cooldown -= delta
+		if _walk_sfx_cooldown <= 0.0:
+			GameAudio.play_walk()
+			_walk_sfx_cooldown = 0.38
+	else:
+		_walk_sfx_cooldown = 0.0
 	# 边界约束（需求 1.4）
 	var arena_rect := _get_arena_rect()
 	position = _apply_boundary_clamp(position, arena_rect)
@@ -54,7 +62,6 @@ func _physics_process(_delta: float) -> void:
 		_debug_action = "移动中(无敌帧)"
 	else:
 		_debug_action = "移动 dir:(%.2f,%.2f)" % [direction.x, direction.y]
-	queue_redraw()
 
 
 ## 读取 WASD / 虚拟摇杆并返回归一化方向向量（需求 1.1、1.2、1.3）
@@ -148,17 +155,3 @@ func _get_arena_rect() -> Rect2:
 	return Rect2(0.0, 0.0, 1920.0, 1080.0)
 
 
-## Debug 绘制：粉色圆形代表野猪，下方显示坐标与血量
-func _draw() -> void:
-	draw_circle(Vector2.ZERO, 20.0, Color(0.9, 0.4, 0.5, 1.0))
-	draw_circle(Vector2(-7, -6), 4.0, Color(1, 1, 1, 1))
-	draw_circle(Vector2(7, -6), 4.0, Color(1, 1, 1, 1))
-	draw_circle(Vector2(-7, -6), 2.0, Color(0.1, 0.1, 0.1, 1))
-	draw_circle(Vector2(7, -6), 2.0, Color(0.1, 0.1, 0.1, 1))
-	# 角色下方调试信息
-	var font := ThemeDB.fallback_font
-	var font_size := 12
-	var pos_text := "坐标:(%.0f,%.0f)" % [global_position.x, global_position.y]
-	var hp_text  := "HP:%d/%d%s" % [current_hp, max_hp, " [无敌]" if is_invincible else ""]
-	draw_string(font, Vector2(-40, 32), pos_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color(1, 1, 0))
-	draw_string(font, Vector2(-40, 46), hp_text,  HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color(0.4, 1, 0.4))

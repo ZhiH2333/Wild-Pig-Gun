@@ -32,6 +32,7 @@ const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
 @onready var level_up_overlay: CanvasLayer = $LevelUpOverlay
 @onready var wave_manager: WaveManager = $WaveManager
 @onready var enemy_pool: Node = $EnemyPool
+@onready var bgm_player: AudioStreamPlayer = $BgmPlayer
 
 ## 预加载的敌人场景缓存
 var _loaded_enemy_scenes: Dictionary = {}
@@ -43,6 +44,11 @@ func _ready() -> void:
 	add_to_group("arena")
 	_wave_cfg = WaveData.load_config()
 	_preload_scenes()
+	if bgm_player != null:
+		var s: AudioStream = bgm_player.stream
+		if s is AudioStreamMP3:
+			(s as AudioStreamMP3).loop = true
+		bgm_player.play()
 
 	# 连接玩家信号
 	if player:
@@ -243,6 +249,7 @@ func _on_interstitial_continue_pressed() -> void:
 
 ## 玩家死亡（需求 4.4、6.1）
 func _on_player_died() -> void:
+	GameAudio.play_die()
 	wave_manager.is_wave_active = false
 	await get_tree().create_timer(1.0).timeout
 	if ResourceLoader.exists("res://scenes/game_over.tscn"):

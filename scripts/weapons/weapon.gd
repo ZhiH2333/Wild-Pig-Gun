@@ -92,6 +92,7 @@ func _fire(target: Node2D) -> void:
 	var dir: Vector2 = (target.global_position - global_position).normalized()
 	projectile.direction = dir
 	projectile.damage = _effective_damage()
+	GameAudio.play_shoot()
 
 
 func _get_projectile_container() -> Node:
