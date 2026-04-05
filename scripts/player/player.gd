@@ -101,6 +101,22 @@ func get_pickup_collect_radius() -> float:
 	return 12.0 + stat_pickup_radius_bonus
 
 
+func apply_run_snapshot_stats(d: Dictionary) -> void:
+	max_hp = maxi(1, int(d.get("max_hp", 100)))
+	current_hp = clampi(int(d.get("current_hp", max_hp)), 0, max_hp)
+	stat_damage_mult = maxf(0.05, float(d.get("stat_damage_mult", 1.0)))
+	stat_move_speed_mult = maxf(0.05, float(d.get("stat_move_speed_mult", 1.0)))
+	stat_fire_rate_mult = maxf(0.05, float(d.get("stat_fire_rate_mult", 1.0)))
+	stat_pickup_radius_bonus = float(d.get("stat_pickup_radius_bonus", 0.0))
+	stat_harvest = maxf(0.0, float(d.get("stat_harvest", 0.0)))
+	stat_luck = int(d.get("stat_luck", 0))
+	shop_price_mult = maxf(0.01, float(d.get("shop_price_mult", 1.0)))
+	material_to_damage_kv = maxf(0.0, float(d.get("material_to_damage_kv", 0.0)))
+	stat_synergy_damage_mult = maxf(0.05, float(d.get("stat_synergy_damage_mult", 1.0)))
+	global_position = Vector2(float(d.get("pos_x", 960.0)), float(d.get("pos_y", 540.0)))
+	emit_signal("hp_changed", current_hp, max_hp)
+
+
 func recompute_weapon_synergy() -> void:
 	var loadout: Node = get_node_or_null("WeaponLoadout")
 	if loadout == null:

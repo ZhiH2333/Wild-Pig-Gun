@@ -38,6 +38,9 @@ func show_for_finished_wave(finished_wave_index: int) -> void:
 	_next_wave_for_shop = finished_wave_index + 1
 	_upgrade_picked = false
 	continue_btn.disabled = true
+	continue_btn.custom_minimum_size = Vector2(300, 52)
+	continue_btn.remove_theme_font_size_override("font_size")
+	continue_btn.text = "开始下一波"
 	_rng.seed = int(RunState.run_seed) ^ int(finished_wave_index) * 1103515245
 	_clear_children(upgrade_row)
 	_clear_children(shop_vbox)
@@ -120,6 +123,9 @@ func _on_upgrade_button_pressed(def: Dictionary) -> void:
 		RunState.upgrade_ids.append(id)
 	_upgrade_picked = true
 	continue_btn.disabled = false
+	continue_btn.custom_minimum_size = Vector2(380, 58)
+	continue_btn.add_theme_font_size_override("font_size", 24)
+	continue_btn.text = "继续 — 开始下一波"
 	for c in upgrade_row.get_children():
 		if c is Button:
 			(c as Button).disabled = true

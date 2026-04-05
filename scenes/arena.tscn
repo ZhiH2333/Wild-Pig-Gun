@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://rena"]
+[gd_scene load_steps=18 format=3 uid="uid://rena"]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="AudioStream" uid="uid://brci8d1tksvmd" path="res://assets/audio/war.mp3" id="12_war_bgm"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="9_vjoy"]
 [ext_resource type="Script" path="res://scripts/ui/level_up_overlay.gd" id="10_levelup"]
 [ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="11_ui"]
+[ext_resource type="Script" path="res://scripts/ui/pause_overlay_menu.gd" id="13_pause_menu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
@@ -93,6 +94,7 @@ script = ExtResource("7_enemy_pool")
 process_mode = 3
 layer = 40
 visible = false
+script = ExtResource("13_pause_menu")
 
 [node name="Dim" type="ColorRect" parent="PauseOverlay"]
 anchors_preset = 15
@@ -101,7 +103,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0, 0, 0, 0.55)
+color = Color(0.02, 0.03, 0.06, 0.72)
 
 [node name="CenterContainer" type="CenterContainer" parent="PauseOverlay"]
 anchors_preset = 15
@@ -110,18 +112,43 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PauseVBox" type="VBoxContainer" parent="PauseOverlay/CenterContainer"]
+[node name="Panel" type="PanelContainer" parent="PauseOverlay/CenterContainer"]
+custom_minimum_size = Vector2(420, 0)
 theme = ExtResource("11_ui")
-theme_override_constants/separation = 16
 
-[node name="PauseTitle" type="Label" parent="PauseOverlay/CenterContainer/PauseVBox"]
-theme_override_font_sizes/font_size = 44
-text = "游戏暂停"
+[node name="Margin" type="MarginContainer" parent="PauseOverlay/CenterContainer/Panel"]
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="PauseVBox" type="VBoxContainer" parent="PauseOverlay/CenterContainer/Panel/Margin"]
+theme_override_constants/separation = 18
+
+[node name="PauseTitle" type="Label" parent="PauseOverlay/CenterContainer/Panel/Margin/PauseVBox"]
+theme_override_colors/font_color = Color(0.98, 0.95, 0.88, 1)
+theme_override_font_sizes/font_size = 40
+text = "已暂停"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="PauseOverlay/CenterContainer/PauseVBox"]
-custom_minimum_size = Vector2(340, 56)
-text = "继续游戏 (ESC)"
+[node name="ResumeButton" type="Button" parent="PauseOverlay/CenterContainer/Panel/Margin/PauseVBox"]
+custom_minimum_size = Vector2(360, 56)
+text = "继续游戏 · ESC"
+
+[node name="SaveMenuButton" type="Button" parent="PauseOverlay/CenterContainer/Panel/Margin/PauseVBox"]
+custom_minimum_size = Vector2(360, 56)
+text = "保存并返回主菜单"
+
+[node name="QuitNoSaveButton" type="Button" parent="PauseOverlay/CenterContainer/Panel/Margin/PauseVBox"]
+custom_minimum_size = Vector2(360, 56)
+text = "不保存并返回主菜单"
+
+[node name="HintLabel" type="Label" parent="PauseOverlay/CenterContainer/Panel/Margin/PauseVBox"]
+theme_override_colors/font_color = Color(0.62, 0.64, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "提示：ESC 可快速继续或打开本菜单"
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="LevelUpOverlay" type="CanvasLayer" parent="."]
 process_mode = 3
@@ -254,7 +281,7 @@ script = ExtResource("9_vjoy")
 
 [node name="BgmPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("12_war_bgm")
-bus = &"Master"
+bus = &"Music"
 
 [node name="DebugOverlay" type="CanvasLayer" parent="."]
 layer = 100

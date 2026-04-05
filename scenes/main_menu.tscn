@@ -73,11 +73,17 @@ anchor_top = 1.0
 anchor_right = 0.0
 anchor_bottom = 1.0
 offset_left = 28.0
-offset_top = -312.0
+offset_top = -376.0
 offset_right = 308.0
 offset_bottom = -28.0
 grow_vertical = 0
 theme_override_constants/separation = 14
+
+[node name="ContinueButton" type="Button" parent="ButtonColumn"]
+visible = false
+custom_minimum_size = Vector2(300, 52)
+layout_mode = 2
+text = "继续游戏"
 
 [node name="StartButton" type="Button" parent="ButtonColumn"]
 custom_minimum_size = Vector2(300, 52)
@@ -106,7 +112,7 @@ text = "退出"
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_bgm")
-bus = &"Master"
+bus = &"Music"
 
 [node name="PlaceholderDialog" type="AcceptDialog" parent="."]
 layout_mode = 1

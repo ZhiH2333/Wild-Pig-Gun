@@ -8,6 +8,7 @@ extends Control
 
 
 func _ready() -> void:
+	SaveManager.clear_pending_run()
 	SaveManager.record_run_finished(RunState.wave_index, false)
 	waves_label.text = "存活波次：%d 波" % RunState.wave_index
 	restart_button.pressed.connect(_on_restart_pressed)

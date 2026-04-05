@@ -51,6 +51,11 @@ static func get_starting_weapon_ids(character_id: String) -> Array:
 	return ["rifle"]
 
 
+static func apply_character_visual(player: Node, character_id: String) -> void:
+	var d: Dictionary = find_character(character_id)
+	_apply_sprite(player, d)
+
+
 static func apply_to_player(player: Node, character_id: String) -> void:
 	var d: Dictionary = find_character(character_id)
 	var hp: int = int(d.get("max_hp", 100))
