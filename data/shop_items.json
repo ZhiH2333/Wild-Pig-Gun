@@ -8,6 +8,8 @@
   {"id": "shop_crit_mult", "title": "锯齿刃", "desc": "暴击倍率 +0.2", "short_desc": "暴伤 +0.2", "base_price": 18, "tier": 3, "kind": "crit_mult_flat", "value": 0.2, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_fire_dmg", "title": "燃油瓶", "desc": "火焰伤害 +8%", "short_desc": "火伤 +8%", "base_price": 14, "tier": 2, "kind": "fire_damage_pct", "value": 0.08, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_burn", "title": "引火布", "desc": "燃烧 DPS +1.2", "short_desc": "燃烧 +1.2", "base_price": 12, "tier": 2, "kind": "burn_dps_flat", "value": 1.2, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "shop_ice_dmg", "title": "冰晶粉", "desc": "冰霜伤害 +7%", "short_desc": "冰伤 +7%", "base_price": 13, "tier": 2, "kind": "ice_damage_pct", "value": 0.07, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "shop_ice_dur", "title": "寒气瓶", "desc": "冰冻时长 +0.35 秒", "short_desc": "冰缓 +0.35s", "base_price": 11, "tier": 1, "kind": "ice_duration_flat", "value": 0.35, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_regen", "title": "再生芯片", "desc": "每秒回复 0.35 生命", "short_desc": "回复 +0.35/s", "base_price": 15, "tier": 2, "kind": "hp_regen_flat", "value": 0.35, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_mag", "title": "小磁石", "desc": "拾取范围 +18", "short_desc": "拾取 +18", "base_price": 7, "tier": 1, "kind": "pickup", "value": 18.0, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_luck", "title": "四叶草", "desc": "幸运 +3（商店高阶权重）", "short_desc": "幸运 +3", "base_price": 14, "tier": 3, "kind": "luck_flat", "value": 3, "icon": "res://assets/sprites/icon.png", "stackable": true},

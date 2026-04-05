@@ -262,6 +262,8 @@ func build_run_snapshot() -> Dictionary:
 			"stat_crit_mult": player.stat_crit_mult,
 			"stat_fire_damage_mult": player.stat_fire_damage_mult,
 			"stat_burn_dps_flat": player.stat_burn_dps_flat,
+			"stat_ice_damage_mult": player.stat_ice_damage_mult,
+			"stat_ice_duration_bonus": player.stat_ice_duration_bonus,
 			"pos_x": player.global_position.x,
 			"pos_y": player.global_position.y,
 		}

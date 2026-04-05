@@ -61,6 +61,8 @@ func _on_body_entered(body: Node2D) -> void:
 			var pl: Node = get_tree().get_first_node_in_group("player")
 			if damage_element == &"fire" and pl != null and "stat_fire_damage_mult" in pl:
 				dmg_base = maxi(1, int(round(float(damage) * float(pl.stat_fire_damage_mult))))
+			elif damage_element == &"ice" and pl != null and "stat_ice_damage_mult" in pl:
+				dmg_base = maxi(1, int(round(float(damage) * float(pl.stat_ice_damage_mult))))
 			var final_dmg: int = dmg_base
 			var is_crit: bool = false
 			if pl != null and "stat_crit_chance" in pl and "stat_crit_mult" in pl:
@@ -78,6 +80,12 @@ func _on_body_entered(body: Node2D) -> void:
 				if pl2 != null and "stat_burn_dps_flat" in pl2:
 					bdps += float(pl2.stat_burn_dps_flat)
 				body.call("apply_status_burn", bdps, 3.2)
+			elif damage_element == &"ice" and body.has_method("apply_status_slow"):
+				var pl3: Node = get_tree().get_first_node_in_group("player")
+				var dur: float = 2.6
+				if pl3 != null and "stat_ice_duration_bonus" in pl3:
+					dur += float(pl3.stat_ice_duration_bonus)
+				body.call("apply_status_slow", 0.68, dur)
 		_hits_remaining -= 1
 		if _hits_remaining <= 0:
 			queue_free()
