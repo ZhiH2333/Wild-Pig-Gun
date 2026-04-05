@@ -45,8 +45,7 @@ func _add_weapon_by_id(weapon_id: String) -> void:
 		if not ResourceLoader.exists(mpath):
 			return
 		var m: Node2D = (load(mpath) as PackedScene).instantiate() as Node2D
-		if m.has_method("setup_from_catalog"):
-			m.setup_from_catalog(weapon_id)
+		m.set("weapon_id", weapon_id)
 		add_child(m)
 		_tag_weapon_node(m)
 		return
@@ -54,8 +53,7 @@ func _add_weapon_by_id(weapon_id: String) -> void:
 	if not ResourceLoader.exists(wpath):
 		return
 	var w: Node2D = (load(wpath) as PackedScene).instantiate() as Node2D
-	if w.has_method("setup_from_catalog"):
-		w.setup_from_catalog(weapon_id)
+	w.set("weapon_id", weapon_id)
 	add_child(w)
 	_tag_weapon_node(w)
 

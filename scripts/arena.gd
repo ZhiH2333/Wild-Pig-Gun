@@ -167,7 +167,10 @@ func _on_material_collected(material_id: String, amount: int, drop_node: Node) -
 		if player != null:
 			var box_rng := RandomNumberGenerator.new()
 			box_rng.randomize()
-			var gifts: Array = BuildCatalog.pick_shop_offer(1, box_rng)
+			var luck: int = 0
+			if "stat_luck" in player:
+				luck = int(player.stat_luck)
+			var gifts: Array = BuildCatalog.pick_shop_offer(1, box_rng, luck)
 			if gifts.size() > 0:
 				BuildCatalog.apply_shop_def(player, gifts[0] as Dictionary)
 		RunState.collect_material(maxi(amount * 6, 8))

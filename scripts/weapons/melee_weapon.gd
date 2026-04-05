@@ -23,7 +23,8 @@ func setup_from_catalog(wid: String) -> void:
 	_base_fire_interval = float(def.get("fire_interval", 0.55))
 	melee_radius = float(def.get("melee_radius", 78.0))
 	set_meta("catalog_applied", true)
-	_sync_wait()
+	if fire_timer != null:
+		_sync_wait()
 
 
 func _find_player() -> Node:
@@ -36,6 +37,8 @@ func _find_player() -> Node:
 
 
 func _sync_wait() -> void:
+	if fire_timer == null:
+		return
 	var mult: float = 1.0
 	var p: Node = _find_player()
 	if p != null and "stat_fire_rate_mult" in p:
