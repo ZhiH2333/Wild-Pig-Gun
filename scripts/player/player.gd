@@ -162,6 +162,7 @@ func take_damage(amount: int) -> void:
 		return
 	# 扣血，不低于 0（需求 4.2）
 	current_hp = max(0, current_hp - amount)
+	_brief_screen_shake()
 	_debug_action = "受伤 -%d → HP:%d" % [amount, current_hp]
 	emit_signal("hp_changed", current_hp, max_hp)
 	# 血量归零时触发死亡（需求 4.4）
@@ -172,6 +173,17 @@ func take_damage(amount: int) -> void:
 	# 触发无敌帧
 	is_invincible = true
 	invincibility_timer.start()
+
+
+func _brief_screen_shake() -> void:
+	var cam: Camera2D = get_node_or_null("Camera2D") as Camera2D
+	if cam == null:
+		return
+	var tw: Tween = create_tween()
+	cam.offset = Vector2(7, -5)
+	tw.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(cam, "offset", Vector2(-4, 4), 0.05)
+	tw.tween_property(cam, "offset", Vector2.ZERO, 0.09)
 
 
 ## 无敌帧结束
