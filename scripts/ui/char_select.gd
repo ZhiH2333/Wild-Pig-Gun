@@ -1,6 +1,7 @@
 extends Control
 
 @onready var character_vbox: VBoxContainer = $ScrollContainer/CharacterVBox
+@onready var risk_check: CheckBox = $RiskCheck
 
 
 func _ready() -> void:
@@ -25,5 +26,6 @@ func _on_back_button_pressed() -> void:
 
 
 func _on_character_chosen(character_id: String) -> void:
-	RunState.begin_new_run(character_id)
+	var risk: float = 1.25 if risk_check.button_pressed else 1.0
+	RunState.begin_new_run(character_id, risk)
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")

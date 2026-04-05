@@ -160,10 +160,13 @@ func take_damage(amount: int) -> void:
 	if is_invincible:
 		_debug_action = "受伤免疫(无敌帧)"
 		return
+	var amt: int = amount
+	if RunState != null:
+		amt = maxi(1, int(round(float(amount) * RunState.run_risk_mult)))
 	# 扣血，不低于 0（需求 4.2）
-	current_hp = max(0, current_hp - amount)
+	current_hp = max(0, current_hp - amt)
 	_brief_screen_shake()
-	_debug_action = "受伤 -%d → HP:%d" % [amount, current_hp]
+	_debug_action = "受伤 -%d → HP:%d" % [amt, current_hp]
 	emit_signal("hp_changed", current_hp, max_hp)
 	# 血量归零时触发死亡（需求 4.4）
 	if current_hp <= 0:

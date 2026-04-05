@@ -38,13 +38,25 @@ theme_override_font_sizes/font_size = 36
 text = "选择角色"
 horizontal_alignment = 1
 
+[node name="RiskCheck" type="CheckBox" parent="." unique_id=9001]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -320.0
+offset_top = 86.0
+offset_right = 320.0
+offset_bottom = 126.0
+grow_horizontal = 2
+text = "困难：受伤×1.25 · 拾取材料略增"
+
 [node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=752469883]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 80.0
-offset_top = 108.0
+offset_top = 132.0
 offset_right = -80.0
 offset_bottom = -108.0
 grow_horizontal = 2
