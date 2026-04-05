@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dctlwroemrtu0"]
+[gd_scene load_steps=3 format=3 uid="uid://dctlwroemrtu0"]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
+[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -9,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_ui")
 script = ExtResource("1_main_menu")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -28,24 +30,24 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -72.0
-offset_right = 280.0
-offset_bottom = 72.0
+offset_left = -340.0
+offset_top = -88.0
+offset_right = 340.0
+offset_bottom = 88.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TitleZh" type="Label" parent="TitleBlock"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 48
 text = "野猪乱打手枪"
 horizontal_alignment = 1
 
 [node name="TitleEn" type="Label" parent="TitleBlock"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.62, 0.58, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 28
 text = "WildPigGun"
 horizontal_alignment = 1
 
@@ -57,34 +59,34 @@ anchor_top = 1.0
 anchor_right = 0.0
 anchor_bottom = 1.0
 offset_left = 28.0
-offset_top = -268.0
-offset_right = 268.0
+offset_top = -312.0
+offset_right = 308.0
 offset_bottom = -28.0
 grow_vertical = 0
-theme_override_constants/separation = 10
+theme_override_constants/separation = 14
 
 [node name="StartButton" type="Button" parent="ButtonColumn"]
-custom_minimum_size = Vector2(240, 40)
+custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
 text = "开始"
 
 [node name="SettingsButton" type="Button" parent="ButtonColumn"]
-custom_minimum_size = Vector2(240, 40)
+custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
 text = "设置"
 
 [node name="ProgressButton" type="Button" parent="ButtonColumn"]
-custom_minimum_size = Vector2(240, 40)
+custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
 text = "进度"
 
 [node name="CreditsButton" type="Button" parent="ButtonColumn"]
-custom_minimum_size = Vector2(240, 40)
+custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
 text = "制作人名单"
 
 [node name="QuitButton" type="Button" parent="ButtonColumn"]
-custom_minimum_size = Vector2(240, 40)
+custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
 text = "退出"
 
@@ -95,10 +97,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -100.0
-offset_right = 220.0
-offset_bottom = 100.0
+offset_left = -280.0
+offset_top = -120.0
+offset_right = 280.0
+offset_bottom = 120.0
 grow_horizontal = 2
 grow_vertical = 2
 ok_button_text = "确定"

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://settings_wpg"]
+[gd_scene load_steps=3 format=3 uid="uid://settings_wpg"]
 
 [ext_resource type="Script" path="res://scripts/ui/settings_screen.gd" id="1_settings"]
+[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
 
 [node name="Settings" type="Control"]
 layout_mode = 3
@@ -9,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_ui")
 script = ExtResource("1_settings")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -30,10 +32,10 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="Center"]
-theme_override_constants/separation = 16
+theme_override_constants/separation = 20
 
 [node name="Title" type="Label" parent="Center/VBox"]
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 36
 text = "设置"
 horizontal_alignment = 1
 
@@ -41,11 +43,12 @@ horizontal_alignment = 1
 theme_override_constants/separation = 12
 
 [node name="MasterLabel" type="Label" parent="Center/VBox/MasterRow"]
-custom_minimum_size = Vector2(120, 0)
+custom_minimum_size = Vector2(140, 0)
+theme_override_font_sizes/font_size = 24
 text = "主音量"
 
 [node name="MasterSlider" type="HSlider" parent="Center/VBox/MasterRow"]
-custom_minimum_size = Vector2(360, 0)
+custom_minimum_size = Vector2(420, 28)
 size_flags_horizontal = 3
 max_value = 1.0
 step = 0.05
@@ -55,5 +58,5 @@ value = 1.0
 text = "全屏（桌面）"
 
 [node name="BackButton" type="Button" parent="Center/VBox"]
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(280, 52)
 text = "返回主菜单"

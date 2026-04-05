@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bmjhqtrbrvx41"]
+[gd_scene load_steps=3 format=3 uid="uid://bmjhqtrbrvx41"]
 
 [ext_resource type="Script" path="res://scripts/ui/char_select.gd" id="1_cs"]
+[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
 
 [node name="CharSelect" type="Control"]
 layout_mode = 3
@@ -9,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_ui")
 script = ExtResource("1_cs")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -34,7 +36,7 @@ offset_right = 200.0
 offset_bottom = 84.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 36
 text = "选择角色"
 horizontal_alignment = 1
 
@@ -44,9 +46,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 80.0
-offset_top = 100.0
+offset_top = 108.0
 offset_right = -80.0
-offset_bottom = -100.0
+offset_bottom = -108.0
 grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
@@ -54,7 +56,7 @@ horizontal_scroll_mode = 0
 [node name="CharacterVBox" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="BackButton" type="Button" parent="."]
 layout_mode = 1
@@ -64,9 +66,10 @@ anchor_top = 1.0
 anchor_right = 0.0
 anchor_bottom = 1.0
 offset_left = 28.0
-offset_top = -68.0
-offset_right = 268.0
+offset_top = -80.0
+offset_right = 308.0
 offset_bottom = -28.0
+custom_minimum_size = Vector2(280, 52)
 text = "返回主菜单"
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

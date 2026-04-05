@@ -48,7 +48,7 @@ func show_for_finished_wave(finished_wave_index: int) -> void:
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(210, 96)
+		b.custom_minimum_size = Vector2(260, 112)
 		b.text = "%s\n%s" % [def["title"], def["desc"]]
 		b.pressed.connect(_on_upgrade_button_pressed.bind(def))
 		upgrade_row.add_child(b)
@@ -69,6 +69,8 @@ func _rebuild_shop_rows() -> void:
 		var def: Dictionary = def_variant as Dictionary
 		var btn := Button.new()
 		var price: int = _effective_price(def)
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.custom_minimum_size = Vector2(0, 96)
 		btn.text = "%s  |  %d 材料\n%s" % [def["title"], price, def["desc"]]
 		btn.pressed.connect(_on_buy_pressed.bind(def))
 		shop_vbox.add_child(btn)
@@ -102,7 +104,7 @@ func _on_refresh_upgrades_pressed() -> void:
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(210, 96)
+		b.custom_minimum_size = Vector2(260, 112)
 		b.text = "%s\n%s" % [def["title"], def["desc"]]
 		b.pressed.connect(_on_upgrade_button_pressed.bind(def))
 		upgrade_row.add_child(b)

@@ -63,7 +63,7 @@ func _rebuild_offers(lv: int) -> void:
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(220, 100)
+		b.custom_minimum_size = Vector2(268, 116)
 		var r: int = int(def.get("rarity", 1))
 		var tag: String = ["", "[蓝] ", "[红] "][mini(r - 1, 2)]
 		b.text = "%s%s\n%s" % [tag, def["title"], def["desc"]]
