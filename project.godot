@@ -22,6 +22,11 @@ RunState="*res://scripts/upgrades/run_state.gd"
 GameSettings="*res://scripts/settings/game_settings.gd"
 GameFlow="*res://scripts/game_flow.gd"
 GameAudio="*res://scripts/audio/game_audio.gd"
+UiSoundFeedback="*res://scripts/ui/ui_sound_feedback.gd"
+
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
 
 [gui]
 

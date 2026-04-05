@@ -21,7 +21,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.11, 0.11, 0.13, 1)
+color = Color(0.07, 0.08, 0.11, 1)
+
+[node name="Vignette" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.22)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -31,32 +41,121 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Center"]
+[node name="MainColumn" type="VBoxContainer" parent="Center"]
+custom_minimum_size = Vector2(560, 0)
 theme_override_constants/separation = 20
 
-[node name="Title" type="Label" parent="Center/VBox"]
-theme_override_font_sizes/font_size = 36
+[node name="Title" type="Label" parent="Center/MainColumn"]
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 40
 text = "设置"
 horizontal_alignment = 1
 
-[node name="MasterRow" type="HBoxContainer" parent="Center/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="Center/MainColumn"]
+custom_minimum_size = Vector2(0, 440)
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/Scroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="AudioHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 26
+text = "音频"
+
+[node name="MasterRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
 theme_override_constants/separation = 12
 
-[node name="MasterLabel" type="Label" parent="Center/VBox/MasterRow"]
+[node name="MasterLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/MasterRow"]
 custom_minimum_size = Vector2(140, 0)
-theme_override_font_sizes/font_size = 24
-text = "主音量"
+theme_override_font_sizes/font_size = 22
+text = "总音量"
 
-[node name="MasterSlider" type="HSlider" parent="Center/VBox/MasterRow"]
-custom_minimum_size = Vector2(420, 28)
+[node name="MasterSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/MasterRow"]
+custom_minimum_size = Vector2(360, 32)
 size_flags_horizontal = 3
 max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="FullscreenCheck" type="CheckBox" parent="Center/VBox"]
+[node name="MusicRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_constants/separation = 12
+
+[node name="MusicLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/MusicRow"]
+custom_minimum_size = Vector2(140, 0)
+theme_override_font_sizes/font_size = 22
+text = "音乐"
+
+[node name="MusicSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/MusicRow"]
+custom_minimum_size = Vector2(360, 32)
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="SfxRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_constants/separation = 12
+
+[node name="SfxLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/SfxRow"]
+custom_minimum_size = Vector2(140, 0)
+theme_override_font_sizes/font_size = 22
+text = "音效（含开火）"
+
+[node name="SfxSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/SfxRow"]
+custom_minimum_size = Vector2(360, 32)
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="DisplayHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 26
+text = "显示"
+
+[node name="UiScaleRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_constants/separation = 12
+
+[node name="UiScaleLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/UiScaleRow"]
+custom_minimum_size = Vector2(140, 0)
+theme_override_font_sizes/font_size = 22
+text = "界面缩放"
+
+[node name="UiScaleSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/UiScaleRow"]
+custom_minimum_size = Vector2(240, 32)
+size_flags_horizontal = 3
+min_value = 0.75
+max_value = 1.45
+step = 0.05
+value = 1.0
+
+[node name="UiScaleValue" type="Label" parent="Center/MainColumn/Scroll/Contents/UiScaleRow"]
+custom_minimum_size = Vector2(72, 0)
+theme_override_font_sizes/font_size = 22
+text = "100%"
+horizontal_alignment = 2
+
+[node name="FullscreenCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_font_sizes/font_size = 22
 text = "全屏（桌面）"
 
-[node name="BackButton" type="Button" parent="Center/VBox"]
+[node name="VsyncCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_font_sizes/font_size = 22
+text = "垂直同步"
+
+[node name="GameplayHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 26
+text = "玩法与提示"
+
+[node name="HintLabel" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+theme_override_font_sizes/font_size = 18
+text = "战斗中按 ESC 暂停，可保存进度返回主菜单。波间界面需先选升级再开始下一波。"
+autowrap_mode = 3
+
+[node name="BackButton" type="Button" parent="Center/MainColumn"]
 custom_minimum_size = Vector2(280, 52)
 text = "返回主菜单"

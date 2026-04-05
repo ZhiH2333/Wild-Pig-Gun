@@ -41,6 +41,7 @@ func _ready() -> void:
 	_register_default_input_actions()
 
 func begin_new_run(p_character_id: String = "default") -> void:
+	SaveManager.clear_pending_run()
 	character_id = p_character_id
 	wave_index = 0
 	gold = 0
@@ -161,3 +162,46 @@ func enter_level_up_pause() -> void:
 func leave_level_up_pause() -> void:
 	pause_reason = PauseReason.NONE
 	get_tree().paused = false
+
+
+func to_snapshot_dict() -> Dictionary:
+	return {
+		"character_id": character_id,
+		"wave_index": wave_index,
+		"gold": gold,
+		"run_start_ticks_msec": run_start_ticks_msec,
+		"upgrade_ids": upgrade_ids.duplicate(),
+		"run_seed": run_seed,
+		"player_max_hp": player_max_hp,
+		"player_current_hp": player_current_hp,
+		"material_current": material_current,
+		"material_savings": material_savings,
+		"player_level": player_level,
+		"player_xp": player_xp,
+	}
+
+
+func apply_snapshot_dict(d: Dictionary) -> void:
+	character_id = str(d.get("character_id", "default"))
+	wave_index = int(d.get("wave_index", 0))
+	gold = int(d.get("gold", 0))
+	run_start_ticks_msec = int(d.get("run_start_ticks_msec", Time.get_ticks_msec()))
+	run_seed = int(d.get("run_seed", randi()))
+	player_max_hp = int(d.get("player_max_hp", 100))
+	player_current_hp = int(d.get("player_current_hp", player_max_hp))
+	material_current = int(d.get("material_current", 0))
+	material_savings = int(d.get("material_savings", 0))
+	player_level = int(d.get("player_level", 1))
+	player_xp = int(d.get("player_xp", 0))
+	upgrade_ids.clear()
+	var raw_up: Variant = d.get("upgrade_ids", [])
+	if raw_up is Array:
+		for x in raw_up as Array:
+			upgrade_ids.append(str(x))
+	pause_reason = PauseReason.NONE
+
+
+func emit_hud_sync_signals() -> void:
+	emit_signal("wave_changed", wave_index)
+	emit_signal("material_changed", material_current, material_savings)
+	emit_signal("xp_changed", player_level, player_xp, xp_to_next_level())

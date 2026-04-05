@@ -20,6 +20,7 @@ const ENEMY_SCENE_MAP: Dictionary = {
 }
 
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
+const RUN_SNAPSHOT_VERSION: int = 1
 
 @onready var enemy_container: Node2D = $EnemyContainer
 @onready var projectile_container: Node2D = $ProjectileContainer
@@ -49,30 +50,23 @@ func _ready() -> void:
 		if s is AudioStreamMP3:
 			(s as AudioStreamMP3).loop = true
 		bgm_player.play()
-
-	# 连接玩家信号
 	if player:
 		player.died.connect(_on_player_died)
-
-	if player != null:
-		CharacterData.apply_to_player(player, RunState.character_id)
-	# 连接 HUD（在角色初始属性应用之后）
+	var resume_run: bool = SaveManager.has_pending_run()
+	if not resume_run:
+		if player != null:
+			CharacterData.apply_to_player(player, RunState.character_id)
 	if hud and hud.has_method("setup"):
 		hud.setup(player)
-
-	# 注入 WaveManager 依赖
 	wave_manager.player = player
 	wave_manager.enemy_pool = enemy_pool
 	wave_manager.arena_rect = get_arena_rect()
-
-	# 连接 WaveManager 信号
 	wave_manager.enemy_spawn_requested.connect(_on_enemy_spawn_requested)
 	wave_manager.spawn_warning_shown.connect(_on_spawn_warning_shown)
 	wave_manager.wave_ended.connect(_on_wave_ended)
 	wave_manager.all_waves_cleared.connect(_on_all_waves_cleared)
 	wave_manager.wave_timer_tick.connect(_on_wave_timer_tick)
 	wave_manager.wave_started.connect(_on_wave_started)
-
 	if interstitial_hub != null:
 		if interstitial_hub.has_method("set_player"):
 			interstitial_hub.set_player(player)
@@ -80,14 +74,11 @@ func _ready() -> void:
 			interstitial_hub.continue_pressed.connect(_on_interstitial_continue_pressed)
 	if level_up_overlay != null and level_up_overlay.has_method("set_player"):
 		level_up_overlay.set_player(player)
-	var resume_btn: Button = pause_overlay.get_node_or_null("CenterContainer/PauseVBox/ResumeButton") as Button
-	if resume_btn != null:
-		resume_btn.pressed.connect(_on_pause_resume_pressed)
-
-	# 启动第 1 波（需求 7.1）
-	wave_manager.start_run()
-
-	# 每 2 秒全局拾取一次：强制所有掉落物开始向玩家飞
+	if resume_run:
+		var snap: Dictionary = SaveManager.load_pending_run()
+		_restore_run_from_snapshot(snap)
+	else:
+		wave_manager.start_run()
 	var collect_timer := Timer.new()
 	collect_timer.wait_time = 2.0
 	collect_timer.autostart = true
@@ -237,6 +228,120 @@ func show_pause_overlay() -> void:
 
 func hide_pause_overlay() -> void:
 	pause_overlay.visible = false
+
+
+func build_run_snapshot() -> Dictionary:
+	if player != null:
+		RunState.player_max_hp = player.max_hp
+		RunState.player_current_hp = player.current_hp
+	RunState.wave_index = wave_manager.current_wave
+	var weapons: Array = []
+	var lo: Node = player.get_node_or_null("WeaponLoadout") if player != null else null
+	if lo != null:
+		for c in lo.get_children():
+			if "weapon_id" in c:
+				weapons.append(str(c.weapon_id))
+	var pstats: Dictionary = {}
+	if player != null:
+		pstats = {
+			"max_hp": player.max_hp,
+			"current_hp": player.current_hp,
+			"stat_damage_mult": player.stat_damage_mult,
+			"stat_move_speed_mult": player.stat_move_speed_mult,
+			"stat_fire_rate_mult": player.stat_fire_rate_mult,
+			"stat_pickup_radius_bonus": player.stat_pickup_radius_bonus,
+			"stat_harvest": player.stat_harvest,
+			"stat_luck": player.stat_luck,
+			"shop_price_mult": player.shop_price_mult,
+			"material_to_damage_kv": player.material_to_damage_kv,
+			"stat_synergy_damage_mult": player.stat_synergy_damage_mult,
+			"pos_x": player.global_position.x,
+			"pos_y": player.global_position.y,
+		}
+	return {
+		"version": RUN_SNAPSHOT_VERSION,
+		"run_state": RunState.to_snapshot_dict(),
+		"player": pstats,
+		"weapons": weapons,
+		"wave": wave_manager.get_save_snapshot(),
+	}
+
+
+func save_run_and_return_to_menu() -> void:
+	var data: Dictionary = build_run_snapshot()
+	SaveManager.save_pending_run(data)
+	RunState.pause_reason = RunState.PauseReason.NONE
+	get_tree().paused = false
+	hide_pause_overlay()
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+
+func quit_to_menu_without_saving() -> void:
+	SaveManager.clear_pending_run()
+	RunState.pause_reason = RunState.PauseReason.NONE
+	get_tree().paused = false
+	hide_pause_overlay()
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+
+func _restore_run_from_snapshot(snap: Dictionary) -> void:
+	var ver: int = int(snap.get("version", 0))
+	if ver != RUN_SNAPSHOT_VERSION:
+		push_warning("Arena: 进行中存档版本不匹配，已改为新开局")
+		SaveManager.clear_pending_run()
+		if player != null:
+			CharacterData.apply_to_player(player, RunState.character_id)
+		wave_manager.start_run()
+		return
+	_clear_combat_entities()
+	var rs: Variant = snap.get("run_state", {})
+	if rs is Dictionary:
+		RunState.apply_snapshot_dict(rs as Dictionary)
+	if player != null:
+		CharacterData.apply_character_visual(player, RunState.character_id)
+		var ps: Variant = snap.get("player", {})
+		if ps is Dictionary and player.has_method("apply_run_snapshot_stats"):
+			player.apply_run_snapshot_stats(ps as Dictionary)
+	var wv: Variant = snap.get("weapons", [])
+	if wv is Array:
+		_restore_weapon_loadout(wv as Array)
+	var ws: Variant = snap.get("wave", {})
+	if ws is Dictionary:
+		wave_manager.apply_save_snapshot(ws as Dictionary)
+	RunState.emit_hud_sync_signals()
+
+
+func _clear_combat_entities() -> void:
+	for c in enemy_container.get_children():
+		c.queue_free()
+	for c in material_container.get_children():
+		c.queue_free()
+	for c in projectile_container.get_children():
+		c.queue_free()
+	for c in spawn_warning_container.get_children():
+		c.queue_free()
+	if enemy_pool != null and enemy_pool.has_method("clear_all"):
+		enemy_pool.clear_all()
+
+
+func _restore_weapon_loadout(weapon_ids: Array) -> void:
+	var lo: Node = player.get_node_or_null("WeaponLoadout") if player != null else null
+	if lo == null:
+		return
+	var prev: Array[Node] = []
+	for c in lo.get_children():
+		prev.append(c)
+	for c in prev:
+		lo.remove_child(c)
+		c.free()
+	for wid_variant in weapon_ids:
+		var wid: String = str(wid_variant)
+		if wid.is_empty():
+			continue
+		if lo.has_method("add_weapon_slot_by_id"):
+			lo.add_weapon_slot_by_id(wid)
+	if player != null and player.has_method("recompute_weapon_synergy"):
+		player.recompute_weapon_synergy()
 
 
 func _on_pause_resume_pressed() -> void:

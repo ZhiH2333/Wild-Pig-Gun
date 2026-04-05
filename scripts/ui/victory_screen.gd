@@ -2,6 +2,7 @@ extends Control
 
 
 func _ready() -> void:
+	SaveManager.clear_pending_run()
 	SaveManager.record_run_finished(RunState.wave_index, true)
 	var stats: Label = $VBox/StatsLabel
 	var main_menu_btn: Button = $VBox/MainMenuButton

@@ -101,6 +101,53 @@ func start_next_wave() -> void:
 	_start_wave(current_wave + 1)
 
 
+func get_save_snapshot() -> Dictionary:
+	var wave_left: float = wave_timer.time_left
+	if wave_timer.is_stopped():
+		wave_left = _get_wave_duration(current_wave)
+	return {
+		"current_wave": current_wave,
+		"is_wave_active": is_wave_active,
+		"spawn_elapsed": _spawn_elapsed,
+		"wave_timer_left": wave_left,
+		"spawn_timer_running": not spawn_timer.is_stopped(),
+		"spawn_timer_left": spawn_timer.time_left if not spawn_timer.is_stopped() else 0.0,
+		"elite_timer_running": not elite_check_timer.is_stopped(),
+		"elite_timer_left": elite_check_timer.time_left if not elite_check_timer.is_stopped() else 0.0,
+	}
+
+
+func apply_save_snapshot(d: Dictionary) -> void:
+	_wave_file_config = WaveData.load_config()
+	current_wave = int(d.get("current_wave", 1))
+	is_wave_active = bool(d.get("is_wave_active", true))
+	_spawn_elapsed = float(d.get("spawn_elapsed", 0.0))
+	wave_timer.stop()
+	spawn_timer.stop()
+	elite_check_timer.stop()
+	if not is_wave_active:
+		return
+	var widx: int = current_wave
+	var wave_left: float = float(d.get("wave_timer_left", _get_wave_duration(widx)))
+	wave_timer.wait_time = maxf(0.08, wave_left)
+	wave_timer.start()
+	var elite_cfg: Dictionary = WaveData.get_elite_focus_settings(_wave_file_config, widx)
+	_elite_chance_bonus = float(elite_cfg.get("chance_bonus", 0.0))
+	if widx >= 10 or bool(elite_cfg.get("active", false)):
+		var elite_iv: float = float(elite_cfg.get("interval", 15.0))
+		if bool(d.get("elite_timer_running", false)):
+			elite_check_timer.wait_time = maxf(0.15, float(d.get("elite_timer_left", elite_iv)))
+		else:
+			elite_check_timer.wait_time = elite_iv
+		elite_check_timer.start()
+	if bool(d.get("spawn_timer_running", false)):
+		var stl: float = float(d.get("spawn_timer_left", 0.5))
+		spawn_timer.wait_time = maxf(0.08, stl)
+		spawn_timer.start()
+	else:
+		_schedule_next_spawn_tick()
+
+
 ## 波次时长：优先 data 表 duration_sec，否则回退公式
 func _get_wave_duration(wave_index: int) -> float:
 	var d: float = WaveData.get_wave_duration_sec(_wave_file_config, wave_index)
