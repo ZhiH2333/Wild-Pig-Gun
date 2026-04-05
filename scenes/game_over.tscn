@@ -52,4 +52,4 @@ offset_right = 120.0
 offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "重新开始"
+text = "返回主菜单"

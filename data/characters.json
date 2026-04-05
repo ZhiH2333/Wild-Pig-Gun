@@ -19,10 +19,11 @@
     {
       "id": "scout",
       "display_name": "迅捷野猪",
-      "description": "移速更快，生命略低。",
+      "description": "移速更快，生命略低。（最高波次 ≥5 解锁）",
       "max_hp": 85,
       "speed_mult": 1.12,
-      "damage_mult": 1.0
+      "damage_mult": 1.0,
+      "unlock_wave": 5
     }
   ]
 }

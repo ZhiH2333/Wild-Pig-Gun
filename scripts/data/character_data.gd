@@ -25,6 +25,14 @@ static func list_characters() -> Array:
 	return arr
 
 
+static func is_character_unlocked(d: Dictionary) -> bool:
+	var req: int = int(d.get("unlock_wave", 0))
+	if req <= 0:
+		return true
+	var meta: Dictionary = SaveManager.load_meta_progress()
+	return int(meta.get("best_wave", 0)) >= req
+
+
 static func find_character(character_id: String) -> Dictionary:
 	for c in list_characters():
 		if c is Dictionary and str((c as Dictionary).get("id", "")) == character_id:

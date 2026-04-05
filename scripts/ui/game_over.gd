@@ -8,10 +8,11 @@ extends Control
 
 
 func _ready() -> void:
+	SaveManager.record_run_finished(RunState.wave_index, false)
 	waves_label.text = "存活波次：%d 波" % RunState.wave_index
 	restart_button.pressed.connect(_on_restart_pressed)
 
 
 func _on_restart_pressed() -> void:
-	RunState.begin_new_run()
-	get_tree().change_scene_to_file("res://scenes/arena.tscn")
+	RunState.begin_new_run("default")
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
