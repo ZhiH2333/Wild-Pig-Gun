@@ -63,10 +63,32 @@ static func apply_to_player(player: Node, character_id: String) -> void:
 	player.shop_price_mult = float(d.get("shop_price_mult", 1.0))
 	player.material_to_damage_kv = float(d.get("material_to_damage_kv", 0.0))
 	_apply_traits(player, d)
+	_apply_sprite(player, d)
 	player.emit_signal("hp_changed", player.current_hp, player.max_hp)
 	var lo: Node = player.get_node_or_null("WeaponLoadout")
 	if lo != null and lo.has_method("equip_default_start"):
 		lo.equip_default_start(get_starting_weapon_ids(character_id))
+
+
+static func _apply_sprite(player: Node, d: Dictionary) -> void:
+	var spr: Sprite2D = player.get_node_or_null("Sprite2D") as Sprite2D
+	if spr == null:
+		return
+	var tex_path: String = str(d.get("sprite_path", "res://assets/sprites/wildpig.png"))
+	if not ResourceLoader.exists(tex_path):
+		return
+	var tex: Texture2D = load(tex_path) as Texture2D
+	if tex == null:
+		return
+	spr.texture = tex
+	var scale_override: float = float(d.get("sprite_scale", -1.0))
+	if scale_override <= 0.0001:
+		var h: float = float(tex.get_height())
+		if h > 0.001:
+			scale_override = 56.0 / h
+		else:
+			scale_override = 1.0
+	spr.scale = Vector2(scale_override, scale_override)
 
 
 static func _apply_traits(player: Node, d: Dictionary) -> void:
