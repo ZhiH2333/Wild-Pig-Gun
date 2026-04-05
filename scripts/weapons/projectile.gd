@@ -13,9 +13,17 @@ var damage: int = 10
 ## 发射方阵营：player 只伤害 enemies；enemy 只伤害 player
 var team: StringName = TEAM_PLAYER
 var speed: float = DEFAULT_SPEED
+## 额外穿透目标数，总命中次数 = 1 + pierce_extra（仅玩家弹）
+var pierce_extra: int = 0
+var _hits_remaining: int = 1
+var _damaged_ids: Dictionary = {}
 
 
 func _ready() -> void:
+	if team == TEAM_PLAYER:
+		_hits_remaining = 1 + maxi(0, pierce_extra)
+	else:
+		_hits_remaining = 1
 	body_entered.connect(_on_body_entered)
 	$VisibleOnScreenNotifier2D.screen_exited.connect(_on_screen_exited)
 
@@ -34,9 +42,15 @@ func _on_body_entered(body: Node2D) -> void:
 	if team == TEAM_PLAYER:
 		if not body.is_in_group("enemies"):
 			return
+		var bid: int = body.get_instance_id()
+		if _damaged_ids.has(bid):
+			return
+		_damaged_ids[bid] = true
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
-		queue_free()
+		_hits_remaining -= 1
+		if _hits_remaining <= 0:
+			queue_free()
 		return
 	if team == TEAM_ENEMY:
 		if not body.is_in_group("player"):

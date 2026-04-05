@@ -8,6 +8,7 @@ var damage: int = 10
 var _base_fire_interval: float = 0.5
 var _pellet_count: int = 1
 var _spread_deg: float = 0.0
+var _pierce_extra: int = 0
 
 @onready var fire_timer: Timer = $FireTimer
 
@@ -25,6 +26,7 @@ func setup_from_catalog(wid: String) -> void:
 	_base_fire_interval = float(def.get("fire_interval", 0.5))
 	_pellet_count = maxi(1, int(def.get("pellet_count", 1)))
 	_spread_deg = maxf(0.0, float(def.get("spread_deg", 0.0)))
+	_pierce_extra = maxi(0, int(def.get("pierce", 0)))
 	set_meta("catalog_applied", true)
 	if fire_timer != null:
 		_sync_fire_timer_wait()
@@ -102,19 +104,20 @@ func _fire(target: Node2D) -> void:
 			var u: float = float(i) / float(n - 1)
 			ang = lerpf(-half_spread, half_spread, u)
 		var dir: Vector2 = base_dir.rotated(ang)
-		_spawn_projectile(container, dir, per_pellet)
+		_spawn_projectile(container, dir, per_pellet, _pierce_extra)
 
 
-func _spawn_projectile(container: Node, dir: Vector2, dmg: int) -> void:
+func _spawn_projectile(container: Node, dir: Vector2, dmg: int, pierce: int) -> void:
 	var projectile: Node2D = projectile_scene.instantiate()
-	container.add_child(projectile)
-	projectile.global_position = global_position
 	projectile.direction = dir
 	projectile.damage = dmg
 	var proj: Projectile = projectile as Projectile
 	if proj != null:
 		proj.team = Projectile.TEAM_PLAYER
 		proj.speed = Projectile.DEFAULT_SPEED
+		proj.pierce_extra = pierce
+	container.add_child(projectile)
+	projectile.global_position = global_position
 
 
 func _get_projectile_container() -> Node:
