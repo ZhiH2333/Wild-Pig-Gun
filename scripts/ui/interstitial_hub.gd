@@ -104,8 +104,11 @@ func _on_refresh_upgrades_pressed() -> void:
 		return
 	if not RunState.try_spend_material(REFRESH_UPGRADE_COST):
 		return
+	var luck2: int = 0
+	if _player != null and "stat_luck" in _player:
+		luck2 = int(_player.stat_luck)
 	_clear_children(upgrade_row)
-	var offers: Array = BuildCatalog.pick_random_upgrades(3, RunState.upgrade_ids, _rng, _next_wave_for_shop, luck)
+	var offers: Array = BuildCatalog.pick_random_upgrades(3, RunState.upgrade_ids, _rng, _next_wave_for_shop, luck2)
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
 		var card: ItemCard = ITEM_CARD_SCENE.instantiate() as ItemCard
