@@ -14,14 +14,18 @@ func _notification(what: int) -> void:
 	if OS.get_name() != "Web":
 		return
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
-		if RunState.pause_reason != RunState.PauseReason.INTERSTITIAL:
-			_web_focus_pause_active = true
-			get_tree().paused = true
+		if RunState.pause_reason != RunState.PauseReason.NONE:
+			return
+		if get_tree().paused:
+			return
+		_web_focus_pause_active = true
+		get_tree().paused = true
 	elif what == NOTIFICATION_APPLICATION_FOCUS_IN:
-		if _web_focus_pause_active:
-			_web_focus_pause_active = false
-			if RunState.pause_reason != RunState.PauseReason.INTERSTITIAL:
-				get_tree().paused = false
+		if not _web_focus_pause_active:
+			return
+		_web_focus_pause_active = false
+		if RunState.pause_reason == RunState.PauseReason.NONE:
+			get_tree().paused = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
