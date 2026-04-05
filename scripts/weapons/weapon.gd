@@ -9,6 +9,7 @@ var _base_fire_interval: float = 0.5
 var _pellet_count: int = 1
 var _spread_deg: float = 0.0
 var _pierce_extra: int = 0
+var _damage_element: StringName = &"physical"
 
 @onready var fire_timer: Timer = $FireTimer
 
@@ -27,6 +28,8 @@ func setup_from_catalog(wid: String) -> void:
 	_pellet_count = maxi(1, int(def.get("pellet_count", 1)))
 	_spread_deg = maxf(0.0, float(def.get("spread_deg", 0.0)))
 	_pierce_extra = maxi(0, int(def.get("pierce", 0)))
+	var elem: String = str(def.get("element", "physical"))
+	_damage_element = StringName(elem)
 	set_meta("catalog_applied", true)
 	if fire_timer != null:
 		_sync_fire_timer_wait()
@@ -116,6 +119,7 @@ func _spawn_projectile(container: Node, dir: Vector2, dmg: int, pierce: int) -> 
 		proj.team = Projectile.TEAM_PLAYER
 		proj.speed = Projectile.DEFAULT_SPEED
 		proj.pierce_extra = pierce
+		proj.damage_element = _damage_element
 	container.add_child(projectile)
 	projectile.global_position = global_position
 

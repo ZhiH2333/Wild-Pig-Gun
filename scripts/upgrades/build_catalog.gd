@@ -214,6 +214,12 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 		"crit_mult_flat":
 			if "stat_crit_mult" in player:
 				player.stat_crit_mult = maxf(1.0, float(player.stat_crit_mult) + float(value))
+		"fire_damage_pct":
+			if "stat_fire_damage_mult" in player:
+				player.stat_fire_damage_mult *= 1.0 + float(value)
+		"burn_dps_flat":
+			if "stat_burn_dps_flat" in player:
+				player.stat_burn_dps_flat += float(value)
 		"hp_regen_flat":
 			if "stat_hp_regen_per_sec" in player:
 				player.stat_hp_regen_per_sec += float(value)
@@ -317,6 +323,13 @@ static func shop_purchase_preview_text(
 			var cm: float = float(player.stat_crit_mult) if "stat_crit_mult" in player else 1.5
 			var am: float = float(value)
 			lines.append("· 暴击倍率：×%.2f → ×%.2f" % [cm, maxf(1.0, cm + am)])
+		"fire_damage_pct":
+			var fm: float = float(player.stat_fire_damage_mult) if "stat_fire_damage_mult" in player else 1.0
+			var fp: float = float(value)
+			lines.append("· 火焰伤害乘数：×%.2f → ×%.2f" % [fm, fm * (1.0 + fp)])
+		"burn_dps_flat":
+			var bd: float = float(player.stat_burn_dps_flat) if "stat_burn_dps_flat" in player else 0.0
+			lines.append("· 燃烧 DPS 加成：%.2f → %.2f" % [bd, bd + float(value)])
 		_:
 			lines.append("· %s" % str(def.get("desc", "参见物品说明")))
 	return "\n".join(lines)
