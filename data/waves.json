@@ -18,7 +18,7 @@
     {"wave": 12, "duration_sec": 60, "batch_cap": 4, "weights": {"basic": 0.34, "dash": 0.18, "ranged": 0.28, "tree": 0.08, "buff": 0.04, "charger": 0.08}},
     {"wave": 13, "duration_sec": 60, "batch_cap": 4, "weights": {"basic": 0.33, "dash": 0.18, "ranged": 0.27, "tree": 0.1, "looter": 0.08, "buff": 0.04}},
     {"wave": 14, "duration_sec": 60, "batch_cap": 5, "weights": {"basic": 0.28, "dash": 0.18, "ranged": 0.25, "tree": 0.1, "looter": 0.08, "buff": 0.05, "shield": 0.06}},
-    {"wave": 15, "duration_sec": 60, "batch_cap": 5, "modifiers": ["cluster"], "weights": {"basic": 0.26, "dash": 0.22, "ranged": 0.32, "tree": 0.06, "trap": 0.06, "splitter": 0.08}},
+    {"wave": 15, "duration_sec": 78, "batch_cap": 0, "boss_type": "boss_pig", "weights": {}},
     {"wave": 16, "duration_sec": 60, "batch_cap": 5, "weights": {"basic": 0.28, "dash": 0.18, "ranged": 0.3, "tree": 0.1, "looter": 0.08, "buff": 0.06}},
     {"wave": 17, "duration_sec": 60, "batch_cap": 5, "weights": {"basic": 0.24, "dash": 0.22, "ranged": 0.3, "tree": 0.1, "looter": 0.08, "buff": 0.06}},
     {"wave": 18, "duration_sec": 60, "batch_cap": 5, "weights": {"basic": 0.22, "dash": 0.2, "ranged": 0.33, "tree": 0.1, "trap": 0.07, "splitter": 0.08}},
