@@ -87,15 +87,15 @@ func _spawn_bullet(dir: Vector2) -> void:
 	if _bullet_scene == null:
 		return
 	var bullet: Node = _bullet_scene.instantiate()
-	var container: Node = _get_projectile_container()
-	container.add_child(bullet)
-	bullet.global_position = global_position
 	if bullet is Projectile:
 		var p: Projectile = bullet as Projectile
 		p.direction = dir
 		p.damage = 8
 		p.team = Projectile.TEAM_ENEMY
 		p.speed = ENEMY_BULLET_SPEED
+	var container: Node = _get_projectile_container()
+	container.add_child(bullet)
+	bullet.global_position = global_position
 
 
 func _get_projectile_container() -> Node:
