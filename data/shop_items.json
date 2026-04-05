@@ -8,5 +8,8 @@
   {"id": "shop_luck", "title": "四叶草", "desc": "幸运 +3（商店高阶权重）", "short_desc": "幸运 +3", "base_price": 14, "tier": 3, "kind": "luck_flat", "value": 3, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_harvest", "title": "园艺铲", "desc": "收获 +1.2（每波结束额外材料）", "short_desc": "收获 +1.2", "base_price": 13, "tier": 2, "kind": "harvest_flat", "value": 1.2, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "shop_add_smg", "title": "走私冲锋枪", "desc": "增加一把 SMG（最多 6 把）", "short_desc": "+冲锋枪", "base_price": 22, "tier": 3, "kind": "add_weapon", "value": "smg", "icon": "res://assets/sprites/icon.png", "stackable": false},
-  {"id": "shop_add_hammer", "title": "工地铁锤", "desc": "增加一把近战锤（羁绊重型）", "short_desc": "+铁锤", "base_price": 20, "tier": 3, "kind": "add_weapon", "value": "hammer", "icon": "res://assets/sprites/icon.png", "stackable": false}
+  {"id": "shop_add_hammer", "title": "工地铁锤", "desc": "增加一把近战锤（羁绊重型）", "short_desc": "+铁锤", "base_price": 20, "tier": 3, "kind": "add_weapon", "value": "hammer", "icon": "res://assets/sprites/icon.png", "stackable": false},
+  {"id": "shop_add_pistol", "title": "黑市手枪", "desc": "增加一把手枪", "short_desc": "+手枪", "base_price": 16, "tier": 2, "kind": "add_weapon", "value": "pistol", "icon": "res://assets/sprites/icon.png", "stackable": false},
+  {"id": "shop_add_shotgun", "title": "截短霰弹枪", "desc": "增加一把霰弹枪", "short_desc": "+霰弹", "base_price": 24, "tier": 3, "kind": "add_weapon", "value": "shotgun", "icon": "res://assets/sprites/icon.png", "stackable": false},
+  {"id": "shop_add_minigun", "title": "报废转管", "desc": "增加一把转管机枪", "short_desc": "+转管", "base_price": 28, "tier": 3, "kind": "add_weapon", "value": "minigun", "icon": "res://assets/sprites/icon.png", "stackable": false}
 ]
