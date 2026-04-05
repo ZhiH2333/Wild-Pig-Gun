@@ -4,3 +4,6 @@
 
 [node name="MaterialDrop" type="Node2D"]
 script = ExtResource("1_material_drop")
+
+[node name="CoinSprite" type="Sprite2D" parent="."]
+visible = false
