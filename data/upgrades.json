@@ -1,10 +1,14 @@
 [
-  {"id": "vitality_s", "title": "强壮 I", "desc": "最大生命 +15", "kind": "max_hp", "value": 15},
-  {"id": "vitality_m", "title": "强壮 II", "desc": "最大生命 +25", "kind": "max_hp", "value": 25},
-  {"id": "swift", "title": "敏捷", "desc": "移速 +10%", "kind": "move_pct", "value": 0.10},
-  {"id": "power", "title": "重击", "desc": "伤害 +12%", "kind": "damage_pct", "value": 0.12},
-  {"id": "fury", "title": "狂怒", "desc": "攻速 +12%", "kind": "fire_pct", "value": 0.12},
-  {"id": "magnet", "title": "磁石", "desc": "拾取范围 +24", "kind": "pickup", "value": 24.0},
-  {"id": "mend", "title": "愈合", "desc": "立即回复 35 生命", "kind": "heal_flat", "value": 35},
-  {"id": "iron", "title": "铁躯", "desc": "最大生命 +18，伤害 +6%", "kind": "combo_hp_dmg", "value": 18}
+  {"id": "vitality_s", "rarity": 1, "title": "强壮 I", "desc": "最大生命 +15", "kind": "max_hp", "value": 15},
+  {"id": "vitality_m", "rarity": 2, "title": "强壮 II", "desc": "最大生命 +25", "kind": "max_hp", "value": 25},
+  {"id": "swift", "rarity": 2, "title": "敏捷", "desc": "移速 +10%", "kind": "move_pct", "value": 0.10},
+  {"id": "power", "rarity": 2, "title": "重击", "desc": "伤害 +12%", "kind": "damage_pct", "value": 0.12},
+  {"id": "fury", "rarity": 2, "title": "狂怒", "desc": "攻速 +12%", "kind": "fire_pct", "value": 0.12},
+  {"id": "magnet", "rarity": 1, "title": "磁石", "desc": "拾取范围 +24", "kind": "pickup", "value": 24.0},
+  {"id": "mend", "rarity": 1, "title": "愈合", "desc": "立即回复 35 生命", "kind": "heal_flat", "value": 35},
+  {"id": "iron", "rarity": 2, "title": "铁躯", "desc": "最大生命 +18，伤害 +6%", "kind": "combo_hp_dmg", "value": 18},
+  {"id": "green_thumb", "rarity": 2, "title": "老农", "desc": "收获 +1.0", "kind": "harvest_flat", "value": 1.0},
+  {"id": "rabbit_foot", "rarity": 2, "title": "兔脚", "desc": "幸运 +2", "kind": "luck_flat", "value": 2},
+  {"id": "titan", "rarity": 3, "title": "泰坦", "desc": "最大生命 +40，伤害 +15%", "kind": "combo_hp_dmg_big", "value": 40},
+  {"id": "overclock", "rarity": 3, "title": "超频", "desc": "攻速 +22%", "kind": "fire_pct", "value": 0.22}
 ]

@@ -2,13 +2,14 @@
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/player.tscn" id="2_player"]
-[ext_resource type="PackedScene" uid="uid://weapon" path="res://scenes/weapon.tscn" id="3_weapon"]
+[ext_resource type="Script" path="res://scripts/player/weapon_loadout.gd" id="3_loadout"]
 [ext_resource type="Script" path="res://scripts/ui/debug_overlay.gd" id="4_debug_overlay"]
 [ext_resource type="PackedScene" uid="uid://hud" path="res://scenes/hud.tscn" id="5_hud"]
 [ext_resource type="Script" path="res://scripts/wave/wave_manager.gd" id="6_wave_manager"]
 [ext_resource type="Script" path="res://scripts/wave/enemy_pool.gd" id="7_enemy_pool"]
 [ext_resource type="Script" path="res://scripts/ui/interstitial_hub.gd" id="8_interstitial"]
 [ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="9_vjoy"]
+[ext_resource type="Script" path="res://scripts/ui/level_up_overlay.gd" id="10_levelup"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
@@ -57,7 +58,8 @@ shape = SubResource("RectangleShape2D_right")
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector2(960, 540)
 
-[node name="Weapon" parent="Player" instance=ExtResource("3_weapon")]
+[node name="WeaponLoadout" type="Node2D" parent="Player"]
+script = ExtResource("3_loadout")
 
 [node name="EnemyContainer" type="Node2D" parent="."]
 
@@ -117,6 +119,46 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(280, 44)
 text = "继续游戏 (ESC)"
 
+[node name="LevelUpOverlay" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 55
+visible = false
+script = ExtResource("10_levelup")
+
+[node name="CenterContainer" type="CenterContainer" parent="LevelUpOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="LevelUpOverlay/CenterContainer"]
+custom_minimum_size = Vector2(880, 420)
+
+[node name="MarginContainer" type="MarginContainer" parent="LevelUpOverlay/CenterContainer/Panel"]
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="LevelUpOverlay/CenterContainer/Panel/MarginContainer"]
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="LevelUpOverlay/CenterContainer/Panel/MarginContainer/VBox"]
+theme_override_font_sizes/font_size = 24
+text = "升级"
+horizontal_alignment = 1
+
+[node name="UpgradeRow" type="HBoxContainer" parent="LevelUpOverlay/CenterContainer/Panel/MarginContainer/VBox"]
+alignment = 1
+
+[node name="BottomRow" type="HBoxContainer" parent="LevelUpOverlay/CenterContainer/Panel/MarginContainer/VBox"]
+alignment = 1
+
+[node name="RefreshOffersButton" type="Button" parent="LevelUpOverlay/CenterContainer/Panel/MarginContainer/VBox/BottomRow"]
+custom_minimum_size = Vector2(280, 40)
+text = "刷新选项 (6 材料)"
+
 [node name="InterstitialHub" type="CanvasLayer" parent="."]
 process_mode = 3
 layer = 50
@@ -155,6 +197,10 @@ horizontal_alignment = 1
 [node name="UpgradeRow" type="HBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
 theme_override_constants/separation = 10
 alignment = 1
+
+[node name="RefreshUpgradesButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(300, 40)
+text = "刷新升级选项 (8)"
 
 [node name="ShopLabel" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
 theme_override_font_sizes/font_size = 18

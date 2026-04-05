@@ -4,6 +4,7 @@ enum PauseReason {
 	NONE,
 	USER,
 	INTERSTITIAL,
+	LEVEL_UP,
 }
 
 # 信号
@@ -11,6 +12,8 @@ signal wave_changed(wave_index: int)
 signal gold_changed(gold: int)
 signal hp_changed(current: int, maximum: int)
 signal material_changed(current: int, savings: int)  # 阶段二：材料变化
+signal xp_changed(level: int, xp: int, need: int)
+signal level_up_queued(new_level: int)
 
 # 局内状态
 var character_id: String = "default"
@@ -31,6 +34,8 @@ var player_current_hp: int = 100
 # 阶段二：材料（金币）
 var material_current: int = 0   # 本波已拾取材料
 var material_savings: int = 0   # 未拾取储蓄材料（下波拾取时翻倍）
+var player_level: int = 1
+var player_xp: int = 0
 
 func _ready() -> void:
 	_register_default_input_actions()
@@ -48,6 +53,8 @@ func begin_new_run(p_character_id: String = "default") -> void:
 	player_current_hp = 100
 	material_current = 0
 	material_savings = 0
+	player_level = 1
+	player_xp = 0
 
 
 func enter_interstitial_pause() -> void:
@@ -62,6 +69,8 @@ func leave_interstitial_pause() -> void:
 
 func try_toggle_user_pause(arena: Node) -> void:
 	if pause_reason == PauseReason.INTERSTITIAL:
+		return
+	if pause_reason == PauseReason.LEVEL_UP:
 		return
 	if pause_reason == PauseReason.USER:
 		pause_reason = PauseReason.NONE
@@ -124,3 +133,31 @@ func try_spend_material(cost: int) -> bool:
 	material_current -= cost
 	emit_signal("material_changed", material_current, material_savings)
 	return true
+
+
+func xp_to_next_level() -> int:
+	return 22 + player_level * 16
+
+
+func add_xp(amount: int) -> void:
+	if amount <= 0:
+		return
+	player_xp += amount
+	while true:
+		var need: int = xp_to_next_level()
+		if player_xp < need:
+			break
+		player_xp -= need
+		player_level += 1
+		level_up_queued.emit(player_level)
+	emit_signal("xp_changed", player_level, player_xp, xp_to_next_level())
+
+
+func enter_level_up_pause() -> void:
+	pause_reason = PauseReason.LEVEL_UP
+	get_tree().paused = true
+
+
+func leave_level_up_pause() -> void:
+	pause_reason = PauseReason.NONE
+	get_tree().paused = false

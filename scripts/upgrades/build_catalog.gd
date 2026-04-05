@@ -30,23 +30,21 @@ static func _to_typed_dict_array(raw: Array) -> Array[Dictionary]:
 	return out
 
 
-## 局内升级池；优先 data/upgrades.json
+static func _upgrade_rarity(def: Dictionary) -> int:
+	return maxi(1, int(def.get("rarity", 1)))
+
+
 static func all_upgrade_defs() -> Array[Dictionary]:
 	var loaded: Array = _load_dict_array_from_file(UPGRADES_JSON)
 	if not loaded.is_empty():
 		return _to_typed_dict_array(loaded)
 	return [
-		{"id": "vitality_s", "title": "强壮 I", "desc": "最大生命 +15", "kind": "max_hp", "value": 15},
-		{"id": "vitality_m", "title": "强壮 II", "desc": "最大生命 +25", "kind": "max_hp", "value": 25},
-		{"id": "swift", "title": "敏捷", "desc": "移速 +10%", "kind": "move_pct", "value": 0.10},
-		{"id": "power", "title": "重击", "desc": "伤害 +12%", "kind": "damage_pct", "value": 0.12},
-		{"id": "fury", "title": "狂怒", "desc": "攻速 +12%", "kind": "fire_pct", "value": 0.12},
-		{"id": "magnet", "title": "磁石", "desc": "拾取范围 +24", "kind": "pickup", "value": 24.0},
-		{"id": "mend", "title": "愈合", "desc": "立即回复 35 生命", "kind": "heal_flat", "value": 35},
-		{"id": "iron", "title": "铁躯", "desc": "最大生命 +18，伤害 +6%", "kind": "combo_hp_dmg", "value": 18},
+		{"id": "vitality_s", "rarity": 1, "title": "强壮 I", "desc": "最大生命 +15", "kind": "max_hp", "value": 15},
+		{"id": "swift", "rarity": 2, "title": "敏捷", "desc": "移速 +10%", "kind": "move_pct", "value": 0.10},
 	]
 
 
+## 波间三选一：不筛选稀有度（任意稀有度可出）
 static func pick_random_upgrades(count: int, taken_ids: Array[String], rng: RandomNumberGenerator) -> Array[Dictionary]:
 	var pool: Array[Dictionary] = []
 	for d in all_upgrade_defs():
@@ -57,6 +55,41 @@ static func pick_random_upgrades(count: int, taken_ids: Array[String], rng: Rand
 	if pool.is_empty():
 		for d in all_upgrade_defs():
 			pool.append(d)
+	var out: Array[Dictionary] = []
+	while out.size() < count and pool.size() > 0:
+		var idx: int = rng.randi_range(0, pool.size() - 1)
+		out.append(pool[idx])
+		pool.remove_at(idx)
+	return out
+
+
+## 升级：按最低稀有度筛选（用于局内等级提升）
+static func pick_level_upgrades(
+	count: int,
+	taken_ids: Array[String],
+	rng: RandomNumberGenerator,
+	new_level: int
+) -> Array[Dictionary]:
+	var min_r: int = 1
+	if new_level >= 25:
+		min_r = 3
+	elif new_level == 5 or new_level == 10 or new_level == 15 or new_level == 20:
+		min_r = 2
+	var pool: Array[Dictionary] = []
+	for d in all_upgrade_defs():
+		var id: String = d["id"] as String
+		if id in taken_ids:
+			continue
+		if _upgrade_rarity(d) < min_r:
+			continue
+		pool.append(d)
+	if pool.size() < count:
+		for d in all_upgrade_defs():
+			var id2: String = d["id"] as String
+			if id2 in taken_ids:
+				continue
+			if d not in pool:
+				pool.append(d)
 	var out: Array[Dictionary] = []
 	while out.size() < count and pool.size() > 0:
 		var idx: int = rng.randi_range(0, pool.size() - 1)
@@ -84,36 +117,84 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 		"combo_hp_dmg":
 			player.add_max_hp(value as int)
 			player.stat_damage_mult *= 1.06
+		"combo_hp_dmg_big":
+			player.add_max_hp(value as int)
+			player.stat_damage_mult *= 1.15
+		"luck_flat":
+			if "stat_luck" in player:
+				player.stat_luck += int(value)
+		"harvest_flat":
+			if "stat_harvest" in player:
+				player.stat_harvest += float(value)
+		"add_weapon":
+			var wid: String = str(value)
+			var lo: Node = player.get_node_or_null("WeaponLoadout")
+			if lo != null and lo.has_method("add_weapon_slot_by_id"):
+				lo.add_weapon_slot_by_id(wid)
 
 
-## 商店池；优先 data/shop_items.json
+static func get_shop_base_price(def: Dictionary) -> int:
+	if def.has("base_price"):
+		return int(def["base_price"])
+	return int(def.get("price", 5))
+
+
+static func get_shop_tier(def: Dictionary) -> int:
+	return clampi(int(def.get("tier", 1)), 1, 3)
+
+
+static func effective_shop_price(def: Dictionary, wave_index: int, player: Node) -> int:
+	var base: int = get_shop_base_price(def)
+	var scaled: int = WaveData.shop_price_scaled(base, wave_index)
+	if player != null and "shop_price_mult" in player:
+		var m: float = float(player.shop_price_mult)
+		if m > 0.001:
+			scaled = maxi(1, int(round(float(scaled) * m)))
+	return scaled
+
+
+## 幸运提高高 tier 权重；不放回加权抽样
+static func pick_shop_offer(count: int, rng: RandomNumberGenerator, luck: int) -> Array[Dictionary]:
+	var src: Array[Dictionary] = []
+	for d in default_shop_items():
+		src.append(d)
+	var out: Array[Dictionary] = []
+	var lf: float = maxf(0.0, float(luck))
+	while out.size() < count and src.size() > 0:
+		var total_w: float = 0.0
+		var weights: Array[float] = []
+		for item in src:
+			var tier: int = get_shop_tier(item)
+			var w: float = 1.0 + lf * 0.12 * float(tier)
+			weights.append(w)
+			total_w += w
+		var r: float = rng.randf() * total_w
+		var acc: float = 0.0
+		var pick_i: int = 0
+		for i in range(src.size()):
+			acc += weights[i]
+			if r <= acc:
+				pick_i = i
+				break
+		out.append(src[pick_i])
+		src.remove_at(pick_i)
+	return out
+
+
 static func default_shop_items() -> Array[Dictionary]:
 	var loaded: Array = _load_dict_array_from_file(SHOP_JSON)
 	if not loaded.is_empty():
 		return _to_typed_dict_array(loaded)
 	return [
-		{"id": "shop_heal", "title": "治疗包", "desc": "回复 22 生命", "price": 5, "kind": "heal_flat", "value": 22},
-		{"id": "shop_hp5", "title": "体能训练", "desc": "最大生命 +8", "price": 8, "kind": "max_hp", "value": 8},
-		{"id": "shop_dmg", "title": "磨刀石", "desc": "伤害 +8%", "price": 12, "kind": "damage_pct", "value": 0.08},
-		{"id": "shop_move", "title": "轻靴", "desc": "移速 +6%", "price": 10, "kind": "move_pct", "value": 0.06},
-		{"id": "shop_fire", "title": "扳机簧", "desc": "攻速 +8%", "price": 11, "kind": "fire_pct", "value": 0.08},
-		{"id": "shop_mag", "title": "小磁石", "desc": "拾取范围 +18", "price": 7, "kind": "pickup", "value": 18.0},
+		{"id": "shop_heal", "title": "治疗包", "base_price": 5, "tier": 1, "kind": "heal_flat", "value": 22},
 	]
 
 
-static func pick_shop_offer(count: int, rng: RandomNumberGenerator) -> Array[Dictionary]:
-	var src: Array[Dictionary] = []
-	for d in default_shop_items():
-		src.append(d)
-	var out: Array[Dictionary] = []
-	while out.size() < count and src.size() > 0:
-		var idx: int = rng.randi_range(0, src.size() - 1)
-		out.append(src[idx])
-		src.remove_at(idx)
-	return out
-
-
 static func apply_shop_def(player: Node, def: Dictionary) -> void:
+	var kind: String = str(def.get("kind", ""))
+	if kind == "add_weapon":
+		apply_upgrade_def(player, def)
+		return
 	apply_upgrade_def(player, {
 		"kind": def["kind"],
 		"value": def["value"],

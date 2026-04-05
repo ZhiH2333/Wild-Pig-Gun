@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ground_trap"]
+
+[ext_resource type="Script" path="res://scripts/enemies/ground_trap_hazard.gd" id="1_hazard"]
+
+[node name="GroundTrapHazard" type="Node2D"]
+script = ExtResource("1_hazard")

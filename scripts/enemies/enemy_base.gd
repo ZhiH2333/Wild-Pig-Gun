@@ -21,6 +21,9 @@ var drop_box_chance: float = 0.02    # 掉落绿箱子概率
 
 var target: Node2D = null
 var _damage_on_cooldown: bool = false
+## 死亡时额外生成若干小怪（分裂体）
+@export var split_spawn_count: int = 0
+@export var split_spawn_type: String = "basic"
 
 ## 类型名称，子类设置，用于 debug 标签显示
 var enemy_type_name: String = "敌人"
@@ -42,10 +45,34 @@ func _get_move_velocity() -> Vector2:
 func _physics_process(_delta: float) -> void:
 	if target == null:
 		return
-	velocity = _get_move_velocity()
+	velocity = _get_move_velocity() * _totem_speed_mult()
 	move_and_slide()
 	_check_player_collision()
 	queue_redraw()
+
+
+func _totem_speed_mult() -> float:
+	var m: float = 1.0
+	for n in get_tree().get_nodes_in_group("buff_totem"):
+		if n == self:
+			continue
+		if is_instance_valid(n) and n.global_position.distance_to(global_position) < 240.0:
+			m *= 1.08
+	return m
+
+
+func _totem_damage_mult() -> float:
+	var m: float = 1.0
+	for n in get_tree().get_nodes_in_group("buff_totem"):
+		if n == self:
+			continue
+		if is_instance_valid(n) and n.global_position.distance_to(global_position) < 240.0:
+			m *= 1.16
+	return m
+
+
+func _effective_contact_damage() -> int:
+	return maxi(1, int(round(float(contact_damage) * _totem_damage_mult())))
 
 
 ## 检测与 Player 的碰撞并造成接触伤害（需求 3.3）
@@ -56,7 +83,7 @@ func _check_player_collision() -> void:
 		var collision := get_slide_collision(i)
 		var collider := collision.get_collider()
 		if collider != null and collider.is_in_group("player"):
-			collider.take_damage(contact_damage)
+			collider.take_damage(_effective_contact_damage())
 			_damage_on_cooldown = true
 			damage_timer.start()
 			break
@@ -81,7 +108,19 @@ func take_damage(amount: int) -> void:
 func _on_death() -> void:
 	_spawn_drops()
 	died.emit(self)
+	_spawn_splits_if_needed()
 	queue_free()
+
+
+func _spawn_splits_if_needed() -> void:
+	if split_spawn_count <= 0:
+		return
+	var arena: Node = get_tree().get_first_node_in_group("arena")
+	if arena == null or not arena.has_method("spawn_enemy_at"):
+		return
+	for _i in range(split_spawn_count):
+		var off := Vector2(randf_range(-48.0, 48.0), randf_range(-48.0, 48.0))
+		arena.spawn_enemy_at(split_spawn_type, global_position + off)
 
 
 ## 生成掉落物，添加到 Arena 的 MaterialContainer（需求 10.1）
