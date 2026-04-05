@@ -14,5 +14,7 @@
   {"id": "glass_cannon", "rarity": 2, "title": "玻璃炮", "desc": "伤害 +14%，最大生命 -12", "short_desc": "伤+14% HP-12", "kind": "dmg_for_hp", "value": {"dmg": 0.14, "hp": 12}, "icon": "res://assets/sprites/icon.png", "stackable": false},
   {"id": "reckless", "rarity": 2, "title": "莽夫", "desc": "攻速 +15%，移速 -8%", "short_desc": "速+15% 移-8%", "kind": "fire_for_move", "value": {"fire": 0.15, "move": -0.08}, "icon": "res://assets/sprites/icon.png", "stackable": true},
   {"id": "eagle_eye", "rarity": 2, "title": "鹰眼", "desc": "暴击率 +6%", "short_desc": "暴击 +6%", "kind": "crit_chance_flat", "value": 0.06, "icon": "res://assets/sprites/icon.png", "stackable": true},
-  {"id": "executioner", "rarity": 3, "title": "行刑", "desc": "暴击伤害 +0.25 倍率", "short_desc": "暴伤 +0.25", "kind": "crit_mult_flat", "value": 0.25, "icon": "res://assets/sprites/icon.png", "stackable": true}
+  {"id": "executioner", "rarity": 3, "title": "行刑", "desc": "暴击伤害 +0.25 倍率", "short_desc": "暴伤 +0.25", "kind": "crit_mult_flat", "value": 0.25, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "ember", "rarity": 2, "title": "余烬", "desc": "火焰伤害 +10%", "short_desc": "火伤 +10%", "kind": "fire_damage_pct", "value": 0.10, "icon": "res://assets/sprites/icon.png", "stackable": true},
+  {"id": "wildfire", "rarity": 2, "title": "野火", "desc": "燃烧 DPS +1.5", "short_desc": "燃烧 +1.5", "kind": "burn_dps_flat", "value": 1.5, "icon": "res://assets/sprites/icon.png", "stackable": true}
 ]

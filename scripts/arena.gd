@@ -260,6 +260,8 @@ func build_run_snapshot() -> Dictionary:
 			"stat_hp_regen_per_sec": player.stat_hp_regen_per_sec,
 			"stat_crit_chance": player.stat_crit_chance,
 			"stat_crit_mult": player.stat_crit_mult,
+			"stat_fire_damage_mult": player.stat_fire_damage_mult,
+			"stat_burn_dps_flat": player.stat_burn_dps_flat,
 			"pos_x": player.global_position.x,
 			"pos_y": player.global_position.y,
 		}
