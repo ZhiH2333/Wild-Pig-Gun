@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://player"]
+[gd_scene load_steps=5 format=3 uid="uid://player"]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/ui/player_hurt_feedback.gd" id="2_hurt_fb"]
+[ext_resource type="Script" path="res://scripts/player/attack_range_ring.gd" id="3_ring"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1"]
 radius = 16.0
@@ -12,6 +13,9 @@ script = ExtResource("1_player")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_1")
+
+[node name="AttackRangeRing" type="Node2D" parent="."]
+script = ExtResource("3_ring")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 

@@ -49,6 +49,20 @@ func _setup_visual() -> void:
 
 func _physics_process(delta: float) -> void:
 	position += direction * speed * delta
+	if team == TEAM_PLAYER:
+		_despawn_if_beyond_player_attack_range()
+
+
+func _despawn_if_beyond_player_attack_range() -> void:
+	var pl: Node = get_tree().get_first_node_in_group("player")
+	if pl == null or not pl.has_method("get_attack_range_radius"):
+		return
+	var lim: float = float(pl.call("get_attack_range_radius"))
+	var pl2d: Node2D = pl as Node2D
+	if pl2d == null:
+		return
+	if global_position.distance_squared_to(pl2d.global_position) > lim * lim:
+		queue_free()
 
 
 ## 玩家弹：按元素着色圆点；敌人弹使用 Sprite2D 贴图

@@ -183,6 +183,9 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 			player.stat_fire_rate_mult *= 1.0 + (value as float)
 		"pickup":
 			player.stat_pickup_radius_bonus += value as float
+		"attack_range_flat":
+			if "stat_attack_range_bonus" in player:
+				player.stat_attack_range_bonus += float(value)
 		"heal_flat":
 			player.heal_flat(value as int)
 		"combo_hp_dmg":
@@ -321,6 +324,12 @@ static func shop_purchase_preview_text(
 			var b4: float = float(player.stat_pickup_radius_bonus)
 			var addp: float = float(value)
 			lines.append("· 拾取范围加成：%.1f → %.1f" % [b4, b4 + addp])
+		"attack_range_flat":
+			var b5: float = float(player.stat_attack_range_bonus) if "stat_attack_range_bonus" in player else 0.0
+			var adda: float = float(value)
+			var before_r: float = AttackRangeBalance.BASE_RADIUS_PX + b5
+			var after_r: float = AttackRangeBalance.BASE_RADIUS_PX + b5 + adda
+			lines.append("· 攻击范围半径：%.0f → %.0f（+%.0f）" % [before_r, after_r, adda])
 		"luck_flat":
 			var lk: int = int(player.stat_luck) if "stat_luck" in player else 0
 			lines.append("· 幸运：%d → %d" % [lk, lk + int(value)])
