@@ -53,3 +53,13 @@ func play_ui_hover() -> void:
 
 func play_ui_confirm() -> void:
 	play_sfx(STREAM_UI, -8.0, 1.18)
+
+
+## 敌人被任意来源击中（可替换为专用 hit.mp3）
+func play_hit_enemy() -> void:
+	play_sfx(STREAM_SHOOT, -16.0, 1.35)
+
+
+## 玩家受伤（可替换为专用 hurt.mp3）
+func play_hurt_player() -> void:
+	play_sfx(STREAM_DIE, -14.0, 1.12)

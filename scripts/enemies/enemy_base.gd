@@ -99,6 +99,7 @@ func take_damage(amount: int) -> void:
 		return
 	var actual := int(amount * (1.0 - armor))
 	actual = max(1, actual)  # 至少造成 1 点伤害
+	GameAudio.play_hit_enemy()
 	current_hp = max(0, current_hp - actual)
 	if current_hp <= 0:
 		_on_death()
