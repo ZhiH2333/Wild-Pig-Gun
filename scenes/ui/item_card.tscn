@@ -40,6 +40,7 @@ theme_override_constants/separation = 4
 
 [node name="Title" type="Label" parent="Margin/Main/Texts"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.98, 0.96, 0.92, 1)
 theme_override_font_sizes/font_size = 22
 text = "标题"
@@ -47,6 +48,7 @@ autowrap_mode = 3
 
 [node name="Desc" type="Label" parent="Margin/Main/Texts"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.78, 0.8, 0.86, 1)
 theme_override_font_sizes/font_size = 17
 text = "描述"
@@ -55,6 +57,7 @@ autowrap_mode = 3
 [node name="Price" type="Label" parent="Margin/Main/Texts"]
 visible = false
 layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.72, 0.95, 0.62, 1)
 theme_override_font_sizes/font_size = 20
 text = "0 材料"

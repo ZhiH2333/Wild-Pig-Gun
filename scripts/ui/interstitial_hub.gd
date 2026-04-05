@@ -19,6 +19,8 @@ var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _upgrade_picked: bool = false
 var _shop_offers: Array = []
 var _next_wave_for_shop: int = 1
+var _shop_confirm: ConfirmationDialog
+var _pending_shop_def: Dictionary = {}
 
 
 func set_player(p: Node) -> void:
@@ -26,12 +28,20 @@ func set_player(p: Node) -> void:
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	continue_btn.pressed.connect(_on_continue_pressed)
 	refresh_btn.pressed.connect(_on_refresh_shop_pressed)
 	refresh_upgrade_btn.pressed.connect(_on_refresh_upgrades_pressed)
 	refresh_btn.text = "刷新商店 (%d)" % REFRESH_SHOP_COST
 	refresh_upgrade_btn.text = "刷新升级选项 (%d)" % REFRESH_UPGRADE_COST
+	_shop_confirm = ConfirmationDialog.new()
+	_shop_confirm.title = "确认购买"
+	_shop_confirm.ok_button_text = "购买"
+	_shop_confirm.cancel_button_text = "取消"
+	_shop_confirm.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_shop_confirm)
+	_shop_confirm.confirmed.connect(_on_shop_confirm_buy)
 
 
 func show_for_finished_wave(finished_wave_index: int) -> void:
@@ -77,15 +87,36 @@ func _rebuild_shop_rows() -> void:
 		card.custom_minimum_size = Vector2(0, 108)
 		shop_vbox.add_child(card)
 		card.setup_card(def, "shop", price, can_afford)
-		card.pressed.connect(_on_buy_pressed.bind(def))
+		card.pressed.connect(_on_shop_item_pressed.bind(def))
 
 
-func _on_buy_pressed(def: Dictionary) -> void:
+func _on_shop_item_pressed(def: Dictionary) -> void:
+	if _player == null:
+		return
+	var price: int = _effective_price(def)
+	var body: String = BuildCatalog.shop_purchase_preview_text(
+		def,
+		_player,
+		_next_wave_for_shop,
+		RunState.material_current
+	)
+	_pending_shop_def = def.duplicate()
+	_shop_confirm.dialog_text = body
+	var ok_btn: Button = _shop_confirm.get_ok_button()
+	if ok_btn != null:
+		ok_btn.disabled = RunState.material_current < price
+	_shop_confirm.popup_centered()
+
+
+func _on_shop_confirm_buy() -> void:
+	var def: Dictionary = _pending_shop_def.duplicate()
+	_pending_shop_def.clear()
+	if def.is_empty() or _player == null:
+		return
 	var price: int = _effective_price(def)
 	if not RunState.try_spend_material(price):
 		return
-	if _player != null:
-		BuildCatalog.apply_shop_def(_player, def)
+	BuildCatalog.apply_shop_def(_player, def)
 	_rebuild_shop_rows()
 
 

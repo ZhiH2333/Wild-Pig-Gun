@@ -235,6 +235,72 @@ static func effective_shop_price(def: Dictionary, wave_index: int, player: Node)
 	return scaled
 
 
+## 商店确认弹窗：价格、材料、购买后属性变化说明
+static func shop_purchase_preview_text(
+	def: Dictionary,
+	player: Node,
+	wave_index: int,
+	material_current: int
+) -> String:
+	var title: String = str(def.get("title", "商品"))
+	var price: int = effective_shop_price(def, wave_index, player)
+	var kind: String = str(def.get("kind", ""))
+	var value = def.get("value")
+	var lines: PackedStringArray = PackedStringArray()
+	lines.append("「%s」" % title)
+	lines.append("")
+	lines.append("价格：%d 材料 ｜ 当前持有：%d" % [price, material_current])
+	if material_current < price:
+		lines.append("材料不足时无法完成购买。")
+	lines.append("")
+	lines.append("购买后效果：")
+	match kind:
+		"heal_flat":
+			var h: int = int(value)
+			var nh: int = mini(player.max_hp, player.current_hp + h)
+			lines.append(
+				"· 当前生命：%d → %d（回复 %d，上限 %d）" % [player.current_hp, nh, h, player.max_hp]
+			)
+		"max_hp":
+			var v: int = int(value)
+			lines.append(
+				"· 最大生命：%d → %d（当前生命 +%d）" % [player.max_hp, player.max_hp + v, v]
+			)
+		"damage_pct":
+			var p: float = float(value)
+			var before: float = float(player.stat_damage_mult)
+			var after: float = before * (1.0 + p)
+			lines.append(
+				"· 伤害乘数：×%.3f → ×%.3f（+%d%%）" % [before, after, int(round(p * 100.0))]
+			)
+		"move_pct":
+			var p2: float = float(value)
+			var b2: float = float(player.stat_move_speed_mult)
+			lines.append("· 移速乘数：×%.3f → ×%.3f" % [b2, b2 * (1.0 + p2)])
+		"fire_pct":
+			var p3: float = float(value)
+			var b3: float = float(player.stat_fire_rate_mult)
+			lines.append("· 攻速乘数：×%.3f → ×%.3f" % [b3, b3 * (1.0 + p3)])
+		"pickup":
+			var b4: float = float(player.stat_pickup_radius_bonus)
+			var addp: float = float(value)
+			lines.append("· 拾取范围加成：%.1f → %.1f" % [b4, b4 + addp])
+		"luck_flat":
+			var lk: int = int(player.stat_luck) if "stat_luck" in player else 0
+			lines.append("· 幸运：%d → %d" % [lk, lk + int(value)])
+		"harvest_flat":
+			var hv: float = float(player.stat_harvest) if "stat_harvest" in player else 0.0
+			lines.append("· 收获：%.2f → %.2f" % [hv, hv + float(value)])
+		"add_weapon":
+			var wid: String = str(value)
+			var wdef: Dictionary = WeaponCatalog.find_def(wid)
+			var nm: String = str(wdef.get("display_name", wdef.get("id", wid)))
+			lines.append("· 获得武器：%s（未满 6 槽时加入）" % nm)
+		_:
+			lines.append("· %s" % str(def.get("desc", "参见物品说明")))
+	return "\n".join(lines)
+
+
 ## 幸运提高高 tier 权重；不放回加权抽样
 static func pick_shop_offer(count: int, rng: RandomNumberGenerator, luck: int) -> Array[Dictionary]:
 	var src: Array[Dictionary] = []
