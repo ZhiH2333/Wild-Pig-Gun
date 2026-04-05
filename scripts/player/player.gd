@@ -51,6 +51,7 @@ var _walk_sfx_cooldown: float = 0.0
 var _hp_regen_accum: float = 0.0
 
 @onready var invincibility_timer: Timer = $InvincibilityTimer
+@onready var hurt_feedback: CanvasLayer = $HurtFeedback
 
 
 func _ready() -> void:
@@ -216,7 +217,7 @@ func take_damage(amount: int) -> void:
 	GameAudio.play_hurt_player()
 	# 扣血，不低于 0（需求 4.2）
 	current_hp = max(0, current_hp - amt)
-	_brief_screen_shake()
+	_play_hurt_feedback()
 	_debug_action = "受伤 -%d → HP:%d" % [amt, current_hp]
 	emit_signal("hp_changed", current_hp, max_hp)
 	# 血量归零时触发死亡（需求 4.4）
@@ -229,15 +230,22 @@ func take_damage(amount: int) -> void:
 	invincibility_timer.start()
 
 
-func _brief_screen_shake() -> void:
+func _play_hurt_feedback() -> void:
+	_screen_shake_hit()
+	if hurt_feedback != null and hurt_feedback.has_method("play_impact"):
+		hurt_feedback.play_impact()
+
+
+func _screen_shake_hit() -> void:
 	var cam: Camera2D = get_node_or_null("Camera2D") as Camera2D
 	if cam == null:
 		return
 	var tw: Tween = create_tween()
-	cam.offset = Vector2(7, -5)
+	cam.offset = Vector2(12, -9)
 	tw.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tw.tween_property(cam, "offset", Vector2(-4, 4), 0.05)
-	tw.tween_property(cam, "offset", Vector2.ZERO, 0.09)
+	tw.tween_property(cam, "offset", Vector2(-8, 7), 0.06)
+	tw.tween_property(cam, "offset", Vector2(5, -4), 0.08)
+	tw.tween_property(cam, "offset", Vector2.ZERO, 0.12)
 
 
 ## 无敌帧结束
