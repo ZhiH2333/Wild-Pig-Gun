@@ -28,9 +28,12 @@ var shop_price_mult: float = 1.0
 var material_to_damage_kv: float = 0.0
 ## 同标签武器 ≥2 时的全局伤害乘数（由 WeaponLoadout 重算）
 var stat_synergy_damage_mult: float = 1.0
+## 每秒生命回复（构筑）
+var stat_hp_regen_per_sec: float = 0.0
 ## 当前帧的操作描述（供调试覆盖层读取）
 var _debug_action: String = "待机"
 var _walk_sfx_cooldown: float = 0.0
+var _hp_regen_accum: float = 0.0
 
 @onready var invincibility_timer: Timer = $InvincibilityTimer
 
@@ -63,6 +66,24 @@ func _physics_process(delta: float) -> void:
 		_debug_action = "移动中(无敌帧)"
 	else:
 		_debug_action = "移动 dir:(%.2f,%.2f)" % [direction.x, direction.y]
+	_apply_hp_regen(delta)
+
+
+## 每秒生命回复结算
+func _apply_hp_regen(delta: float) -> void:
+	if stat_hp_regen_per_sec <= 0.0001:
+		_hp_regen_accum = 0.0
+		return
+	if current_hp >= max_hp:
+		return
+	_hp_regen_accum += stat_hp_regen_per_sec * delta
+	if _hp_regen_accum < 1.0:
+		return
+	var heal_amt: int = mini(floori(_hp_regen_accum), max_hp - current_hp)
+	if heal_amt <= 0:
+		return
+	heal_flat(heal_amt)
+	_hp_regen_accum -= float(heal_amt)
 
 
 ## 读取 WASD / 虚拟摇杆并返回归一化方向向量（需求 1.1、1.2、1.3）
@@ -123,6 +144,7 @@ func apply_run_snapshot_stats(d: Dictionary) -> void:
 	shop_price_mult = maxf(0.01, float(d.get("shop_price_mult", 1.0)))
 	material_to_damage_kv = maxf(0.0, float(d.get("material_to_damage_kv", 0.0)))
 	stat_synergy_damage_mult = maxf(0.05, float(d.get("stat_synergy_damage_mult", 1.0)))
+	stat_hp_regen_per_sec = maxf(0.0, float(d.get("stat_hp_regen_per_sec", 0.0)))
 	global_position = Vector2(float(d.get("pos_x", 960.0)), float(d.get("pos_y", 540.0)))
 	emit_signal("hp_changed", current_hp, max_hp)
 
