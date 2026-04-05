@@ -163,6 +163,7 @@ func take_damage(amount: int) -> void:
 	var amt: int = amount
 	if RunState != null:
 		amt = maxi(1, int(round(float(amount) * RunState.run_risk_mult)))
+	GameAudio.play_hurt_player()
 	# 扣血，不低于 0（需求 4.2）
 	current_hp = max(0, current_hp - amt)
 	_brief_screen_shake()
