@@ -4,7 +4,7 @@ class_name WaveManager
 ## 负责波次倒计时、敌人分批刷新、精英怪随机出现和通关判定
 ## 需求：7.1、7.2、7.3、7.4、7.5
 
-signal wave_started(wave_index: int)
+signal wave_started(wave_index: int, duration_sec: float)
 signal wave_ended(wave_index: int)
 signal wave_timer_tick(remaining: float)
 signal all_waves_cleared
@@ -80,7 +80,7 @@ func _start_wave(wave_index: int) -> void:
 	else:
 		elite_check_timer.stop()
 
-	emit_signal("wave_started", wave_index)
+	emit_signal("wave_started", wave_index, duration)
 	# 波次开始时立刻刷一批
 	_try_spawn_batch()
 

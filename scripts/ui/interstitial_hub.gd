@@ -5,6 +5,7 @@ signal continue_pressed
 
 const REFRESH_SHOP_COST: int = 3
 const REFRESH_UPGRADE_COST: int = 8
+const ITEM_CARD_SCENE: PackedScene = preload("res://scenes/ui/item_card.tscn")
 
 @onready var title_label: Label = $CenterContainer/Panel/MarginContainer/VBox/TitleLabel
 @onready var upgrade_row: HBoxContainer = $CenterContainer/Panel/MarginContainer/VBox/UpgradeRow
@@ -50,11 +51,10 @@ func show_for_finished_wave(finished_wave_index: int) -> void:
 	var offers: Array = BuildCatalog.pick_random_upgrades(3, RunState.upgrade_ids, _rng)
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(260, 112)
-		b.text = "%s\n%s" % [def["title"], def["desc"]]
-		b.pressed.connect(_on_upgrade_button_pressed.bind(def))
-		upgrade_row.add_child(b)
+		var card: ItemCard = ITEM_CARD_SCENE.instantiate() as ItemCard
+		upgrade_row.add_child(card)
+		card.setup_card(def, "upgrade")
+		card.pressed.connect(_on_upgrade_button_pressed.bind(def))
 	_shop_offers = BuildCatalog.pick_shop_offer(4, _rng, luck)
 	_rebuild_shop_rows()
 	refresh_upgrade_btn.disabled = false
@@ -70,13 +70,14 @@ func _rebuild_shop_rows() -> void:
 	_clear_children(shop_vbox)
 	for def_variant in _shop_offers:
 		var def: Dictionary = def_variant as Dictionary
-		var btn := Button.new()
 		var price: int = _effective_price(def)
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.custom_minimum_size = Vector2(0, 96)
-		btn.text = "%s  |  %d 材料\n%s" % [def["title"], price, def["desc"]]
-		btn.pressed.connect(_on_buy_pressed.bind(def))
-		shop_vbox.add_child(btn)
+		var can_afford: bool = RunState.material_current >= price
+		var card: ItemCard = ITEM_CARD_SCENE.instantiate() as ItemCard
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.custom_minimum_size = Vector2(0, 108)
+		shop_vbox.add_child(card)
+		card.setup_card(def, "shop", price, can_afford)
+		card.pressed.connect(_on_buy_pressed.bind(def))
 
 
 func _on_buy_pressed(def: Dictionary) -> void:
@@ -85,6 +86,7 @@ func _on_buy_pressed(def: Dictionary) -> void:
 		return
 	if _player != null:
 		BuildCatalog.apply_shop_def(_player, def)
+	_rebuild_shop_rows()
 
 
 func _on_refresh_shop_pressed() -> void:
@@ -106,11 +108,10 @@ func _on_refresh_upgrades_pressed() -> void:
 	var offers: Array = BuildCatalog.pick_random_upgrades(3, RunState.upgrade_ids, _rng)
 	for def_variant in offers:
 		var def: Dictionary = def_variant as Dictionary
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(260, 112)
-		b.text = "%s\n%s" % [def["title"], def["desc"]]
-		b.pressed.connect(_on_upgrade_button_pressed.bind(def))
-		upgrade_row.add_child(b)
+		var card: ItemCard = ITEM_CARD_SCENE.instantiate() as ItemCard
+		upgrade_row.add_child(card)
+		card.setup_card(def, "upgrade")
+		card.pressed.connect(_on_upgrade_button_pressed.bind(def))
 
 
 func _on_upgrade_button_pressed(def: Dictionary) -> void:
@@ -127,8 +128,8 @@ func _on_upgrade_button_pressed(def: Dictionary) -> void:
 	continue_btn.add_theme_font_size_override("font_size", 24)
 	continue_btn.text = "继续 — 开始下一波"
 	for c in upgrade_row.get_children():
-		if c is Button:
-			(c as Button).disabled = true
+		if c is ItemCard:
+			(c as ItemCard).disabled = true
 	refresh_upgrade_btn.disabled = true
 
 
