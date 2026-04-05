@@ -4,6 +4,8 @@ class_name Projectile
 ## 子弹脚本：直线飞行，按阵营命中目标，飞出屏幕后自动销毁
 ## 需求：2.4、2.5、2.6
 
+const ENEMY_BULLET_TEXTURE: Texture2D = preload("res://assets/sprites/enemy_bullets.png")
+
 const TEAM_PLAYER: StringName = &"player"
 const TEAM_ENEMY: StringName = &"enemy"
 const DEFAULT_SPEED: float = 400.0
@@ -19,6 +21,8 @@ var _hits_remaining: int = 1
 var _damaged_ids: Dictionary = {}
 var damage_element: StringName = &"physical"
 
+@onready var _sprite: Sprite2D = $Sprite2D
+
 
 func _ready() -> void:
 	if team == TEAM_PLAYER:
@@ -27,14 +31,30 @@ func _ready() -> void:
 		_hits_remaining = 1
 	body_entered.connect(_on_body_entered)
 	$VisibleOnScreenNotifier2D.screen_exited.connect(_on_screen_exited)
+	_setup_visual()
+
+
+func _setup_visual() -> void:
+	if _sprite == null:
+		return
+	if team == TEAM_ENEMY:
+		_sprite.texture = ENEMY_BULLET_TEXTURE
+		var th: float = float(ENEMY_BULLET_TEXTURE.get_height())
+		var target_h: float = 34.0
+		_sprite.scale = Vector2.ONE * (target_h / maxf(1.0, th))
+		_sprite.rotation = direction.angle()
+	else:
+		_sprite.texture = null
 
 
 func _physics_process(delta: float) -> void:
 	position += direction * speed * delta
 
 
-## Debug 占位绘制
+## 玩家弹：按元素着色圆点；敌人弹使用 Sprite2D 贴图
 func _draw() -> void:
+	if team == TEAM_ENEMY:
+		return
 	var c: Color = Color(1, 1, 0.4, 1.0)
 	if damage_element == &"fire":
 		c = Color(1.0, 0.45, 0.12, 1.0)

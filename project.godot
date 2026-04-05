@@ -23,6 +23,7 @@ GameSettings="*res://scripts/settings/game_settings.gd"
 GameFlow="*res://scripts/game_flow.gd"
 GameAudio="*res://scripts/audio/game_audio.gd"
 UiSoundFeedback="*res://scripts/ui/ui_sound_feedback.gd"
+DamagePopupSpawner="*res://scripts/ui/damage_popup_spawner.gd"
 
 [audio]
 

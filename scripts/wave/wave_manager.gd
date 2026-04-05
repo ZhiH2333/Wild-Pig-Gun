@@ -87,6 +87,24 @@ func _start_wave(wave_index: int) -> void:
 	emit_signal("wave_started", wave_index, duration)
 	if boss_t.is_empty():
 		_try_spawn_batch()
+	else:
+		_try_spawn_boss_wave(boss_t)
+
+
+## Boss 波（waves.json 中 boss_type）：预警后生成一只 Boss；batch_cap 为 0 时原先不会走批次刷新
+func _try_spawn_boss_wave(boss_type: String) -> void:
+	if not is_wave_active or boss_type.is_empty():
+		return
+	var pos: Vector2 = _get_safe_spawn_position()
+	emit_signal("spawn_warning_shown", pos)
+	await get_tree().create_timer(SPAWN_WARNING_DURATION).timeout
+	if not is_wave_active:
+		return
+	if _is_spawn_blocked_by_player(pos):
+		pos = _get_safe_spawn_position()
+		if _is_spawn_blocked_by_player(pos):
+			pos = _random_edge_position()
+	emit_signal("enemy_spawn_requested", {"type": boss_type}, pos)
 
 
 ## 结束当前波次
