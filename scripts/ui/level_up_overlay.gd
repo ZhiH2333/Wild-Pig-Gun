@@ -48,6 +48,7 @@ func _flush_show_queue() -> void:
 func _show_overlay_for_level(lv: int) -> void:
 	_picked_for_active = false
 	visible = true
+	refresh_btn.disabled = false
 	RunState.enter_level_up_pause()
 	title_label.text = "升级到 Lv.%d — 选择一项强化" % lv
 	_rng.randomize()
