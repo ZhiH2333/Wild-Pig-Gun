@@ -1,0 +1,1 @@
+策划表导出 JSON 时请保持与 data/upgrades.json、shop_items.json、weapons.json 相同字段键名；合并前在副本上校验 JSON 语法。

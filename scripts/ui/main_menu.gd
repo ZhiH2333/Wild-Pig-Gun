@@ -1,6 +1,6 @@
 extends Control
 
-@onready var placeholder_dialog: AcceptDialog = $PlaceholderDialog
+@onready var info_dialog: AcceptDialog = $InfoDialog
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 
 
@@ -46,14 +46,14 @@ func _on_progress_pressed() -> void:
 	var best: int = int(meta.get("best_wave", 0))
 	var runs: int = int(meta.get("runs", 0))
 	var wins: int = int(meta.get("victories", 0))
-	_show_placeholder("最高到达波次：%d\n累计局数：%d\n通关次数：%d" % [best, runs, wins])
+	_show_info_dialog("最高到达波次：%d\n累计局数：%d\n通关次数：%d" % [best, runs, wins])
 
 func _on_credits_pressed() -> void:
-	_show_placeholder("制作人名单（占位）\nWildPigGun")
+	_show_info_dialog("WildPigGun\n感谢游玩")
 
-func _show_placeholder(message: String) -> void:
-	placeholder_dialog.dialog_text = message
-	placeholder_dialog.popup_centered()
+func _show_info_dialog(message: String) -> void:
+	info_dialog.dialog_text = message
+	info_dialog.popup_centered()
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
