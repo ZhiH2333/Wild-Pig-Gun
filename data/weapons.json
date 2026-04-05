@@ -1,5 +1,5 @@
 [
-  {"id": "rifle", "tags": ["heavy"], "kind": "projectile", "damage": 11, "fire_interval": 0.52},
-  {"id": "smg", "tags": ["light"], "kind": "projectile", "damage": 6, "fire_interval": 0.3},
-  {"id": "hammer", "tags": ["heavy", "melee"], "kind": "melee", "damage": 16, "fire_interval": 0.55, "melee_radius": 78.0}
+  {"id": "rifle", "display_name": "步枪", "tags": ["heavy"], "kind": "projectile", "damage": 11, "fire_interval": 0.52, "icon": "res://assets/sprites/icon.png", "short_desc": "重型单发，均衡"},
+  {"id": "smg", "display_name": "冲锋枪", "tags": ["light"], "kind": "projectile", "damage": 6, "fire_interval": 0.3, "icon": "res://assets/sprites/icon.png", "short_desc": "轻型高射速"},
+  {"id": "hammer", "display_name": "工地铁锤", "tags": ["heavy", "melee"], "kind": "melee", "damage": 16, "fire_interval": 0.55, "melee_radius": 78.0, "icon": "res://assets/sprites/icon.png", "short_desc": "近战范围，重型羁绊"}
 ]
