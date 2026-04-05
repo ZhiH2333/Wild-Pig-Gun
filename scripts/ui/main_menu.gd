@@ -13,7 +13,7 @@ func _on_start_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/char_select.tscn")
 
 func _on_settings_pressed() -> void:
-	_show_placeholder("设置功能将在后续版本提供。")
+	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 func _on_progress_pressed() -> void:
 	var meta: Dictionary = SaveManager.load_meta_progress()

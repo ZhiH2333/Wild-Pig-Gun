@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://settings_wpg"]
+
+[ext_resource type="Script" path="res://scripts/ui/settings_screen.gd" id="1_settings"]
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_settings")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.11, 0.11, 0.13, 1)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center"]
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Center/VBox"]
+theme_override_font_sizes/font_size = 28
+text = "设置"
+horizontal_alignment = 1
+
+[node name="MasterRow" type="HBoxContainer" parent="Center/VBox"]
+theme_override_constants/separation = 12
+
+[node name="MasterLabel" type="Label" parent="Center/VBox/MasterRow"]
+custom_minimum_size = Vector2(120, 0)
+text = "主音量"
+
+[node name="MasterSlider" type="HSlider" parent="Center/VBox/MasterRow"]
+custom_minimum_size = Vector2(360, 0)
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="FullscreenCheck" type="CheckBox" parent="Center/VBox"]
+text = "全屏（桌面）"
+
+[node name="BackButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(200, 44)
+text = "返回主菜单"
