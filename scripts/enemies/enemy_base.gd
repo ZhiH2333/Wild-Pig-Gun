@@ -27,6 +27,21 @@ var _damage_on_cooldown: bool = false
 
 ## 类型名称，子类设置，用于 debug 标签显示
 var enemy_type_name: String = "敌人"
+## 元素状态：移速倍率（1=正常，越小越慢）
+var _status_slow_mult: float = 1.0
+var _status_slow_time_left: float = 0.0
+## 燃烧：每秒伤害与剩余时间
+var _status_burn_dps: float = 0.0
+var _status_burn_time_left: float = 0.0
+var _status_burn_carry: float = 0.0
+## 中毒：层数、每层 DPS、剩余时间
+var _status_poison_stacks: int = 0
+var _status_poison_dps_per_stack: float = 0.0
+var _status_poison_time_left: float = 0.0
+var _status_poison_carry: float = 0.0
+## 感电易伤：受到电属性伤害时 ×(1+vuln)
+var _status_shock_vuln: float = 0.0
+var _shock_vuln_time_left: float = 0.0
 
 @onready var damage_timer: Timer = $DamageTimer
 
@@ -43,9 +58,12 @@ func _get_move_velocity() -> Vector2:
 
 
 func _physics_process(_delta: float) -> void:
+	_tick_status_slow(_delta)
+	_tick_shock_vuln(_delta)
+	_tick_dot_effects(_delta)
 	if target == null:
 		return
-	velocity = _get_move_velocity() * _totem_speed_mult()
+	velocity = _get_move_velocity() * _totem_speed_mult() * _status_slow_mult
 	move_and_slide()
 	_check_player_collision()
 	queue_redraw()
@@ -93,11 +111,86 @@ func _on_damage_timer_timeout() -> void:
 	_damage_on_cooldown = false
 
 
-## 受到伤害，考虑护甲减伤（需求 3.5）
-func take_damage(amount: int, is_crit: bool = false) -> void:
+func _tick_status_slow(delta: float) -> void:
+	if _status_slow_time_left > 0.0:
+		_status_slow_time_left = maxf(0.0, _status_slow_time_left - delta)
+		if _status_slow_time_left <= 0.0001:
+			_status_slow_mult = 1.0
+
+
+func _tick_shock_vuln(delta: float) -> void:
+	if _shock_vuln_time_left > 0.0:
+		_shock_vuln_time_left = maxf(0.0, _shock_vuln_time_left - delta)
+		if _shock_vuln_time_left <= 0.0001:
+			_status_shock_vuln = 0.0
+
+
+## 施加减速：mult 为移速乘子（如 0.65），duration_sec 刷新为较长值
+func apply_status_slow(move_mult: float, duration_sec: float) -> void:
+	var m: float = clampf(move_mult, 0.15, 1.0)
+	_status_slow_mult = mini(_status_slow_mult, m)
+	_status_slow_time_left = maxf(_status_slow_time_left, duration_sec)
+
+
+## 施加燃烧：刷新持续，DPS 取较高
+func apply_status_burn(dps: float, duration_sec: float) -> void:
+	_status_burn_dps = maxf(_status_burn_dps, maxf(0.0, dps))
+	_status_burn_time_left = maxf(_status_burn_time_left, maxf(0.0, duration_sec))
+
+
+## 施加中毒：叠层并刷新持续时间
+func apply_status_poison(dps_per_stack: float, duration_sec: float) -> void:
+	_status_poison_dps_per_stack = maxf(_status_poison_dps_per_stack, maxf(0.0, dps_per_stack))
+	_status_poison_stacks = mini(8, _status_poison_stacks + 1)
+	_status_poison_time_left = maxf(_status_poison_time_left, maxf(0.0, duration_sec))
+
+
+## 感电易伤（加法，如 0.15 表示 +15% 受到的电伤）
+func apply_status_shock_vuln(extra: float, duration_sec: float) -> void:
+	_status_shock_vuln = maxf(_status_shock_vuln, maxf(0.0, extra))
+	_shock_vuln_time_left = maxf(_shock_vuln_time_left, maxf(0.0, duration_sec))
+
+
+func _tick_dot_effects(delta: float) -> void:
 	if current_hp <= 0:
 		return
-	var actual := int(amount * (1.0 - armor))
+	if _status_burn_time_left > 0.0 and _status_burn_dps > 0.0001:
+		_status_burn_time_left = maxf(0.0, _status_burn_time_left - delta)
+		_status_burn_carry += _status_burn_dps * delta
+		while _status_burn_carry >= 1.0:
+			_apply_dot_hp_loss(1)
+			_status_burn_carry -= 1.0
+		if _status_burn_time_left <= 0.0001:
+			_status_burn_dps = 0.0
+			_status_burn_carry = 0.0
+	if _status_poison_time_left > 0.0 and _status_poison_stacks > 0:
+		_status_poison_time_left = maxf(0.0, _status_poison_time_left - delta)
+		var pdps: float = _status_poison_dps_per_stack * float(_status_poison_stacks)
+		_status_poison_carry += pdps * delta
+		while _status_poison_carry >= 1.0:
+			_apply_dot_hp_loss(1)
+			_status_poison_carry -= 1.0
+		if _status_poison_time_left <= 0.0001:
+			_status_poison_stacks = 0
+			_status_poison_carry = 0.0
+
+
+func _apply_dot_hp_loss(amount: int) -> void:
+	if amount <= 0 or current_hp <= 0:
+		return
+	current_hp = max(0, current_hp - amount)
+	if current_hp <= 0:
+		_on_death()
+
+
+## 受到伤害，考虑护甲减伤（需求 3.5）；damage_element 用于电易伤等
+func take_damage(amount: int, is_crit: bool = false, damage_element: StringName = &"physical") -> void:
+	if current_hp <= 0:
+		return
+	var hit: int = amount
+	if damage_element == &"shock" and _status_shock_vuln > 0.0001:
+		hit = maxi(1, int(round(float(amount) * (1.0 + _status_shock_vuln))))
+	var actual := int(float(hit) * (1.0 - armor))
 	actual = max(1, actual)  # 至少造成 1 点伤害
 	GameAudio.play_hit_enemy()
 	_play_hit_flash()
