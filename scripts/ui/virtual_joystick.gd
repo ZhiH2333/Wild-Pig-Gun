@@ -1,7 +1,7 @@
 extends Control
 
 ## 仅 Android：输出模拟方向，长度 0~1
-const STICK_MAX: float = 64.0
+const STICK_MAX: float = 80.0
 
 var output_vector: Vector2 = Vector2.ZERO
 var _active_index: int = -1
@@ -39,7 +39,7 @@ func _update_vector(local_pos: Vector2) -> void:
 	var center: Vector2 = size * 0.5
 	var delta: Vector2 = local_pos - center
 	var len: float = delta.length()
-	if len < 10.0:
+	if len < 12.0:
 		output_vector = Vector2.ZERO
 		return
 	var dir: Vector2 = delta / len
@@ -52,7 +52,7 @@ func _draw() -> void:
 	if not OS.has_feature("android"):
 		return
 	var c: Vector2 = size * 0.5
-	draw_circle(c, 72.0, Color(0.15, 0.15, 0.18, 0.65))
-	draw_arc(c, 72.0, 0.0, TAU, 32, Color(0.5, 0.5, 0.55, 0.5), 2.0)
+	draw_circle(c, 88.0, Color(0.15, 0.15, 0.18, 0.65))
+	draw_arc(c, 88.0, 0.0, TAU, 32, Color(0.5, 0.5, 0.55, 0.5), 2.5)
 	var stick: Vector2 = output_vector * STICK_MAX
-	draw_circle(c + stick, 22.0, Color(0.9, 0.85, 0.3, 0.85))
+	draw_circle(c + stick, 28.0, Color(0.9, 0.85, 0.3, 0.85))

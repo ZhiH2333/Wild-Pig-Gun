@@ -13,7 +13,7 @@ func _ready() -> void:
 		var b := Button.new()
 		var unlocked: bool = CharacterData.is_character_unlocked(d)
 		b.text = "%s\n%s" % [d.get("display_name", "?"), d.get("description", "")]
-		b.custom_minimum_size = Vector2(520, 72)
+		b.custom_minimum_size = Vector2(620, 92)
 		b.disabled = not unlocked
 		if unlocked:
 			b.pressed.connect(_on_character_chosen.bind(str(d.get("id", "default"))))

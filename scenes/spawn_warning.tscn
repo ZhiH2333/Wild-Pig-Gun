@@ -13,6 +13,5 @@ offset_bottom = 12.0
 text = "✕"
 horizontal_alignment = 1
 vertical_alignment = 1
-add_theme_font_size_override = "font_size"
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 theme_override_colors/font_color = Color(1, 0.1, 0.1, 1)

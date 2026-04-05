@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/ui/interstitial_hub.gd" id="8_interstitial"]
 [ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="9_vjoy"]
 [ext_resource type="Script" path="res://scripts/ui/level_up_overlay.gd" id="10_levelup"]
+[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="11_ui"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
@@ -109,15 +110,16 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="PauseVBox" type="VBoxContainer" parent="PauseOverlay/CenterContainer"]
-theme_override_constants/separation = 12
+theme = ExtResource("11_ui")
+theme_override_constants/separation = 16
 
 [node name="PauseTitle" type="Label" parent="PauseOverlay/CenterContainer/PauseVBox"]
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 44
 text = "游戏暂停"
 horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="PauseOverlay/CenterContainer/PauseVBox"]
-custom_minimum_size = Vector2(280, 44)
+custom_minimum_size = Vector2(340, 56)
 text = "继续游戏 (ESC)"
 
 [node name="LevelUpOverlay" type="CanvasLayer" parent="."]
@@ -134,19 +136,20 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="LevelUpOverlay/CenterContainer"]
-custom_minimum_size = Vector2(880, 420)
+custom_minimum_size = Vector2(1040, 500)
+theme = ExtResource("11_ui")
 
 [node name="MarginContainer" type="MarginContainer" parent="LevelUpOverlay/CenterContainer/Panel"]
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
 
 [node name="VBox" type="VBoxContainer" parent="LevelUpOverlay/CenterContainer/Panel/MarginContainer"]
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="LevelUpOverlay/CenterContainer/Panel/MarginContainer/VBox"]
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 text = "升级"
 horizontal_alignment = 1
 
@@ -157,7 +160,7 @@ alignment = 1
 alignment = 1
 
 [node name="RefreshOffersButton" type="Button" parent="LevelUpOverlay/CenterContainer/Panel/MarginContainer/VBox/BottomRow"]
-custom_minimum_size = Vector2(280, 40)
+custom_minimum_size = Vector2(340, 52)
 text = "刷新选项 (6 材料)"
 
 [node name="InterstitialHub" type="CanvasLayer" parent="."]
@@ -174,58 +177,59 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="InterstitialHub/CenterContainer"]
-custom_minimum_size = Vector2(920, 640)
+custom_minimum_size = Vector2(1080, 720)
+theme = ExtResource("11_ui")
 
 [node name="MarginContainer" type="MarginContainer" parent="InterstitialHub/CenterContainer/Panel"]
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
 
 [node name="VBox" type="VBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer"]
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 34
 text = "波次结束"
 horizontal_alignment = 1
 
 [node name="UpgradeHint" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "选择一项升级（必选）"
 horizontal_alignment = 1
 
 [node name="UpgradeRow" type="HBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-theme_override_constants/separation = 10
+theme_override_constants/separation = 14
 alignment = 1
 
 [node name="RefreshUpgradesButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-custom_minimum_size = Vector2(300, 40)
+custom_minimum_size = Vector2(360, 52)
 text = "刷新升级选项 (8)"
 
 [node name="ShopLabel" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "商店（消耗材料）"
 horizontal_alignment = 1
 
 [node name="ShopScroll" type="ScrollContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-custom_minimum_size = Vector2(0, 200)
+custom_minimum_size = Vector2(0, 280)
 horizontal_scroll_mode = 0
 
 [node name="ShopVBox" type="VBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/ShopScroll"]
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
 [node name="BottomRow" type="HBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-theme_override_constants/separation = 16
+theme_override_constants/separation = 20
 alignment = 1
 
 [node name="RefreshShopButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/BottomRow"]
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(260, 52)
 text = "刷新商店 (3)"
 
 [node name="ContinueButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/BottomRow"]
-custom_minimum_size = Vector2(240, 44)
+custom_minimum_size = Vector2(300, 52)
 disabled = true
 text = "开始下一波"
 
@@ -239,10 +243,10 @@ anchor_left = 0.0
 anchor_top = 1.0
 anchor_right = 0.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -240.0
-offset_right = 224.0
-offset_bottom = -40.0
+offset_left = 20.0
+offset_top = -260.0
+offset_right = 240.0
+offset_bottom = -20.0
 grow_vertical = 0
 mouse_filter = 0
 script = ExtResource("9_vjoy")
