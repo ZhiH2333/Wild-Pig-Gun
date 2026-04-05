@@ -21,6 +21,7 @@ var drop_box_chance: float = 0.02    # 掉落绿箱子概率
 
 var target: Node2D = null
 var _damage_on_cooldown: bool = false
+var _popup_count_this_frame: int = 0
 ## 死亡时额外生成若干小怪（分裂体）
 @export var split_spawn_count: int = 0
 @export var split_spawn_type: String = "basic"
@@ -58,6 +59,7 @@ func _get_move_velocity() -> Vector2:
 
 
 func _physics_process(_delta: float) -> void:
+	_popup_count_this_frame = 0
 	_tick_status_slow(_delta)
 	_tick_shock_vuln(_delta)
 	_tick_dot_effects(_delta)
@@ -201,18 +203,13 @@ func take_damage(amount: int, is_crit: bool = false, damage_element: StringName 
 
 
 func _spawn_damage_popup(hits: int, is_crit: bool) -> void:
-	var path: String = "res://scenes/ui/damage_popup.tscn"
-	if not ResourceLoader.exists(path):
-		return
-	var scene: PackedScene = load(path) as PackedScene
-	var pop: Node2D = scene.instantiate() as Node2D
-	var par: Node = get_parent()
-	if par == null:
-		return
-	par.add_child(pop)
-	pop.global_position = global_position + Vector2(randf_range(-14.0, 14.0), randf_range(-38.0, -18.0))
-	if pop.has_method("setup"):
-		pop.call("setup", hits, is_crit)
+	var offset_y: float = -_popup_count_this_frame * 20.0
+	var spawn_pos: Vector2 = global_position + Vector2(
+		randf_range(-14.0, 14.0),
+		randf_range(-38.0, -18.0) + offset_y
+	)
+	DamagePopupSpawner.spawn(spawn_pos, hits, is_crit, get_parent())
+	_popup_count_this_frame += 1
 
 
 func _play_hit_flash() -> void:
