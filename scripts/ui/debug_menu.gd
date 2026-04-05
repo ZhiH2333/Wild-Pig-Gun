@@ -3,6 +3,10 @@ extends CanvasLayer
 ## 三击 Z 开关的调试浮窗：系统无衬线字体、仅面板拦截鼠标，键盘不影响走位逻辑
 
 const TRIPLE_Z_WINDOW_MS: int = 500
+## 调试条目中多数数值的上限（原若干倍率项误设为 5）
+const DEBUG_SPIN_MAX_FLOAT: float = 9999.0
+const DEBUG_SPIN_MAX_INT: int = 9999
+const DEBUG_SPIN_MAX_HP: int = 99999
 
 var _font_names: PackedStringArray = PackedStringArray([
 	"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI",
@@ -29,8 +33,12 @@ func _ready() -> void:
 	sf.font_weight = 400
 	sf.generate_mipmaps = false
 	_ui_font = sf
+	# 子节点 _ready 先于父节点 Arena：此时父节点尚未 add_to_group("arena")，
+	# 不能仅靠分组解析，否则 _arena 为空会导致无法生成敌人。
 	var p: Node = get_parent()
-	if p != null and p.is_in_group("arena"):
+	if p != null and p is Node2D and p.has_method("debug_spawn_enemy_at"):
+		_arena = p as Node2D
+	elif p != null and p.is_in_group("arena"):
 		_arena = p as Node2D
 	else:
 		_arena = get_tree().get_first_node_in_group("arena") as Node2D
@@ -147,29 +155,29 @@ func _build_ui() -> void:
 	form.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(form)
 	_add_section_label(form, "玩家属性")
-	_add_spin(form, "生命上限", "max_hp", 1, 99999, 1, true)
-	_add_spin(form, "当前生命", "current_hp", 0, 99999, 1, true)
-	_add_spin(form, "伤害倍率", "stat_damage_mult", 0.05, 10.0, 0.05, false)
-	_add_spin(form, "移速倍率", "stat_move_speed_mult", 0.05, 5.0, 0.05, false)
-	_add_spin(form, "射速倍率", "stat_fire_rate_mult", 0.05, 5.0, 0.05, false)
-	_add_spin(form, "拾取半径加成", "stat_pickup_radius_bonus", 0.0, 300.0, 1.0, false)
+	_add_spin(form, "生命上限", "max_hp", 1, DEBUG_SPIN_MAX_HP, 1, true)
+	_add_spin(form, "当前生命", "current_hp", 0, DEBUG_SPIN_MAX_HP, 1, true)
+	_add_spin(form, "伤害倍率", "stat_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "移速倍率", "stat_move_speed_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "射速倍率", "stat_fire_rate_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "拾取半径加成", "stat_pickup_radius_bonus", 0.0, DEBUG_SPIN_MAX_FLOAT, 1.0, false)
 	_add_spin(form, "暴击率", "stat_crit_chance", 0.0, 1.0, 0.01, false)
-	_add_spin(form, "暴击倍率", "stat_crit_mult", 1.0, 5.0, 0.05, false)
-	_add_spin(form, "羁绊伤害倍率", "stat_synergy_damage_mult", 0.05, 5.0, 0.05, false)
-	_add_spin(form, "生命回复/秒", "stat_hp_regen_per_sec", 0.0, 50.0, 0.1, false)
-	_add_spin(form, "幸运", "stat_luck", 0, 500, 1, true)
-	_add_spin(form, "材料转伤系数", "material_to_damage_kv", 0.0, 0.01, 0.0001, false)
-	_add_spin(form, "收获加成", "stat_harvest", 0.0, 5.0, 0.05, false)
-	_add_spin(form, "商店价格倍率", "shop_price_mult", 0.1, 3.0, 0.05, false)
-	_add_spin(form, "火焰伤害倍率", "stat_fire_damage_mult", 0.05, 5.0, 0.05, false)
-	_add_spin(form, "冰霜伤害倍率", "stat_ice_damage_mult", 0.05, 5.0, 0.05, false)
-	_add_spin(form, "毒素伤害倍率", "stat_poison_damage_mult", 0.05, 5.0, 0.05, false)
-	_add_spin(form, "电击伤害倍率", "stat_shock_damage_mult", 0.05, 5.0, 0.05, false)
-	_add_spin(form, "燃烧 DPS 加成", "stat_burn_dps_flat", 0.0, 20.0, 0.1, false)
-	_add_spin(form, "冰缓时长加成", "stat_ice_duration_bonus", 0.0, 10.0, 0.1, false)
-	_add_spin(form, "毒素 DPS 加成", "stat_poison_dps_flat", 0.0, 20.0, 0.1, false)
-	_add_spin(form, "毒素时长 %", "stat_poison_duration_pct", 0.0, 3.0, 0.05, false)
-	_add_spin(form, "感电易伤加成", "stat_shock_vuln_apply_flat", 0.0, 1.0, 0.01, false)
+	_add_spin(form, "暴击倍率", "stat_crit_mult", 1.0, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "羁绊伤害倍率", "stat_synergy_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "生命回复/秒", "stat_hp_regen_per_sec", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.1, false)
+	_add_spin(form, "幸运", "stat_luck", 0, DEBUG_SPIN_MAX_INT, 1, true)
+	_add_spin(form, "材料转伤系数", "material_to_damage_kv", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.0001, false)
+	_add_spin(form, "收获加成", "stat_harvest", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "商店价格倍率", "shop_price_mult", 0.1, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "火焰伤害倍率", "stat_fire_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "冰霜伤害倍率", "stat_ice_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "毒素伤害倍率", "stat_poison_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "电击伤害倍率", "stat_shock_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "燃烧 DPS 加成", "stat_burn_dps_flat", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.1, false)
+	_add_spin(form, "冰缓时长加成", "stat_ice_duration_bonus", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.1, false)
+	_add_spin(form, "毒素 DPS 加成", "stat_poison_dps_flat", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.1, false)
+	_add_spin(form, "毒素时长 %", "stat_poison_duration_pct", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
+	_add_spin(form, "感电易伤加成", "stat_shock_vuln_apply_flat", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.01, false)
 	_add_section_label(form, "局内状态 (RunState)")
 	_add_spin_rs(form, "当前材料", "material_current", 0, 999999, 1, true)
 	_add_spin_rs(form, "储蓄材料", "material_savings", 0, 999999, 1, true)
