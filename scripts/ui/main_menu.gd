@@ -1,14 +1,10 @@
 extends Control
 
 @onready var info_dialog: AcceptDialog = $InfoDialog
-@onready var music_player: AudioStreamPlayer = $MusicPlayer
 
 
 func _ready() -> void:
-	var stream: AudioStream = music_player.stream
-	if stream is AudioStreamMP3:
-		(stream as AudioStreamMP3).loop = true
-	music_player.play()
+	MenuBgm.ensure_playing_main_volume()
 	var continue_btn: Button = $ButtonColumn/ContinueButton
 	continue_btn.pressed.connect(_on_continue_pressed)
 	_refresh_continue_button()
@@ -31,14 +27,17 @@ func _refresh_continue_button() -> void:
 
 
 func _on_continue_pressed() -> void:
+	MenuBgm.stop()
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")
 
 
 func _on_start_pressed() -> void:
+	MenuBgm.duck_for_subpage()
 	get_tree().change_scene_to_file("res://scenes/char_select.tscn")
 
 
 func _on_settings_pressed() -> void:
+	MenuBgm.duck_for_subpage()
 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 func _on_progress_pressed() -> void:
