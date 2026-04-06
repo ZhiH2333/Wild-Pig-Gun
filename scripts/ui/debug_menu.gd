@@ -161,6 +161,7 @@ func _build_ui() -> void:
 	_add_spin(form, "移速倍率", "stat_move_speed_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
 	_add_spin(form, "射速倍率", "stat_fire_rate_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
 	_add_spin(form, "拾取半径加成", "stat_pickup_radius_bonus", 0.0, DEBUG_SPIN_MAX_FLOAT, 1.0, false)
+	_add_spin(form, "攻击范围加成", "stat_attack_range_bonus", 0.0, DEBUG_SPIN_MAX_FLOAT, 4.0, false)
 	_add_spin(form, "暴击率", "stat_crit_chance", 0.0, 1.0, 0.01, false)
 	_add_spin(form, "暴击倍率", "stat_crit_mult", 1.0, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
 	_add_spin(form, "羁绊伤害倍率", "stat_synergy_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
@@ -308,6 +309,8 @@ func _on_player_spin_changed(value: float, prop: String, as_int: bool) -> void:
 			pl.current_hp = pl.max_hp
 		if pl.has_signal("hp_changed"):
 			pl.emit_signal("hp_changed", pl.current_hp, pl.max_hp)
+	elif prop == "stat_attack_range_bonus":
+		_refresh_hud_stats_after_debug_spin()
 
 
 func _on_runstate_spin_changed(value: float, prop: String, as_int: bool) -> void:
@@ -339,6 +342,14 @@ func _on_spawn_enemy_pressed() -> void:
 	if pl != null:
 		pos = pl.global_position + Vector2(140, 0)
 	_arena.debug_spawn_enemy_at(str(tid), pos)
+
+
+func _refresh_hud_stats_after_debug_spin() -> void:
+	if _arena == null:
+		return
+	var hud: Node = _arena.get_node_or_null("HUD")
+	if hud != null and hud.has_method("refresh_player_stats"):
+		hud.refresh_player_stats()
 
 
 func _get_player() -> Node:
@@ -400,6 +411,10 @@ func _refresh_stats_text() -> void:
 		lines.append("HP %d / %d   无敌帧 %s" % [hp, mx, inv])
 		if "_debug_action" in pl:
 			lines.append("动作 %s" % str(pl.get("_debug_action")))
+		if pl.has_method("get_attack_range_radius"):
+			var ar: float = float(pl.call("get_attack_range_radius"))
+			var ab: float = float(pl.get("stat_attack_range_bonus")) if "stat_attack_range_bonus" in pl else 0.0
+			lines.append("攻击范围半径 %.0f（基础+加成，加成 %.0f）" % [ar, ab])
 	var ec: int = get_tree().get_nodes_in_group("enemies").size()
 	var pc: int = 0
 	if _arena != null:

@@ -1,8 +1,44 @@
 extends Node2D
 
-## 远景：渐变天幕 + 多层山形剪影 + 微弱视差偏移（随相机可扩展）
+## 远景：整屏金属底图 + 渐变天幕（仅地平线上方）+ 山形剪影 + 网格
+## draw_texture_rect(..., tile=true) 需要纹理导入中开启 Repeat；否则易呈洋红/紫。
+## 此处用 tile=false 单张拉伸铺满 1920×1080，不依赖 repeat。
+## 天幕为半透明叠色（modulate.a 小于 1），金属纹路始终存在，仅被压暗/冷色，避免「上半屏无纹路」观感。
+
+const _METAL_TEX: Texture2D = preload("res://assets/sprites/metal.jpg")
+const _VIEW_W: float = 1920.0
+const _VIEW_H: float = 1080.0
+## 与天色叠色后仍接近全屏统一亮度（略提亮金属底）
+const _METAL_MODULATE := Color(0.93, 0.94, 0.97, 1.0)
+## 浅色冷灰天幕（避免与压暗后的金属差过大）
+const _SKY_TOP := Color(0.44, 0.46, 0.52, 1.0)
+const _SKY_MID := Color(0.50, 0.50, 0.56, 1.0)
+const _SKY_BOT := Color(0.54, 0.54, 0.60, 1.0)
+## 天幕叠色区域高度（比例）；与 _SKY_TINT_ALPHA 一起调冷暖与通透感
+const _SKY_BAND_FRAC: float = 0.32
+## 天幕叠色强度：宜低以保持与下半屏金属视亮度一致
+const _SKY_TINT_ALPHA: float = 0.16
 
 var _t: float = 0.0
+## 天幕用连续渐变，避免多段 draw_rect 在缩放后产生明显条纹/分带
+var _sky_gradient: GradientTexture2D
+
+
+func _ready() -> void:
+	var g: Gradient = Gradient.new()
+	var mid: Color = _SKY_TOP.lerp(_SKY_MID, 0.65)
+	## 地平线处贴近提亮后的金属顶，减少上下亮度跳变
+	var at_horizon: Color = _SKY_BOT.lerp(Color(0.62, 0.64, 0.68, 1.0), 0.55)
+	g.offsets = PackedFloat32Array([0.0, 0.4, 0.72, 1.0])
+	g.colors = PackedColorArray([_SKY_TOP, mid, _SKY_BOT, at_horizon])
+	g.interpolation_color_space = Gradient.GRADIENT_COLOR_SPACE_OKLAB
+	var gt: GradientTexture2D = GradientTexture2D.new()
+	gt.gradient = g
+	gt.width = 8
+	gt.height = 256
+	gt.fill_from = Vector2(0.5, 0.0)
+	gt.fill_to = Vector2(0.5, 1.0)
+	_sky_gradient = gt
 
 
 func _process(delta: float) -> void:
@@ -11,35 +47,31 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	var w: float = 1920.0
-	var h: float = 1080.0
+	var w: float = _VIEW_W
+	var h: float = _VIEW_H
+	var horizon: float = h * _SKY_BAND_FRAC
+	draw_texture_rect(_METAL_TEX, Rect2(0.0, 0.0, w, h), false, _METAL_MODULATE)
 	var parallax: float = sin(_t * 0.08) * 6.0
-	var sky_top := Color(0.06, 0.07, 0.14, 1.0)
-	var sky_mid := Color(0.12, 0.11, 0.22, 1.0)
-	var sky_bot := Color(0.18, 0.14, 0.2, 1.0)
-	for i in range(24):
-		var y0: float = float(i) / 24.0 * h
-		var y1: float = float(i + 1) / 24.0 * h
-		var u: float = float(i) / 23.0
-		var c: Color = sky_top.lerp(sky_mid, clampf(u * 1.4, 0.0, 1.0))
-		if u > 0.45:
-			c = sky_mid.lerp(sky_bot, clampf((u - 0.45) / 0.55, 0.0, 1.0))
-		draw_rect(Rect2(0.0, y0, w, y1 - y0 + 0.5), c)
-	var horizon: float = h * 0.42
-	draw_rect(Rect2(0.0, horizon, w, h - horizon), Color(0.08, 0.09, 0.12, 0.92))
-	_draw_hill_silhouette(Vector2(parallax * 0.3, horizon - 40.0), w, 90.0, Color(0.11, 0.12, 0.16, 0.95), 0.012)
-	_draw_hill_silhouette(Vector2(-parallax * 0.5, horizon - 8.0), w, 120.0, Color(0.14, 0.1, 0.12, 0.88), 0.008)
-	_draw_hill_silhouette(Vector2(parallax * 0.8, horizon + 22.0), w, 70.0, Color(0.18, 0.14, 0.11, 0.72), 0.015)
+	if _sky_gradient != null:
+		draw_texture_rect(
+			_sky_gradient,
+			Rect2(0.0, 0.0, w, horizon),
+			false,
+			Color(1.0, 1.0, 1.0, _SKY_TINT_ALPHA),
+		)
+	_draw_hill_silhouette(Vector2(parallax * 0.3, horizon - 40.0), w, 90.0, Color(0.16, 0.17, 0.21, 0.92), 0.012)
+	_draw_hill_silhouette(Vector2(-parallax * 0.5, horizon - 8.0), w, 120.0, Color(0.19, 0.15, 0.17, 0.86), 0.008)
+	_draw_hill_silhouette(Vector2(parallax * 0.8, horizon + 22.0), w, 70.0, Color(0.22, 0.18, 0.16, 0.70), 0.015)
 	var step: float = 88.0
 	var gx: float = fmod(_t * 18.0, step)
-	var gcol := Color(0.2, 0.22, 0.28, 0.12)
+	var gcol := Color(0.26, 0.28, 0.34, 0.12)
 	var x: float = -step + gx
 	while x <= w + step:
 		draw_line(Vector2(x, horizon + 30.0), Vector2(x, h), gcol, 1.0)
 		x += step
 	var y: float = horizon + 40.0
 	while y <= h:
-		draw_line(Vector2(0.0, y), Vector2(w, y), Color(0.16, 0.17, 0.2, 0.08), 1.0)
+		draw_line(Vector2(0.0, y), Vector2(w, y), Color(0.22, 0.23, 0.27, 0.08), 1.0)
 		y += step
 
 

@@ -37,8 +37,6 @@ const RUN_SNAPSHOT_VERSION: int = 1
 @onready var level_up_overlay: CanvasLayer = $LevelUpOverlay
 @onready var wave_manager: WaveManager = $WaveManager
 @onready var enemy_pool: Node = $EnemyPool
-@onready var bgm_player: AudioStreamPlayer = $BgmPlayer
-
 ## 预加载的敌人场景缓存
 var _loaded_enemy_scenes: Dictionary = {}
 var _spawn_warning_scene: PackedScene = null
@@ -49,11 +47,7 @@ func _ready() -> void:
 	add_to_group("arena")
 	_wave_cfg = WaveData.load_config()
 	_preload_scenes()
-	if bgm_player != null:
-		var s: AudioStream = bgm_player.stream
-		if s is AudioStreamMP3:
-			(s as AudioStreamMP3).loop = true
-		bgm_player.play()
+	GameMusic.enter_battle()
 	if player:
 		player.died.connect(_on_player_died)
 	var resume_run: bool = SaveManager.has_pending_run()
@@ -247,6 +241,7 @@ func _begin_boss_spawn_async(boss_type: String) -> void:
 ## 通关（需求 7.5）
 func _on_all_waves_cleared() -> void:
 	await get_tree().create_timer(1.0).timeout
+	RunState.capture_endgame_from_player(player)
 	if ResourceLoader.exists("res://scenes/victory.tscn"):
 		get_tree().change_scene_to_file("res://scenes/victory.tscn")
 	elif ResourceLoader.exists("res://scenes/game_over.tscn"):
@@ -281,6 +276,7 @@ func build_run_snapshot() -> Dictionary:
 			"stat_move_speed_mult": player.stat_move_speed_mult,
 			"stat_fire_rate_mult": player.stat_fire_rate_mult,
 			"stat_pickup_radius_bonus": player.stat_pickup_radius_bonus,
+			"stat_attack_range_bonus": player.stat_attack_range_bonus,
 			"stat_harvest": player.stat_harvest,
 			"stat_luck": player.stat_luck,
 			"shop_price_mult": player.shop_price_mult,
@@ -402,6 +398,7 @@ func _on_player_died() -> void:
 	GameAudio.play_die()
 	wave_manager.is_wave_active = false
 	await get_tree().create_timer(1.0).timeout
+	RunState.capture_endgame_from_player(player)
 	if ResourceLoader.exists("res://scenes/game_over.tscn"):
 		get_tree().change_scene_to_file("res://scenes/game_over.tscn")
 

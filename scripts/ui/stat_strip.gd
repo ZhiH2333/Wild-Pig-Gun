@@ -6,6 +6,7 @@ class_name StatStrip
 @onready var _dmg: Label = $DmgLabel
 @onready var _fire: Label = $FireLabel
 @onready var _move: Label = $MoveLabel
+@onready var _range: Label = $RangeLabel
 @onready var _luck: Label = $LuckLabel
 @onready var _syn: Label = $SynLabel
 
@@ -24,6 +25,11 @@ func refresh_from_player(p: Node) -> void:
 		fr = float(p.stat_fire_rate_mult)
 	if "stat_move_speed_mult" in p:
 		mv = float(p.stat_move_speed_mult)
+	var ar: float = AttackRangeBalance.BASE_RADIUS_PX
+	if p.has_method("get_attack_range_radius"):
+		ar = p.get_attack_range_radius()
+	if _range != null:
+		_range.text = "程%.0f" % ar
 	if "stat_luck" in p:
 		lk = int(p.stat_luck)
 	if "stat_synergy_damage_mult" in p:

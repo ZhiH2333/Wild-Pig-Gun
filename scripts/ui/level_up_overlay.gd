@@ -80,6 +80,8 @@ func _on_pick(def: Dictionary) -> void:
 	var id: String = def["id"] as String
 	if id not in RunState.upgrade_ids:
 		RunState.upgrade_ids.append(id)
+	var utitle: String = str(def.get("title", id))
+	RunState.append_run_choice("level_up", RunState.wave_index, id, utitle, _active_level)
 	_picked_for_active = true
 	for c in upgrade_row.get_children():
 		if c is ItemCard:

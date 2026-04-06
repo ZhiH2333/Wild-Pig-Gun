@@ -1,6 +1,6 @@
 extends Node2D
 
-## 武器脚本：自动向最近敌人发射子弹（支持武器表 / 羁绊 / 材料转伤害）
+## 武器脚本：自动发射子弹；多枪/多发时按距离优先把不同弹丸分给不同敌人（支持武器表 / 羁绊 / 材料转伤害）
 
 var projectile_scene: PackedScene = preload("res://scenes/projectile.tscn")
 var weapon_id: String = "rifle"
@@ -73,41 +73,66 @@ func _draw() -> void:
 	draw_rect(Rect2(0, -4, 24, 8), Color(1.0, 0.85, 0.2, 1.0))
 
 
-func find_nearest_enemy(enemies: Array, from_pos: Vector2) -> Node2D:
-	var nearest: Node2D = null
-	var min_dist: float = INF
-	for e in enemies:
-		var d: float = from_pos.distance_to(e.global_position)
-		if d < min_dist:
-			min_dist = d
-			nearest = e
-	return nearest
+func _collect_enemies_sorted_by_distance(from_pos: Vector2) -> Array[Node2D]:
+	var result: Array[Node2D] = []
+	for n in get_tree().get_nodes_in_group("enemies"):
+		if n is Node2D:
+			result.append(n as Node2D)
+	result.sort_custom(func(a: Node2D, b: Node2D) -> bool:
+		return from_pos.distance_squared_to(a.global_position) < from_pos.distance_squared_to(b.global_position)
+	)
+	return result
+
+
+## 本武器在 WeaponLoadout 中「投射物武器」里的序号（0=最近敌人优先槽，1=次近…）
+func _projectile_weapon_slot() -> int:
+	var lo: Node = get_parent()
+	if lo == null:
+		return 0
+	var idx: int = 0
+	for c in lo.get_children():
+		if c == self:
+			return idx
+		if not ("weapon_id" in c):
+			continue
+		var def: Dictionary = WeaponCatalog.find_def(str(c.weapon_id))
+		if str(def.get("kind", "projectile")) != "projectile":
+			continue
+		idx += 1
+	return idx
 
 
 func _on_fire_timer_timeout() -> void:
 	_sync_fire_timer_wait()
-	var enemies: Array = get_tree().get_nodes_in_group("enemies")
-	var target: Node2D = find_nearest_enemy(enemies, global_position)
-	if target == null:
+	var sorted_enemies: Array[Node2D] = _collect_enemies_sorted_by_distance(global_position)
+	if sorted_enemies.is_empty():
 		return
-	_fire(target)
+	_fire_distributed(sorted_enemies)
 
 
-func _fire(target: Node2D) -> void:
+func _fire_distributed(sorted_enemies: Array[Node2D]) -> void:
 	var container: Node = _get_projectile_container()
-	var base_dir: Vector2 = (target.global_position - global_position).normalized()
 	var total_dmg: int = _effective_damage()
 	var n: int = maxi(1, _pellet_count)
 	var per_pellet: int = maxi(1, int(round(float(total_dmg) / float(n))))
+	var ec: int = sorted_enemies.size()
+	var slot: int = _projectile_weapon_slot()
 	var half_spread: float = deg_to_rad(_spread_deg) * 0.5
 	GameAudio.play_shoot()
+	if ec == 1:
+		var base_dir: Vector2 = (sorted_enemies[0].global_position - global_position).normalized()
+		for i in range(n):
+			var ang: float = 0.0
+			if n > 1:
+				var u: float = float(i) / float(n - 1)
+				ang = lerpf(-half_spread, half_spread, u)
+			_spawn_projectile(container, base_dir.rotated(ang), per_pellet, _pierce_extra)
+		return
 	for i in range(n):
-		var ang: float = 0.0
-		if n > 1:
-			var u: float = float(i) / float(n - 1)
-			ang = lerpf(-half_spread, half_spread, u)
-		var dir: Vector2 = base_dir.rotated(ang)
-		_spawn_projectile(container, dir, per_pellet, _pierce_extra)
+		var ei: int = (slot + i) % ec
+		var target: Node2D = sorted_enemies[ei]
+		var base_dir: Vector2 = (target.global_position - global_position).normalized()
+		_spawn_projectile(container, base_dir, per_pellet, _pierce_extra)
 
 
 func _spawn_projectile(container: Node, dir: Vector2, dmg: int, pierce: int) -> void:
