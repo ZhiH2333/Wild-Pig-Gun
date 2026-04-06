@@ -241,6 +241,7 @@ func _begin_boss_spawn_async(boss_type: String) -> void:
 ## 通关（需求 7.5）
 func _on_all_waves_cleared() -> void:
 	await get_tree().create_timer(1.0).timeout
+	RunState.capture_endgame_from_player(player)
 	if ResourceLoader.exists("res://scenes/victory.tscn"):
 		get_tree().change_scene_to_file("res://scenes/victory.tscn")
 	elif ResourceLoader.exists("res://scenes/game_over.tscn"):
@@ -397,6 +398,7 @@ func _on_player_died() -> void:
 	GameAudio.play_die()
 	wave_manager.is_wave_active = false
 	await get_tree().create_timer(1.0).timeout
+	RunState.capture_endgame_from_player(player)
 	if ResourceLoader.exists("res://scenes/game_over.tscn"):
 		get_tree().change_scene_to_file("res://scenes/game_over.tscn")
 
