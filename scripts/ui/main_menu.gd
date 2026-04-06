@@ -4,7 +4,7 @@ extends Control
 
 
 func _ready() -> void:
-	MenuBgm.ensure_playing_main_volume()
+	GameMusic.ensure_playing_main_volume()
 	var continue_btn: Button = $ButtonColumn/ContinueButton
 	continue_btn.pressed.connect(_on_continue_pressed)
 	_refresh_continue_button()
@@ -27,17 +27,16 @@ func _refresh_continue_button() -> void:
 
 
 func _on_continue_pressed() -> void:
-	MenuBgm.stop()
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")
 
 
 func _on_start_pressed() -> void:
-	MenuBgm.duck_for_subpage()
+	GameMusic.duck_for_subpage()
 	get_tree().change_scene_to_file("res://scenes/char_select.tscn")
 
 
 func _on_settings_pressed() -> void:
-	MenuBgm.duck_for_subpage()
+	GameMusic.duck_for_subpage()
 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 func _on_progress_pressed() -> void:

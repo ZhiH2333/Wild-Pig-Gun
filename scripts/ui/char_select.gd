@@ -5,7 +5,7 @@ extends Control
 
 
 func _ready() -> void:
-	MenuBgm.duck_for_subpage()
+	GameMusic.duck_for_subpage()
 	for c in character_vbox.get_children():
 		c.queue_free()
 	for c in CharacterData.list_characters():
@@ -23,12 +23,11 @@ func _ready() -> void:
 
 
 func _on_back_button_pressed() -> void:
-	MenuBgm.ensure_playing_main_volume()
+	GameMusic.ensure_playing_main_volume()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 
 func _on_character_chosen(character_id: String) -> void:
 	var risk: float = 1.25 if risk_check.button_pressed else 1.0
 	RunState.begin_new_run(character_id, risk)
-	MenuBgm.stop()
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")

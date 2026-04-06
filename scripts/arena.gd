@@ -37,8 +37,6 @@ const RUN_SNAPSHOT_VERSION: int = 1
 @onready var level_up_overlay: CanvasLayer = $LevelUpOverlay
 @onready var wave_manager: WaveManager = $WaveManager
 @onready var enemy_pool: Node = $EnemyPool
-@onready var bgm_player: AudioStreamPlayer = $BgmPlayer
-
 ## 预加载的敌人场景缓存
 var _loaded_enemy_scenes: Dictionary = {}
 var _spawn_warning_scene: PackedScene = null
@@ -49,11 +47,7 @@ func _ready() -> void:
 	add_to_group("arena")
 	_wave_cfg = WaveData.load_config()
 	_preload_scenes()
-	if bgm_player != null:
-		var s: AudioStream = bgm_player.stream
-		if s is AudioStreamMP3:
-			(s as AudioStreamMP3).loop = true
-		bgm_player.play()
+	GameMusic.enter_battle()
 	if player:
 		player.died.connect(_on_player_died)
 	var resume_run: bool = SaveManager.has_pending_run()
