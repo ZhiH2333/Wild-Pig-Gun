@@ -23,29 +23,51 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.06, 0.14, 0.1, 1)
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="RootVBox" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -120.0
-offset_right = 300.0
-offset_bottom = 120.0
+offset_left = -360.0
+offset_top = -300.0
+offset_right = 360.0
+offset_bottom = 300.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 12
 
-[node name="StatsLabel" type="Label" parent="VBox"]
+[node name="TitleLabel" type="Label" parent="RootVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.98, 0.9, 1)
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 38
 text = "通关"
 horizontal_alignment = 1
 
-[node name="MainMenuButton" type="Button" parent="VBox"]
+[node name="SummaryLabel" type="Label" parent="RootVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.95, 0.88, 1)
+theme_override_font_sizes/font_size = 20
+text = "摘要"
+horizontal_alignment = 1
+
+[node name="DetailText" type="TextEdit" parent="RootVBox"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.88, 0.96, 0.9, 1)
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+wrap_mode = 1
+virtual_keyboard_enabled = false
+
+[node name="MainMenuButton" type="Button" parent="RootVBox"]
 custom_minimum_size = Vector2(320, 56)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "返回主菜单"
