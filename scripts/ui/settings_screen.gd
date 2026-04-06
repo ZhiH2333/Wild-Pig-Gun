@@ -7,6 +7,7 @@ extends Control
 @onready var ui_scale_value: Label = $Center/MainColumn/Scroll/Contents/UiScaleRow/UiScaleValue
 @onready var fullscreen_check: CheckBox = $Center/MainColumn/Scroll/Contents/FullscreenCheck
 @onready var vsync_check: CheckBox = $Center/MainColumn/Scroll/Contents/VsyncCheck
+@onready var mobile_controls_check: CheckBox = $Center/MainColumn/Scroll/Contents/MobileControlsCheck
 @onready var back_button: Button = $Center/MainColumn/BackButton
 
 
@@ -17,6 +18,7 @@ func _ready() -> void:
 	ui_scale_slider.value_changed.connect(_on_ui_scale_changed)
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
 	vsync_check.toggled.connect(_on_vsync_toggled)
+	mobile_controls_check.toggled.connect(_on_mobile_controls_toggled)
 	back_button.pressed.connect(_on_back_pressed)
 	master_slider.value = GameSettings.master_linear
 	music_slider.value = GameSettings.music_linear
@@ -24,6 +26,7 @@ func _ready() -> void:
 	ui_scale_slider.value = GameSettings.ui_scale
 	fullscreen_check.button_pressed = GameSettings.fullscreen
 	vsync_check.button_pressed = GameSettings.vsync_enabled
+	mobile_controls_check.button_pressed = GameSettings.mobile_controls_enabled
 	_refresh_ui_scale_label()
 	if OS.get_name() == "Web":
 		fullscreen_check.visible = false
@@ -53,6 +56,10 @@ func _on_fullscreen_toggled(pressed: bool) -> void:
 
 func _on_vsync_toggled(pressed: bool) -> void:
 	GameSettings.set_vsync_enabled(pressed)
+
+
+func _on_mobile_controls_toggled(pressed: bool) -> void:
+	GameSettings.set_mobile_controls_enabled(pressed)
 
 
 func _refresh_ui_scale_label() -> void:

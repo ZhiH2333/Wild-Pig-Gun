@@ -1,5 +1,7 @@
 extends Node
 
+signal music_linear_changed(new_value: float)
+signal mobile_controls_changed(enabled: bool)
 const SETTINGS_PATH: String = "user://game_settings.json"
 const UI_SCALE_MIN: float = 0.75
 const UI_SCALE_MAX: float = 1.45
@@ -11,6 +13,7 @@ var sfx_linear: float = 1.0
 var fullscreen: bool = false
 var vsync_enabled: bool = true
 var ui_scale: float = UI_SCALE_DEFAULT
+var mobile_controls_enabled: bool = false
 
 
 func _ready() -> void:
@@ -37,6 +40,7 @@ func load_from_disk() -> void:
 	fullscreen = bool(dict.get("fullscreen", false))
 	vsync_enabled = bool(dict.get("vsync_enabled", true))
 	ui_scale = clampf(float(dict.get("ui_scale", UI_SCALE_DEFAULT)), UI_SCALE_MIN, UI_SCALE_MAX)
+	mobile_controls_enabled = bool(dict.get("mobile_controls_enabled", false))
 
 
 func save_to_disk() -> void:
@@ -47,6 +51,7 @@ func save_to_disk() -> void:
 		"fullscreen": fullscreen,
 		"vsync_enabled": vsync_enabled,
 		"ui_scale": ui_scale,
+		"mobile_controls_enabled": mobile_controls_enabled,
 	}
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
 	if f == null:
@@ -88,6 +93,12 @@ func set_ui_scale(value: float) -> void:
 	ui_scale = clampf(value, UI_SCALE_MIN, UI_SCALE_MAX)
 	_apply_ui_scale()
 	save_to_disk()
+
+
+func set_mobile_controls_enabled(enabled: bool) -> void:
+	mobile_controls_enabled = enabled
+	save_to_disk()
+	mobile_controls_changed.emit(mobile_controls_enabled)
 
 
 func _apply_all() -> void:
