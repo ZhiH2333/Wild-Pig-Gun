@@ -1,8 +1,7 @@
-[gd_scene load_steps=19 format=3 uid="uid://rena"]
+[gd_scene load_steps=18 format=3 uid="uid://rena"]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/arena/arena_backdrop.gd" id="14_backdrop"]
-[ext_resource type="AudioStream" uid="uid://brci8d1tksvmd" path="res://assets/audio/war.mp3" id="12_war_bgm"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/player/weapon_loadout.gd" id="3_loadout"]
 [ext_resource type="PackedScene" uid="uid://b8kq2debugmenu1" path="res://scenes/ui/debug_menu.tscn" id="15_debug_menu"]
@@ -302,9 +301,5 @@ offset_bottom = -20.0
 grow_vertical = 0
 mouse_filter = 0
 script = ExtResource("9_vjoy")
-
-[node name="BgmPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("12_war_bgm")
-bus = &"Music"
 
 [node name="DebugMenu" parent="." instance=ExtResource("15_debug_menu")]
