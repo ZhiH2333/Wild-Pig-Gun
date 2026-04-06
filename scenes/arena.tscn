@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://scripts/ui/level_up_overlay.gd" id="10_levelup"]
 [ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="11_ui"]
 [ext_resource type="Script" path="res://scripts/ui/pause_overlay_menu.gd" id="13_pause_menu"]
+[ext_resource type="Script" path="res://scripts/ui/mobile_pause_button.gd" id="16_mobile_pause"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
@@ -306,5 +307,24 @@ script = ExtResource("9_vjoy")
 [node name="BgmPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("12_war_bgm")
 bus = &"Music"
+
+[node name="MobilePauseButton" type="Button" parent="VirtualJoystickLayer"]
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -110.0
+offset_top = -112.0
+offset_right = 110.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 0
+focus_mode = 0
+theme_override_font_sizes/font_size = 30
+text = "暂停"
+script = ExtResource("16_mobile_pause")
 
 [node name="DebugMenu" parent="." instance=ExtResource("15_debug_menu")]

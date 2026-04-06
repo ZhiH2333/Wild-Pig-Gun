@@ -145,6 +145,10 @@ text = "全屏（桌面）"
 theme_override_font_sizes/font_size = 22
 text = "垂直同步"
 
+[node name="MobileControlsCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_font_sizes/font_size = 22
+text = "启用虚拟摇杆与暂停按钮（支持鼠标拖动）"
+
 [node name="GameplayHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
 theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
 theme_override_font_sizes/font_size = 26
