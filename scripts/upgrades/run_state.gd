@@ -25,6 +25,11 @@ var run_start_ticks_msec: int = 0
 ## 暂停来源：用户 ESC 与波间界面互斥
 var pause_reason: PauseReason = PauseReason.NONE
 var upgrade_ids: Array[String] = []
+## 局内构筑时间线：波间三选一、商店购买、升级弹窗（用于结算界面展示）
+var run_choice_log: Array = []
+## 进入结算页面前由 Arena 写入：武器显示名与属性快照
+var last_endgame_weapon_labels: PackedStringArray = PackedStringArray()
+var last_endgame_stats: Dictionary = {}
 var run_seed: int = 0
 
 # 玩家血量（由 Player 节点自身管理，RunState 仅作镜像用于存档）
@@ -49,6 +54,9 @@ func begin_new_run(p_character_id: String = "default", risk_mult: float = 1.0) -
 	wave_index = 0
 	gold = 0
 	upgrade_ids.clear()
+	run_choice_log.clear()
+	last_endgame_weapon_labels.clear()
+	last_endgame_stats.clear()
 	run_seed = randi()
 	run_start_ticks_msec = Time.get_ticks_msec()
 	pause_reason = PauseReason.NONE
@@ -92,21 +100,85 @@ func try_toggle_user_pause(arena: Node) -> void:
 func get_run_elapsed_seconds() -> float:
 	return (Time.get_ticks_msec() - run_start_ticks_msec) / 1000.0
 
-func _register_default_input_actions() -> void:
-	if InputMap.has_action("move_up"):
+
+## kind: wave_upgrade | shop | level_up；wave 为「第几波」语境（波间为刚结束的波次）
+func append_run_choice(kind: String, wave: int, upgrade_id: String, title: String, player_level: int = -1) -> void:
+	var entry: Dictionary = {
+		"kind": kind,
+		"wave": wave,
+		"id": upgrade_id,
+		"title": title,
+	}
+	if player_level >= 0:
+		entry["player_level"] = player_level
+	run_choice_log.append(entry)
+
+
+## 切换至结算场景前调用，保存武器与属性供 UI 读取（玩家节点即将销毁）
+func capture_endgame_from_player(player: Node) -> void:
+	last_endgame_weapon_labels.clear()
+	last_endgame_stats.clear()
+	if player == null:
 		return
-	InputMap.add_action("move_up", 0.2)
-	InputMap.add_action("move_down", 0.2)
-	InputMap.add_action("move_left", 0.2)
-	InputMap.add_action("move_right", 0.2)
-	InputMap.add_action("pause_game", 0.2)
-	InputMap.add_action("confirm", 0.2)
-	_add_key_to_action("move_up", [KEY_W, KEY_UP])
-	_add_key_to_action("move_down", [KEY_S, KEY_DOWN])
-	_add_key_to_action("move_left", [KEY_A, KEY_LEFT])
-	_add_key_to_action("move_right", [KEY_D, KEY_RIGHT])
-	_add_key_to_action("pause_game", [KEY_ESCAPE])
-	_add_key_to_action("confirm", [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE])
+	var lo: Node = player.get_node_or_null("WeaponLoadout")
+	if lo != null:
+		for c in lo.get_children():
+			if "weapon_id" in c:
+				var wid: String = str(c.weapon_id)
+				var def: Dictionary = WeaponCatalog.find_def(wid)
+				var disp: String = str(def.get("display_name", def.get("id", wid)))
+				last_endgame_weapon_labels.append(disp)
+	last_endgame_stats = {
+		"max_hp": player.max_hp,
+		"current_hp": player.current_hp,
+		"stat_damage_mult": player.stat_damage_mult,
+		"stat_move_speed_mult": player.stat_move_speed_mult,
+		"stat_fire_rate_mult": player.stat_fire_rate_mult,
+		"stat_pickup_radius_bonus": player.stat_pickup_radius_bonus,
+		"stat_attack_range_bonus": player.stat_attack_range_bonus,
+		"stat_harvest": player.stat_harvest,
+		"stat_luck": player.stat_luck,
+		"shop_price_mult": player.shop_price_mult,
+		"material_to_damage_kv": player.material_to_damage_kv,
+		"stat_synergy_damage_mult": player.stat_synergy_damage_mult,
+		"stat_hp_regen_per_sec": player.stat_hp_regen_per_sec,
+		"stat_crit_chance": player.stat_crit_chance,
+		"stat_crit_mult": player.stat_crit_mult,
+		"stat_fire_damage_mult": player.stat_fire_damage_mult,
+		"stat_burn_dps_flat": player.stat_burn_dps_flat,
+		"stat_ice_damage_mult": player.stat_ice_damage_mult,
+		"stat_ice_duration_bonus": player.stat_ice_duration_bonus,
+		"stat_poison_damage_mult": player.stat_poison_damage_mult,
+		"stat_poison_dps_flat": player.stat_poison_dps_flat,
+		"stat_poison_duration_pct": player.stat_poison_duration_pct,
+		"stat_shock_damage_mult": player.stat_shock_damage_mult,
+		"stat_shock_vuln_apply_flat": player.stat_shock_vuln_apply_flat,
+		"player_level": player_level,
+		"player_xp": player_xp,
+	}
+
+func _register_default_input_actions() -> void:
+	if not InputMap.has_action("move_up"):
+		InputMap.add_action("move_up", 0.2)
+		InputMap.add_action("move_down", 0.2)
+		InputMap.add_action("move_left", 0.2)
+		InputMap.add_action("move_right", 0.2)
+		InputMap.add_action("pause_game", 0.2)
+		InputMap.add_action("confirm", 0.2)
+		_add_key_to_action("move_up", [KEY_W, KEY_UP])
+		_add_key_to_action("move_down", [KEY_S, KEY_DOWN])
+		_add_key_to_action("move_left", [KEY_A, KEY_LEFT])
+		_add_key_to_action("move_right", [KEY_D, KEY_RIGHT])
+		_add_key_to_action("pause_game", [KEY_ESCAPE])
+		_add_key_to_action("confirm", [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE])
+	_ensure_attack_range_preview_action()
+
+
+func _ensure_attack_range_preview_action() -> void:
+	if InputMap.has_action("show_attack_range"):
+		return
+	InputMap.add_action("show_attack_range", 0.2)
+	_add_key_to_action("show_attack_range", [KEY_R])
 
 func _add_key_to_action(action_name: String, keycodes: Array) -> void:
 	for keycode in keycodes:
@@ -177,6 +249,7 @@ func to_snapshot_dict() -> Dictionary:
 		"gold": gold,
 		"run_start_ticks_msec": run_start_ticks_msec,
 		"upgrade_ids": upgrade_ids.duplicate(),
+		"run_choice_log": run_choice_log.duplicate(true),
 		"run_seed": run_seed,
 		"player_max_hp": player_max_hp,
 		"player_current_hp": player_current_hp,
@@ -206,6 +279,12 @@ func apply_snapshot_dict(d: Dictionary) -> void:
 	if raw_up is Array:
 		for x in raw_up as Array:
 			upgrade_ids.append(str(x))
+	run_choice_log.clear()
+	var raw_log: Variant = d.get("run_choice_log", [])
+	if raw_log is Array:
+		for item in raw_log as Array:
+			if item is Dictionary:
+				run_choice_log.append((item as Dictionary).duplicate(true))
 	pause_reason = PauseReason.NONE
 
 

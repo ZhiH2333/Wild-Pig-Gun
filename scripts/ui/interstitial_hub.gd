@@ -22,6 +22,8 @@ var _shop_offers: Array = []
 var _next_wave_for_shop: int = 1
 var _shop_confirm: ConfirmationDialog
 var _pending_shop_def: Dictionary = {}
+## 当前波间界面所对应的「刚结束的波次」，用于构筑日志分组
+var _finished_wave_for_log: int = 0
 
 
 func set_player(p: Node) -> void:
@@ -46,6 +48,7 @@ func _ready() -> void:
 
 
 func show_for_finished_wave(finished_wave_index: int) -> void:
+	_finished_wave_for_log = finished_wave_index
 	title_label.text = "第 %d 波结束" % finished_wave_index
 	_next_wave_for_shop = finished_wave_index + 1
 	_upgrade_picked = false
@@ -118,6 +121,10 @@ func _on_shop_confirm_buy() -> void:
 	if not RunState.try_spend_material(price):
 		return
 	BuildCatalog.apply_shop_def(_player, def)
+	var sid: String = str(def.get("id", ""))
+	var stitle: String = str(def.get("title", sid))
+	if not sid.is_empty():
+		RunState.append_run_choice("shop", _finished_wave_for_log, sid, stitle)
 	_rebuild_shop_rows()
 
 
@@ -157,6 +164,8 @@ func _on_upgrade_button_pressed(def: Dictionary) -> void:
 	var id: String = def["id"] as String
 	if id not in RunState.upgrade_ids:
 		RunState.upgrade_ids.append(id)
+	var utitle: String = str(def.get("title", id))
+	RunState.append_run_choice("wave_upgrade", _finished_wave_for_log, id, utitle)
 	_upgrade_picked = true
 	continue_btn.disabled = false
 	continue_btn.custom_minimum_size = Vector2(380, 58)

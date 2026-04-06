@@ -12,6 +12,7 @@ extends Control
 
 
 func _ready() -> void:
+	GameMusic.duck_for_subpage()
 	master_slider.value_changed.connect(_on_master_changed)
 	music_slider.value_changed.connect(_on_music_changed)
 	sfx_slider.value_changed.connect(_on_sfx_changed)
@@ -67,4 +68,5 @@ func _refresh_ui_scale_label() -> void:
 
 
 func _on_back_pressed() -> void:
+	GameMusic.ensure_playing_main_volume()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

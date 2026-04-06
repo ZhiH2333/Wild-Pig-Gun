@@ -20,6 +20,8 @@ var stat_damage_mult: float = 1.0
 var stat_move_speed_mult: float = 1.0
 var stat_fire_rate_mult: float = 1.0
 var stat_pickup_radius_bonus: float = 0.0
+## 攻击范围半径加成（像素），商店「瞄准线圈」等叠加；总半径见 get_attack_range_radius()
+var stat_attack_range_bonus: float = 0.0
 ## 每波结束额外材料系数（收获 Harvest）
 var stat_harvest: float = 0.0
 ## 影响商店高 tier 权重
@@ -47,10 +49,10 @@ var stat_shock_damage_mult: float = 1.0
 var stat_shock_vuln_apply_flat: float = 0.0
 ## 当前帧的操作描述（供调试覆盖层读取）
 var _debug_action: String = "待机"
-var _walk_sfx_cooldown: float = 0.0
 var _hp_regen_accum: float = 0.0
 
 @onready var invincibility_timer: Timer = $InvincibilityTimer
+@onready var hurt_feedback: CanvasLayer = $HurtFeedback
 
 
 func _ready() -> void:
@@ -64,13 +66,6 @@ func _physics_process(delta: float) -> void:
 	var direction := _get_input_direction()
 	velocity = direction * SPEED * stat_move_speed_mult
 	move_and_slide()
-	if direction.length_squared() > 0.001:
-		_walk_sfx_cooldown -= delta
-		if _walk_sfx_cooldown <= 0.0:
-			GameAudio.play_walk()
-			_walk_sfx_cooldown = 0.38
-	else:
-		_walk_sfx_cooldown = 0.0
 	# 边界约束（需求 1.4）
 	var arena_rect := _get_arena_rect()
 	position = _apply_boundary_clamp(position, arena_rect)
@@ -147,6 +142,13 @@ func get_pickup_collect_radius() -> float:
 	return 12.0 + stat_pickup_radius_bonus
 
 
+func get_attack_range_radius() -> float:
+	return maxf(
+		AttackRangeBalance.MIN_RADIUS_PX,
+		AttackRangeBalance.BASE_RADIUS_PX + stat_attack_range_bonus
+	)
+
+
 func apply_run_snapshot_stats(d: Dictionary) -> void:
 	max_hp = maxi(1, int(d.get("max_hp", 100)))
 	current_hp = clampi(int(d.get("current_hp", max_hp)), 0, max_hp)
@@ -154,6 +156,7 @@ func apply_run_snapshot_stats(d: Dictionary) -> void:
 	stat_move_speed_mult = maxf(0.05, float(d.get("stat_move_speed_mult", 1.0)))
 	stat_fire_rate_mult = maxf(0.05, float(d.get("stat_fire_rate_mult", 1.0)))
 	stat_pickup_radius_bonus = float(d.get("stat_pickup_radius_bonus", 0.0))
+	stat_attack_range_bonus = float(d.get("stat_attack_range_bonus", 0.0))
 	stat_harvest = maxf(0.0, float(d.get("stat_harvest", 0.0)))
 	stat_luck = int(d.get("stat_luck", 0))
 	shop_price_mult = maxf(0.01, float(d.get("shop_price_mult", 1.0)))
@@ -216,7 +219,7 @@ func take_damage(amount: int) -> void:
 	GameAudio.play_hurt_player()
 	# 扣血，不低于 0（需求 4.2）
 	current_hp = max(0, current_hp - amt)
-	_brief_screen_shake()
+	_play_hurt_feedback()
 	_debug_action = "受伤 -%d → HP:%d" % [amt, current_hp]
 	emit_signal("hp_changed", current_hp, max_hp)
 	# 血量归零时触发死亡（需求 4.4）
@@ -229,15 +232,22 @@ func take_damage(amount: int) -> void:
 	invincibility_timer.start()
 
 
-func _brief_screen_shake() -> void:
+func _play_hurt_feedback() -> void:
+	_screen_shake_hit()
+	if hurt_feedback != null and hurt_feedback.has_method("play_impact"):
+		hurt_feedback.play_impact()
+
+
+func _screen_shake_hit() -> void:
 	var cam: Camera2D = get_node_or_null("Camera2D") as Camera2D
 	if cam == null:
 		return
 	var tw: Tween = create_tween()
-	cam.offset = Vector2(7, -5)
+	cam.offset = Vector2(12, -9)
 	tw.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tw.tween_property(cam, "offset", Vector2(-4, 4), 0.05)
-	tw.tween_property(cam, "offset", Vector2.ZERO, 0.09)
+	tw.tween_property(cam, "offset", Vector2(-8, 7), 0.06)
+	tw.tween_property(cam, "offset", Vector2(5, -4), 0.08)
+	tw.tween_property(cam, "offset", Vector2.ZERO, 0.12)
 
 
 ## 无敌帧结束

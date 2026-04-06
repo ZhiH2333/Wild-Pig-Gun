@@ -1,12 +1,11 @@
 extends Node
-class_name DamagePopupSpawner
 
-## DamagePopup 生成器单例，解耦伤害计算与 UI 表现
+## DamagePopup 生成器；由 autoload 注册为全局 DamagePopupSpawner（勿加同名 class_name）
 
 const POPUP_SCENE_PATH: String = "res://scenes/ui/damage_popup.tscn"
 
 
-static func spawn(world_position: Vector2, amount: int, is_crit: bool, parent: Node) -> void:
+func spawn(world_position: Vector2, amount: int, is_crit: bool, parent: Node) -> void:
 	if not ResourceLoader.exists(POPUP_SCENE_PATH):
 		push_error("[DamagePopupSpawner] 场景文件不存在: " + POPUP_SCENE_PATH)
 		return

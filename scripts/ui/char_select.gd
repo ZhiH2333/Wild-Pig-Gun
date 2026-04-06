@@ -5,6 +5,7 @@ extends Control
 
 
 func _ready() -> void:
+	GameMusic.duck_for_subpage()
 	for c in character_vbox.get_children():
 		c.queue_free()
 	for c in CharacterData.list_characters():
@@ -22,6 +23,7 @@ func _ready() -> void:
 
 
 func _on_back_button_pressed() -> void:
+	GameMusic.ensure_playing_main_volume()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 

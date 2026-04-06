@@ -69,6 +69,7 @@ func set_music_linear(value: float) -> void:
 	music_linear = clampf(value, 0.0, 1.0)
 	_apply_audio_buses()
 	save_to_disk()
+	music_linear_changed.emit(music_linear)
 
 
 func set_sfx_linear(value: float) -> void:

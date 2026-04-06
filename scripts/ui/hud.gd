@@ -159,6 +159,10 @@ func _refresh_stats() -> void:
 		stat_strip.refresh_from_player(_player)
 
 
+func refresh_player_stats() -> void:
+	_refresh_stats()
+
+
 func on_wave_timer_reset(duration_sec: float) -> void:
 	if wave_timer_bar == null:
 		return
