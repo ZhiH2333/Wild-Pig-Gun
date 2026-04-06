@@ -49,7 +49,6 @@ var stat_shock_damage_mult: float = 1.0
 var stat_shock_vuln_apply_flat: float = 0.0
 ## 当前帧的操作描述（供调试覆盖层读取）
 var _debug_action: String = "待机"
-var _walk_sfx_cooldown: float = 0.0
 var _hp_regen_accum: float = 0.0
 
 @onready var invincibility_timer: Timer = $InvincibilityTimer
@@ -67,13 +66,6 @@ func _physics_process(delta: float) -> void:
 	var direction := _get_input_direction()
 	velocity = direction * SPEED * stat_move_speed_mult
 	move_and_slide()
-	if direction.length_squared() > 0.001:
-		_walk_sfx_cooldown -= delta
-		if _walk_sfx_cooldown <= 0.0:
-			GameAudio.play_walk()
-			_walk_sfx_cooldown = 0.38
-	else:
-		_walk_sfx_cooldown = 0.0
 	# 边界约束（需求 1.4）
 	var arena_rect := _get_arena_rect()
 	position = _apply_boundary_clamp(position, arena_rect)

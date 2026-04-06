@@ -2,7 +2,6 @@ extends Node
 
 const STREAM_SHOOT: AudioStream = preload("res://assets/audio/shoot.mp3")
 const STREAM_DIE: AudioStream = preload("res://assets/audio/die.mp3")
-const STREAM_WALK: AudioStream = preload("res://assets/audio/walk.mp3")
 const STREAM_UI: AudioStream = preload("res://assets/audio/ui_select.mp3")
 
 var _players: Array[AudioStreamPlayer] = []
@@ -41,10 +40,6 @@ func play_shoot() -> void:
 
 func play_die() -> void:
 	play_sfx(STREAM_DIE, -2.0)
-
-
-func play_walk() -> void:
-	play_sfx(STREAM_WALK, -10.0)
 
 
 func play_ui_hover() -> void:
