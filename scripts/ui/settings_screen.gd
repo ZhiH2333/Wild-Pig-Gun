@@ -68,5 +68,15 @@ func _refresh_ui_scale_label() -> void:
 
 
 func _on_back_pressed() -> void:
-	GameMusic.ensure_playing_main_volume()
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	if bool(get_meta("in_game_overlay", false)):
+		var arena: Node = get_tree().get_first_node_in_group("arena")
+		if arena != null and arena.has_method("close_in_game_settings"):
+			arena.close_in_game_settings()
+		return
+	var target_scene: String = RunState.settings_return_scene_path
+	if target_scene.is_empty():
+		target_scene = "res://scenes/main_menu.tscn"
+	if target_scene == "res://scenes/main_menu.tscn":
+		GameMusic.ensure_playing_main_volume()
+	RunState.settings_return_scene_path = "res://scenes/main_menu.tscn"
+	get_tree().change_scene_to_file(target_scene)

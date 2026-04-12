@@ -25,6 +25,7 @@ const ENEMY_SCENE_MAP: Dictionary = {
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
 const BOSS_SPAWN_WARNING_SEC: float = 0.8
 const RUN_SNAPSHOT_VERSION: int = 1
+const SETTINGS_SCENE_PATH: String = "res://scenes/settings.tscn"
 
 @onready var enemy_container: Node2D = $EnemyContainer
 @onready var projectile_container: Node2D = $ProjectileContainer
@@ -41,6 +42,7 @@ const RUN_SNAPSHOT_VERSION: int = 1
 var _loaded_enemy_scenes: Dictionary = {}
 var _spawn_warning_scene: PackedScene = null
 var _wave_cfg: Dictionary = {}
+var _in_game_settings_layer: Control = null
 
 
 func _ready() -> void:
@@ -250,10 +252,45 @@ func _on_all_waves_cleared() -> void:
 
 func show_pause_overlay() -> void:
 	pause_overlay.visible = true
+	var center_container: CanvasItem = pause_overlay.get_node_or_null("CenterContainer")
+	if center_container != null:
+		center_container.visible = true
 
 
 func hide_pause_overlay() -> void:
 	pause_overlay.visible = false
+
+
+func open_in_game_settings() -> void:
+	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
+		return
+	if not ResourceLoader.exists(SETTINGS_SCENE_PATH):
+		return
+	var scene: PackedScene = load(SETTINGS_SCENE_PATH) as PackedScene
+	if scene == null:
+		return
+	var settings_layer: Control = scene.instantiate() as Control
+	if settings_layer == null:
+		return
+	pause_overlay.visible = true
+	var center_container: CanvasItem = pause_overlay.get_node_or_null("CenterContainer")
+	if center_container != null:
+		center_container.visible = false
+	settings_layer.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+	settings_layer.set_meta("in_game_overlay", true)
+	settings_layer.mouse_filter = Control.MOUSE_FILTER_STOP
+	pause_overlay.add_child(settings_layer)
+	_in_game_settings_layer = settings_layer
+
+
+func close_in_game_settings() -> void:
+	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
+		_in_game_settings_layer.queue_free()
+	_in_game_settings_layer = null
+	var center_container: CanvasItem = pause_overlay.get_node_or_null("CenterContainer")
+	if center_container != null:
+		center_container.visible = true
+	show_pause_overlay()
 
 
 func build_run_snapshot() -> Dictionary:
@@ -386,6 +423,9 @@ func _restore_weapon_loadout(weapon_ids: Array) -> void:
 
 
 func _on_pause_resume_pressed() -> void:
+	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
+		close_in_game_settings()
+		return
 	RunState.try_toggle_user_pause(self)
 
 

@@ -177,4 +177,4 @@ autowrap_mode = 3
 
 [node name="BackButton" type="Button" parent="Center/MainColumn"]
 custom_minimum_size = Vector2(280, 52)
-text = "返回主菜单"
+text = "返回"

@@ -37,6 +37,7 @@ func _on_start_pressed() -> void:
 
 func _on_settings_pressed() -> void:
 	GameMusic.duck_for_subpage()
+	RunState.settings_return_scene_path = "res://scenes/main_menu.tscn"
 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 func _on_progress_pressed() -> void:
