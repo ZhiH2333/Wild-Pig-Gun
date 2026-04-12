@@ -152,6 +152,28 @@ theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
+[node name="ViewScaleRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_constants/separation = 12
+
+[node name="ViewScaleLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
+custom_minimum_size = Vector2(140, 0)
+theme_override_font_sizes/font_size = 22
+text = "视野范围"
+
+[node name="ViewScaleSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
+custom_minimum_size = Vector2(240, 32)
+size_flags_horizontal = 3
+min_value = 0.75
+max_value = 1.45
+step = 0.05
+value = 1.0
+
+[node name="ViewScaleValue" type="Label" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
+custom_minimum_size = Vector2(72, 0)
+theme_override_font_sizes/font_size = 22
+text = "100%"
+horizontal_alignment = 2
+
 [node name="FullscreenCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
 theme_override_font_sizes/font_size = 22
 text = "全屏（桌面）"
