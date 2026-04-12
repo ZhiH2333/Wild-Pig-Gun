@@ -43,6 +43,6 @@ func _draw() -> void:
 	draw_circle(Vector2(5, -3), 3.0, Color(1, 1, 1))
 	var font := ThemeDB.fallback_font
 	draw_string(font, Vector2(-26, 30), "[%s]" % enemy_type_name,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(0.7, 0.9, 1.0))
-	draw_string(font, Vector2(-26, 42), "盾:%d HP:%d/%d" % [shield_hp, current_hp, max_hp],
-		HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(0.75, 0.85, 0.95))
+		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_NAME, Color(0.7, 0.9, 1.0))
+	draw_string(font, Vector2(-26, 46), "盾:%d HP:%d/%d" % [shield_hp, current_hp, max_hp],
+		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_HP, Color(0.75, 0.85, 0.95))
