@@ -9,6 +9,10 @@ extends Control
 @onready var view_scale_value: Label = $Center/MainColumn/Scroll/Contents/ViewScaleRow/ViewScaleValue
 @onready var fullscreen_check: CheckBox = $Center/MainColumn/Scroll/Contents/FullscreenCheck
 @onready var vsync_check: CheckBox = $Center/MainColumn/Scroll/Contents/VsyncCheck
+@onready var vsync_fps_row: HBoxContainer = $Center/MainColumn/Scroll/Contents/VsyncFpsRow
+@onready var vsync_fps_slider: HSlider = $Center/MainColumn/Scroll/Contents/VsyncFpsRow/VsyncFpsSlider
+@onready var vsync_fps_value: Label = $Center/MainColumn/Scroll/Contents/VsyncFpsRow/VsyncFpsValue
+@onready var show_fps_check: CheckBox = $Center/MainColumn/Scroll/Contents/ShowFpsCheck
 @onready var mobile_controls_check: CheckBox = $Center/MainColumn/Scroll/Contents/MobileControlsCheck
 @onready var back_button: Button = $Center/MainColumn/BackButton
 
@@ -22,6 +26,8 @@ func _ready() -> void:
 	view_scale_slider.value_changed.connect(_on_view_scale_changed)
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
 	vsync_check.toggled.connect(_on_vsync_toggled)
+	vsync_fps_slider.value_changed.connect(_on_vsync_fps_changed)
+	show_fps_check.toggled.connect(_on_show_fps_toggled)
 	mobile_controls_check.toggled.connect(_on_mobile_controls_toggled)
 	back_button.pressed.connect(_on_back_pressed)
 	master_slider.value = GameSettings.master_linear
@@ -31,12 +37,17 @@ func _ready() -> void:
 	view_scale_slider.value = GameSettings.view_scale
 	fullscreen_check.button_pressed = GameSettings.fullscreen
 	vsync_check.button_pressed = GameSettings.vsync_enabled
+	vsync_fps_slider.value = GameSettings.vsync_fps
+	show_fps_check.button_pressed = GameSettings.show_fps
 	mobile_controls_check.button_pressed = GameSettings.mobile_controls_enabled
 	_refresh_ui_scale_label()
 	_refresh_view_scale_label()
+	_refresh_vsync_fps_label()
+	_refresh_vsync_fps_visibility()
 	if OS.get_name() == "Web":
 		fullscreen_check.visible = false
 		vsync_check.visible = false
+		vsync_fps_row.visible = false
 
 
 func _on_master_changed(v: float) -> void:
@@ -67,6 +78,16 @@ func _on_fullscreen_toggled(pressed: bool) -> void:
 
 func _on_vsync_toggled(pressed: bool) -> void:
 	GameSettings.set_vsync_enabled(pressed)
+	_refresh_vsync_fps_visibility()
+
+
+func _on_vsync_fps_changed(v: float) -> void:
+	GameSettings.set_vsync_fps(v)
+	_refresh_vsync_fps_label()
+
+
+func _on_show_fps_toggled(pressed: bool) -> void:
+	GameSettings.set_show_fps(pressed)
 
 
 func _on_mobile_controls_toggled(pressed: bool) -> void:
@@ -79,6 +100,14 @@ func _refresh_ui_scale_label() -> void:
 
 func _refresh_view_scale_label() -> void:
 	view_scale_value.text = "%d%%" % int(round(GameSettings.view_scale * 100.0))
+
+
+func _refresh_vsync_fps_label() -> void:
+	vsync_fps_value.text = "%d FPS" % GameSettings.vsync_fps
+
+
+func _refresh_vsync_fps_visibility() -> void:
+	vsync_fps_row.visible = vsync_check.button_pressed
 
 
 func _on_back_pressed() -> void:
