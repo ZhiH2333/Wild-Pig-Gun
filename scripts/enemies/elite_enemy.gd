@@ -94,6 +94,6 @@ func _draw() -> void:
 	var font := ThemeDB.fallback_font
 	var label := "[%s] P%d" % [enemy_type_name, current_phase]
 	draw_string(font, Vector2(-28, 44), label,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_NAME, Color(1.0, 0.9, 0.2))
-	draw_string(font, Vector2(-28, 60), "HP:%d/%d" % [current_hp, max_hp],
-		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_HP, Color(1.0, 0.7, 0.3))
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(1.0, 0.9, 0.2))
+	draw_string(font, Vector2(-28, 56), "HP:%d/%d" % [current_hp, max_hp],
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1.0, 0.7, 0.3))

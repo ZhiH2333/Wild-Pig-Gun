@@ -30,9 +30,6 @@ var _pulse_tween: Tween = null
 
 func _ready() -> void:
 	_icon.texture = FALLBACK_ICON
-	_title.add_theme_font_size_override("font_size", 25)
-	_desc.add_theme_font_size_override("font_size", 19)
-	_price.add_theme_font_size_override("font_size", 22)
 
 
 func setup_card(def: Dictionary, mode: String, price: int = -1, can_afford: bool = true) -> void:

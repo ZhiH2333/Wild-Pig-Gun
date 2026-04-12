@@ -21,7 +21,6 @@ const WEAPON_SLOT_SCENE: PackedScene = preload("res://scenes/ui/weapon_slot.tscn
 @onready var savings_label: Label = $RightTopPanel/SavingsLabel
 @onready var level_xp_label: Label = $RightTopPanel/LevelXpLabel
 @onready var toast_label: Label = $RightTopPanel/ToastLabel
-@onready var fps_label: Label = $FpsLabel
 
 var _toast_left: float = 0.0
 var _player: Node = null
@@ -59,20 +58,15 @@ func _ready() -> void:
 		push_error("[HUD] level_xp_label 节点路径失效，跳过等级显示")
 	if toast_label == null:
 		push_error("[HUD] toast_label 节点路径失效，跳过提示显示")
-	if fps_label == null:
-		push_error("[HUD] fps_label 节点路径失效，跳过 FPS 显示")
 
 	_apply_platform_margins()
 
 	RunState.wave_changed.connect(_on_wave_changed)
 	RunState.material_changed.connect(_on_material_changed)
 	RunState.xp_changed.connect(_on_xp_changed)
-	if not GameSettings.show_fps_changed.is_connected(_on_show_fps_changed):
-		GameSettings.show_fps_changed.connect(_on_show_fps_changed)
 	_on_wave_changed(RunState.wave_index)
 	_on_material_changed(RunState.material_current, RunState.material_savings)
 	_on_xp_changed(RunState.player_level, RunState.player_xp, RunState.xp_to_next_level())
-	_on_show_fps_changed(GameSettings.show_fps)
 
 	if timer_label != null:
 		timer_label.visible = false
@@ -99,8 +93,6 @@ func _process(delta: float) -> void:
 		if _toast_left <= 0.0:
 			if toast_label != null:
 				toast_label.visible = false
-	if fps_label != null and fps_label.visible:
-		fps_label.text = "FPS %d" % Engine.get_frames_per_second()
 
 
 func _setup_timer_bar_fill_style() -> void:
@@ -262,9 +254,3 @@ func show_harvest_toast(bonus: int) -> void:
 	if bonus <= 0:
 		return
 	show_toast("收获 +%d 材料" % bonus, 2.8)
-
-
-func _on_show_fps_changed(enabled: bool) -> void:
-	if fps_label == null:
-		return
-	fps_label.visible = enabled

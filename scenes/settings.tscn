@@ -5,9 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
 [ext_resource type="ShaderMaterial" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
 
-[sub_resource type="SystemFont" id="SystemFont_dialog"]
-font_names = PackedStringArray("PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", "Source Han Sans SC", "Arial")
-
 [node name="Settings" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -155,28 +152,6 @@ theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="ViewScaleRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_constants/separation = 12
-
-[node name="ViewScaleLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
-custom_minimum_size = Vector2(140, 0)
-theme_override_font_sizes/font_size = 22
-text = "视野范围"
-
-[node name="ViewScaleSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
-custom_minimum_size = Vector2(240, 32)
-size_flags_horizontal = 3
-min_value = 0.75
-max_value = 1.45
-step = 0.05
-value = 1.0
-
-[node name="ViewScaleValue" type="Label" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
-custom_minimum_size = Vector2(72, 0)
-theme_override_font_sizes/font_size = 22
-text = "100%"
-horizontal_alignment = 2
-
 [node name="FullscreenCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
 theme_override_font_sizes/font_size = 22
 text = "全屏（桌面）"
@@ -185,223 +160,17 @@ text = "全屏（桌面）"
 theme_override_font_sizes/font_size = 22
 text = "垂直同步"
 
-[node name="VsyncFpsRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
-visible = false
-theme_override_constants/separation = 12
-
-[node name="VsyncFpsLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
-custom_minimum_size = Vector2(140, 0)
-theme_override_font_sizes/font_size = 22
-text = "垂直同步帧率"
-
-[node name="VsyncFpsSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
-custom_minimum_size = Vector2(240, 32)
-size_flags_horizontal = 3
-min_value = 30.0
-max_value = 240.0
-step = 10.0
-value = 60.0
-
-[node name="VsyncFpsValue" type="Label" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
-custom_minimum_size = Vector2(72, 0)
-theme_override_font_sizes/font_size = 22
-text = "60 FPS"
-horizontal_alignment = 2
-
-[node name="ShowFpsCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_font_sizes/font_size = 22
-text = "显示帧率（右下角）"
-
-[node name="MobileControlsCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_font_sizes/font_size = 22
-text = "启用虚拟摇杆与虚拟暂停按钮"
-
-[node name="DataDangerHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_colors/font_color = Color(0.88, 0.42, 0.42, 1)
+[node name="GameplayHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
 theme_override_font_sizes/font_size = 26
-text = "数据管理"
+text = "玩法与提示"
 
-[node name="DataSummaryLabel" type="Label" parent="Center/MainColumn/Scroll/Contents"]
-custom_minimum_size = Vector2(0, 144)
+[node name="HintLabel" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
 theme_override_font_sizes/font_size = 18
-text = "当前数据：加载中..."
+text = "战斗中按 ESC 暂停，可保存进度返回主菜单。波间界面需先选升级再开始下一波。"
 autowrap_mode = 3
-
-[node name="ClearHintLabel" type="Label" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_colors/font_color = Color(0.95, 0.76, 0.76, 1)
-theme_override_font_sizes/font_size = 18
-text = "先点击确认，再长按 3 秒清除全部数据"
-
-[node name="ClearAllDataButton" type="Button" parent="Center/MainColumn/Scroll/Contents"]
-custom_minimum_size = Vector2(0, 56)
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-text = "清除所有数据"
-self_modulate = Color(1, 0.34, 0.34, 1)
 
 [node name="BackButton" type="Button" parent="Center/MainColumn"]
 custom_minimum_size = Vector2(280, 52)
-text = "返回"
-
-[node name="DeleteConfirmOverlay" type="Control" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 0
-
-[node name="RedBlurBackdrop" type="ColorRect" parent="DeleteConfirmOverlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-material = ExtResource("4_blur")
-mouse_filter = 2
-color = Color(0.42, 0.08, 0.08, 0.7)
-
-[node name="BackdropDim" type="ColorRect" parent="DeleteConfirmOverlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.12, 0.02, 0.03, 0.72)
-
-[node name="CenterContainer" type="CenterContainer" parent="DeleteConfirmOverlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="DialogCard" type="PanelContainer" parent="DeleteConfirmOverlay/CenterContainer"]
-custom_minimum_size = Vector2(560, 0)
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard"]
-layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-
-[node name="Content" type="VBoxContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="TitleLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
-layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
-theme_override_colors/font_color = Color(1, 0.84, 0.84, 1)
-theme_override_font_sizes/font_size = 34
-text = "确认清除"
-horizontal_alignment = 1
-
-[node name="MessageLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
-layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
-theme_override_font_sizes/font_size = 22
-text = "是否清除所有数据？此操作无法恢复。"
-horizontal_alignment = 1
-autowrap_mode = 3
-
-[node name="HoldHintLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
-layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
-theme_override_colors/font_color = Color(1, 0.72, 0.72, 1)
-theme_override_font_sizes/font_size = 18
-text = "确认后回到设置页，长按红色按钮 3 秒才会执行清除。"
-horizontal_alignment = 1
-autowrap_mode = 3
-
-[node name="ButtonRow" type="HBoxContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
-layout_mode = 2
-theme_override_constants/separation = 12
-alignment = 1
-
-[node name="CancelButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow"]
-custom_minimum_size = Vector2(180, 48)
-layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
-theme_override_font_sizes/font_size = 22
-text = "取消"
-
-[node name="ConfirmButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow"]
-custom_minimum_size = Vector2(180, 48)
-layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(1, 0.88, 0.88, 1)
-self_modulate = Color(0.78, 0.2, 0.2, 1)
-text = "确认删除"
-
-[node name="ClearResultOverlay" type="Control" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 0
-
-[node name="DimBackdrop" type="ColorRect" parent="ClearResultOverlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0, 0, 0, 0.62)
-
-[node name="CenterContainer" type="CenterContainer" parent="ClearResultOverlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="DialogCard" type="PanelContainer" parent="ClearResultOverlay/CenterContainer"]
-custom_minimum_size = Vector2(500, 0)
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="ClearResultOverlay/CenterContainer/DialogCard"]
-layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-
-[node name="Content" type="VBoxContainer" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="MessageLabel" type="Label" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin/Content"]
-layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
-theme_override_font_sizes/font_size = 22
-text = "清除完成"
-horizontal_alignment = 1
-autowrap_mode = 3
-
-[node name="BackToMenuButton" type="Button" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin/Content"]
-custom_minimum_size = Vector2(220, 50)
-layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
-theme_override_font_sizes/font_size = 22
 text = "返回主菜单"
-
-[node name="ClearHoldTimer" type="Timer" parent="."]
-wait_time = 3.0
-one_shot = true

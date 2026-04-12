@@ -1,18 +1,16 @@
 extends Control
 
-@onready var summary_label: Label = $RootMargin/RootVBox/SummaryLabel
-@onready var detail_rich: RichTextLabel = $RootMargin/RootVBox/ScrollArea/DetailRich
-@onready var main_menu_btn: Button = $RootMargin/RootVBox/BottomBar/MainMenuButton
-@onready var copy_button: Button = $RootMargin/RootVBox/BottomBar/CopyButton
+@onready var summary_label: Label = $RootVBox/SummaryLabel
+@onready var detail_text: TextEdit = $RootVBox/DetailText
+@onready var main_menu_btn: Button = $RootVBox/MainMenuButton
 
 
 func _ready() -> void:
 	SaveManager.clear_pending_run()
 	SaveManager.record_run_finished(RunState.wave_index, true)
 	summary_label.text = _build_header_line()
-	detail_rich.text = RunEndSummaryText.build_bbcode_section()
+	detail_text.text = RunEndSummaryText.build_full_detail_section()
 	main_menu_btn.pressed.connect(_on_main_menu_pressed)
-	copy_button.pressed.connect(_on_copy_pressed)
 
 
 func _build_header_line() -> String:
@@ -27,10 +25,3 @@ func _build_header_line() -> String:
 func _on_main_menu_pressed() -> void:
 	RunState.begin_new_run()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-
-
-func _on_copy_pressed() -> void:
-	DisplayServer.clipboard_set(RunEndSummaryText.build_full_detail_section())
-	copy_button.text = "✓ 已复制"
-	await get_tree().create_timer(2.0).timeout
-	copy_button.text = "复制报告"

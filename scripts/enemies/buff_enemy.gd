@@ -25,4 +25,4 @@ func _draw() -> void:
 	draw_arc(Vector2.ZERO, 26.0, 0.0, TAU, 24, Color(0.4, 0.85, 1.0, 0.5), 2.0, true)
 	var font := ThemeDB.fallback_font
 	draw_string(font, Vector2(-28, 34), "[%s]" % enemy_type_name,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_NAME, Color(0.7, 0.9, 1.0))
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(0.7, 0.9, 1.0))

@@ -250,12 +250,7 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 		"add_weapon":
 			var wid: String = str(value)
 			var lo: Node = player.get_node_or_null("WeaponLoadout")
-			if lo == null:
-				return
-			if lo.has_method("has_weapon_id") and lo.has_weapon_id(wid):
-				if lo.has_method("upgrade_weapon_by_id"):
-					lo.upgrade_weapon_by_id(wid)
-			elif lo.has_method("add_weapon_slot_by_id"):
+			if lo != null and lo.has_method("add_weapon_slot_by_id"):
 				lo.add_weapon_slot_by_id(wid)
 
 
@@ -345,18 +340,7 @@ static func shop_purchase_preview_text(
 			var wid: String = str(value)
 			var wdef: Dictionary = WeaponCatalog.find_def(wid)
 			var nm: String = str(wdef.get("display_name", wdef.get("id", wid)))
-			var lo: Node = player.get_node_or_null("WeaponLoadout")
-			var has_it: bool = lo != null and lo.has_method("has_weapon_id") and lo.has_weapon_id(wid)
-			var is_full: bool = lo != null and lo.get_child_count() >= 6
-			if has_it:
-				var cur_lv: int = lo.get_weapon_level(wid) if lo.has_method("get_weapon_level") else 1
-				lines.append("· 升级武器：%s（Lv.%d → Lv.%d）" % [nm, cur_lv, cur_lv + 1])
-				lines.append("  伤害 +15%，攻击间隔 -10%")
-			elif is_full:
-				lines.append("· ❌ 武器栏已满（6/6），无法添加 %s" % nm)
-				lines.append("  请先变卖现有武器，或购买已有武器以升级")
-			else:
-				lines.append("· 获得武器：%s（槽位 %d/6）" % [nm, lo.get_child_count() if lo != null else 0])
+			lines.append("· 获得武器：%s（未满 6 槽时加入）" % nm)
 		"hp_regen_flat":
 			var rg: float = float(player.stat_hp_regen_per_sec) if "stat_hp_regen_per_sec" in player else 0.0
 			var add_r: float = float(value)
