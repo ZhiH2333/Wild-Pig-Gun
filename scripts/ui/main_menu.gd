@@ -1,6 +1,17 @@
 extends Control
 
+const BACKGROUND_SWAY_SPEED: float = 0.52
+const BACKGROUND_SWAY_AMP_RAD: float = deg_to_rad(5.2)
+const BACKGROUND_SWAY_SPRING: float = 13.5
+const BACKGROUND_SWAY_DAMPING: float = 9.2
+const BACKGROUND_SWAY_OVERSCALE: float = 1.14
+
 @onready var info_dialog: AcceptDialog = $InfoDialog
+@onready var background: TextureRect = $Background
+
+var background_sway_phase: float = 0.0
+var background_sway_angle: float = 0.0
+var background_sway_angular_vel: float = 0.0
 
 
 func _ready() -> void:
@@ -13,6 +24,26 @@ func _ready() -> void:
 	$ButtonColumn/ProgressButton.pressed.connect(_on_progress_pressed)
 	$ButtonColumn/CreditsButton.pressed.connect(_on_credits_pressed)
 	$ButtonColumn/QuitButton.pressed.connect(_on_quit_pressed)
+	background.resized.connect(_update_background_sway_pivot)
+	await get_tree().process_frame
+	_update_background_sway_pivot()
+	background.scale = Vector2(BACKGROUND_SWAY_OVERSCALE, BACKGROUND_SWAY_OVERSCALE)
+
+
+func _update_background_sway_pivot() -> void:
+	background.pivot_offset = background.size * 0.5
+
+
+func _process(delta: float) -> void:
+	background_sway_phase += delta * BACKGROUND_SWAY_SPEED
+	var target_angle: float = sin(background_sway_phase) * BACKGROUND_SWAY_AMP_RAD
+	var angular_accel: float = (
+		BACKGROUND_SWAY_SPRING * (target_angle - background_sway_angle)
+		- BACKGROUND_SWAY_DAMPING * background_sway_angular_vel
+	)
+	background_sway_angular_vel += angular_accel * delta
+	background_sway_angle += background_sway_angular_vel * delta
+	background.rotation = background_sway_angle
 
 
 func _refresh_continue_button() -> void:
