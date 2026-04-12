@@ -117,7 +117,7 @@ script = ExtResource("7_enemy_pool")
 
 [node name="PauseOverlay" type="CanvasLayer" parent="."]
 process_mode = 3
-layer = 40
+layer = 60
 visible = false
 script = ExtResource("13_pause_menu")
 

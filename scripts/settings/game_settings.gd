@@ -4,6 +4,7 @@ signal music_linear_changed(new_value: float)
 signal mobile_controls_changed(enabled: bool)
 signal ui_scale_changed(new_value: float)
 signal view_scale_changed(new_value: float)
+signal show_fps_changed(enabled: bool)
 const SETTINGS_PATH: String = "user://game_settings.json"
 const UI_SCALE_MIN: float = 0.75
 const UI_SCALE_MAX: float = 1.45
@@ -11,15 +12,20 @@ const UI_SCALE_DEFAULT: float = 1.0
 const VIEW_SCALE_MIN: float = 0.75
 const VIEW_SCALE_MAX: float = 1.45
 const VIEW_SCALE_DEFAULT: float = 1.0
+const VSYNC_FPS_MIN: int = 30
+const VSYNC_FPS_MAX: int = 240
+const VSYNC_FPS_DEFAULT: int = 60
 
 var master_linear: float = 1.0
 var music_linear: float = 1.0
 var sfx_linear: float = 1.0
 var fullscreen: bool = false
 var vsync_enabled: bool = true
+var vsync_fps: int = VSYNC_FPS_DEFAULT
 var ui_scale: float = UI_SCALE_DEFAULT
 var view_scale: float = VIEW_SCALE_DEFAULT
 var mobile_controls_enabled: bool = false
+var show_fps: bool = false
 
 
 func _ready() -> void:
@@ -45,9 +51,11 @@ func load_from_disk() -> void:
 	sfx_linear = clampf(float(dict.get("sfx_linear", 1.0)), 0.0, 1.0)
 	fullscreen = bool(dict.get("fullscreen", false))
 	vsync_enabled = bool(dict.get("vsync_enabled", true))
+	vsync_fps = clampi(int(dict.get("vsync_fps", VSYNC_FPS_DEFAULT)), VSYNC_FPS_MIN, VSYNC_FPS_MAX)
 	ui_scale = clampf(float(dict.get("ui_scale", UI_SCALE_DEFAULT)), UI_SCALE_MIN, UI_SCALE_MAX)
 	view_scale = clampf(float(dict.get("view_scale", VIEW_SCALE_DEFAULT)), VIEW_SCALE_MIN, VIEW_SCALE_MAX)
 	mobile_controls_enabled = bool(dict.get("mobile_controls_enabled", false))
+	show_fps = bool(dict.get("show_fps", false))
 
 
 func save_to_disk() -> void:
@@ -57,9 +65,11 @@ func save_to_disk() -> void:
 		"sfx_linear": sfx_linear,
 		"fullscreen": fullscreen,
 		"vsync_enabled": vsync_enabled,
+		"vsync_fps": vsync_fps,
 		"ui_scale": ui_scale,
 		"view_scale": view_scale,
 		"mobile_controls_enabled": mobile_controls_enabled,
+		"show_fps": show_fps,
 	}
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
 	if f == null:
@@ -98,6 +108,12 @@ func set_vsync_enabled(enabled: bool) -> void:
 	save_to_disk()
 
 
+func set_vsync_fps(value: float) -> void:
+	vsync_fps = clampi(int(round(value)), VSYNC_FPS_MIN, VSYNC_FPS_MAX)
+	_apply_vsync()
+	save_to_disk()
+
+
 func set_ui_scale(value: float) -> void:
 	ui_scale = clampf(value, UI_SCALE_MIN, UI_SCALE_MAX)
 	_apply_ui_scale()
@@ -117,6 +133,12 @@ func set_mobile_controls_enabled(enabled: bool) -> void:
 	mobile_controls_changed.emit(mobile_controls_enabled)
 
 
+func set_show_fps(enabled: bool) -> void:
+	show_fps = enabled
+	save_to_disk()
+	show_fps_changed.emit(show_fps)
+
+
 func _apply_all() -> void:
 	_apply_audio_buses()
 	_apply_window()
@@ -124,6 +146,7 @@ func _apply_all() -> void:
 	_apply_ui_scale()
 	ui_scale_changed.emit(ui_scale)
 	view_scale_changed.emit(view_scale)
+	show_fps_changed.emit(show_fps)
 
 
 func _apply_audio_buses() -> void:
@@ -148,12 +171,15 @@ func _apply_window() -> void:
 
 
 func _apply_vsync() -> void:
-	if OS.get_name() == "Web":
-		return
+	if OS.get_name() != "Web":
+		if vsync_enabled:
+			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
+		else:
+			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	if vsync_enabled:
-		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
+		Engine.max_fps = vsync_fps
 	else:
-		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+		Engine.max_fps = 0
 
 
 func _apply_ui_scale() -> void:

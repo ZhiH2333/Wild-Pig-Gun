@@ -43,6 +43,7 @@ var _loaded_enemy_scenes: Dictionary = {}
 var _spawn_warning_scene: PackedScene = null
 var _wave_cfg: Dictionary = {}
 var _in_game_settings_layer: Control = null
+var _pause_over_level_up: bool = false
 
 
 func _ready() -> void:
@@ -251,6 +252,7 @@ func _on_all_waves_cleared() -> void:
 
 
 func show_pause_overlay() -> void:
+	_pause_over_level_up = (RunState.pause_reason == RunState.PauseReason.LEVEL_UP)
 	pause_overlay.visible = true
 	var center_container: CanvasItem = pause_overlay.get_node_or_null("CenterContainer")
 	if center_container != null:
@@ -259,6 +261,7 @@ func show_pause_overlay() -> void:
 
 func hide_pause_overlay() -> void:
 	pause_overlay.visible = false
+	_pause_over_level_up = false
 
 
 func open_in_game_settings() -> void:
@@ -425,6 +428,12 @@ func _restore_weapon_loadout(weapon_ids: Array) -> void:
 func _on_pause_resume_pressed() -> void:
 	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
 		close_in_game_settings()
+		return
+	if RunState.pause_reason == RunState.PauseReason.LEVEL_UP:
+		if _pause_over_level_up:
+			hide_pause_overlay()
+		else:
+			show_pause_overlay()
 		return
 	RunState.try_toggle_user_pause(self)
 

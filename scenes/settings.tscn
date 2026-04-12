@@ -182,6 +182,33 @@ text = "全屏（桌面）"
 theme_override_font_sizes/font_size = 22
 text = "垂直同步"
 
+[node name="VsyncFpsRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
+visible = false
+theme_override_constants/separation = 12
+
+[node name="VsyncFpsLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
+custom_minimum_size = Vector2(140, 0)
+theme_override_font_sizes/font_size = 22
+text = "垂直同步帧率"
+
+[node name="VsyncFpsSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
+custom_minimum_size = Vector2(240, 32)
+size_flags_horizontal = 3
+min_value = 30.0
+max_value = 240.0
+step = 10.0
+value = 60.0
+
+[node name="VsyncFpsValue" type="Label" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
+custom_minimum_size = Vector2(72, 0)
+theme_override_font_sizes/font_size = 22
+text = "60 FPS"
+horizontal_alignment = 2
+
+[node name="ShowFpsCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_font_sizes/font_size = 22
+text = "显示帧率（右下角）"
+
 [node name="MobileControlsCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
 theme_override_font_sizes/font_size = 22
 text = "启用虚拟摇杆与虚拟暂停按钮"
