@@ -429,6 +429,12 @@ func _on_pause_resume_pressed() -> void:
 	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
 		close_in_game_settings()
 		return
+	if RunState.pause_reason == RunState.PauseReason.INTERSTITIAL:
+		if pause_overlay.visible:
+			hide_pause_overlay()
+		else:
+			show_pause_overlay()
+		return
 	if RunState.pause_reason == RunState.PauseReason.LEVEL_UP:
 		if _pause_over_level_up:
 			hide_pause_overlay()
