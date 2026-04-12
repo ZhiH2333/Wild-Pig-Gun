@@ -53,11 +53,17 @@ var _hp_regen_accum: float = 0.0
 
 @onready var invincibility_timer: Timer = $InvincibilityTimer
 @onready var hurt_feedback: CanvasLayer = $HurtFeedback
+@onready var follow_camera: Camera2D = $Camera2D
 
 
 func _ready() -> void:
 	add_to_group("player")
 	invincibility_timer.timeout.connect(_on_invincibility_timer_timeout)
+	if not GameSettings.ui_scale_changed.is_connected(_on_ui_scale_setting_changed):
+		GameSettings.ui_scale_changed.connect(_on_ui_scale_setting_changed)
+	if not GameSettings.view_scale_changed.is_connected(_on_view_scale_setting_changed):
+		GameSettings.view_scale_changed.connect(_on_view_scale_setting_changed)
+	_apply_camera_view_scale()
 	# 初始化时发出血量信号，让 HUD 同步初始值
 	emit_signal("hp_changed", current_hp, max_hp)
 
@@ -239,7 +245,7 @@ func _play_hurt_feedback() -> void:
 
 
 func _screen_shake_hit() -> void:
-	var cam: Camera2D = get_node_or_null("Camera2D") as Camera2D
+	var cam: Camera2D = follow_camera
 	if cam == null:
 		return
 	var tw: Tween = create_tween()
@@ -261,5 +267,25 @@ func _get_arena_rect() -> Rect2:
 	if arenas.size() > 0 and arenas[0].has_method("get_arena_rect"):
 		return arenas[0].get_arena_rect()
 	return Rect2(0.0, 0.0, 1920.0, 1080.0)
+
+
+func _on_ui_scale_setting_changed(_new_value: float) -> void:
+	_apply_camera_view_scale()
+
+
+func _on_view_scale_setting_changed(_new_value: float) -> void:
+	_apply_camera_view_scale()
+
+
+func _apply_camera_view_scale() -> void:
+	if follow_camera == null:
+		return
+	var ui_s: float = maxf(0.01, GameSettings.ui_scale)
+	var view_s: float = maxf(0.01, GameSettings.view_scale)
+	# content_scale_factor = ui_s 会让整个画面等比放大，
+	# 用 1/ui_s 抵消其对世界视野的影响，使 UI 缩放不再干扰游戏视野。
+	# view_s 越大 → zoom 越小 → 相机视野越广。
+	var zoom_val: float = 1.0 / (ui_s * view_s)
+	follow_camera.zoom = Vector2(zoom_val, zoom_val)
 
 

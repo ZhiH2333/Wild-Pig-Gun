@@ -53,7 +53,7 @@ func _draw() -> void:
 	draw_rect(Rect2(-14, -10, 10, 6), Color(1, 0.85, 0.2))
 	draw_rect(Rect2(4, -10, 10, 6), Color(1, 0.85, 0.2))
 	var font := ThemeDB.fallback_font
-	draw_string(font, Vector2(-40, -48), "[%s]" % enemy_type_name,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1.0, 0.4, 0.35))
-	draw_string(font, Vector2(-40, -28), "HP:%d/%d  P:%d" % [current_hp, max_hp, _boss_phase],
-		HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(0.95, 0.8, 0.75))
+	draw_string(font, Vector2(-44, -54), "[%s]" % enemy_type_name,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_BOSS_NAME, Color(1.0, 0.4, 0.35))
+	draw_string(font, Vector2(-44, -32), "HP:%d/%d  P:%d" % [current_hp, max_hp, _boss_phase],
+		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_BOSS_HP, Color(0.95, 0.8, 0.75))
