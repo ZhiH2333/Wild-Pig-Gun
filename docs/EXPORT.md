@@ -11,6 +11,11 @@
 1. 导出为 Web，模板需与引擎版本一致。
 2. 失焦暂停：由 `GameFlow` 在 Web 平台监听 `NOTIFICATION_APPLICATION_FOCUS_OUT/IN`。
 3. 性能与包体：请在目标浏览器实测 FPS；剔除未使用资源以控制下载体积。
+4. **托管到 Cloudflare Pages**：Godot 4 Web 导出默认要求 **跨源隔离**（`COOP: same-origin` + `COEP: require-corp`），否则可能无法加载 WASM。仓库提供脚本 `scripts/cloudflare-pages-deploy.sh`：会把导出目录中的 `wildpiggun.html` 复制为 **`index.html`**，并写入 **`_headers`** 后执行 `wrangler pages deploy`。
+   - 首次需登录：`npx wrangler login`（在能打开浏览器的机器上完成 OAuth）。
+   - 或使用 **API Token**（推荐 CI）：在环境变量中设置 `CLOUDFLARE_API_TOKEN`，需包含 **Account → Cloudflare Pages → Edit** 等权限。
+   - 自定义导出路径：`WEB_EXPORT_DIR=/你的/web导出目录 ./scripts/cloudflare-pages-deploy.sh`
+   - 自定义项目名：`PROJECT_NAME=你的-pages项目名 ./scripts/cloudflare-pages-deploy.sh`
 
 ## Android
 
