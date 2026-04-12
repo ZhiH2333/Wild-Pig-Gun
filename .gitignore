@@ -12,3 +12,4 @@
 # Editor
 .kiro/**
 .vscode/**
+.cursor/
