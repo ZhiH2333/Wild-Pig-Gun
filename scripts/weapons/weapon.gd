@@ -4,6 +4,7 @@ extends Node2D
 
 var projectile_scene: PackedScene = preload("res://scenes/projectile.tscn")
 var weapon_id: String = "rifle"
+var weapon_level: int = 1
 var damage: int = 10
 var _base_fire_interval: float = 0.5
 var _pellet_count: int = 1
@@ -31,6 +32,14 @@ func setup_from_catalog(wid: String) -> void:
 	var elem: String = str(def.get("element", "physical"))
 	_damage_element = StringName(elem)
 	set_meta("catalog_applied", true)
+	if fire_timer != null:
+		_sync_fire_timer_wait()
+
+
+func upgrade_weapon() -> void:
+	weapon_level += 1
+	damage = int(round(float(damage) * 1.15))
+	_base_fire_interval = maxf(0.1, _base_fire_interval * 0.9)
 	if fire_timer != null:
 		_sync_fire_timer_wait()
 

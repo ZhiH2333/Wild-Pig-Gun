@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://o0fto51q77ev" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
+[ext_resource type="FontFile" uid="uid://cfxigihcadfuq" path="res://assets/fonts/ZhanKuKuaiLeTi2016XiuDingBan-1.ttf" id="4_zhan_ku_kuai_le"]
 
 [node name="MainMenu" type="Control" unique_id=1151415159]
 layout_mode = 3
@@ -52,13 +53,15 @@ grow_vertical = 2
 
 [node name="TitleZh" type="Label" parent="TitleBlock" unique_id=1055004951]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 62
 text = "野猪乱打手枪"
 horizontal_alignment = 1
 
 [node name="TitleEn" type="Label" parent="TitleBlock" unique_id=1426475162]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 theme_override_colors/font_color = Color(0.65, 0.62, 0.58, 1)
 theme_override_font_sizes/font_size = 28
 text = "WildPigGun"
@@ -81,33 +84,40 @@ theme_override_constants/separation = 14
 visible = false
 custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 text = "继续游戏"
 
 [node name="StartButton" type="Button" parent="ButtonColumn" unique_id=1607436261]
 custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 text = "开始"
 
 [node name="SettingsButton" type="Button" parent="ButtonColumn" unique_id=1022545876]
 custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 text = "设置"
 
 [node name="ProgressButton" type="Button" parent="ButtonColumn" unique_id=1089814915]
 custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 text = "进度"
 
 [node name="CreditsButton" type="Button" parent="ButtonColumn" unique_id=1307126427]
 custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 text = "制作人名单"
 
 [node name="QuitButton" type="Button" parent="ButtonColumn" unique_id=1682175575]
 custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 text = "退出"
 
 [node name="InfoDialog" type="AcceptDialog" parent="." unique_id=1339375067]
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
 ok_button_text = "确定"
 dialog_text = "占位"

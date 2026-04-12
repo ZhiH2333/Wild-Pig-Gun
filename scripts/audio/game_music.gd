@@ -35,6 +35,7 @@ var _ctx: Context = Context.OFF
 var _menu_idx: int = 0
 var _battle_idx: int = 0
 var _vol_offset_db: float = VOLUME_DB_MAIN
+var _paused_position_sec: float = 0.0
 
 
 func _ready() -> void:
@@ -93,6 +94,7 @@ func enter_battle() -> void:
 
 func stop() -> void:
 	_player.stop()
+	_paused_position_sec = 0.0
 	_ctx = Context.OFF
 	track_changed.emit("")
 
@@ -100,10 +102,20 @@ func stop() -> void:
 func toggle_pause() -> void:
 	if _ctx == Context.OFF:
 		return
+	if _player.stream == null:
+		_play_current_track()
+		return
+	if _player.stream_paused:
+		_player.stream_paused = false
+		if not _player.playing:
+			_player.play(maxf(0.0, _paused_position_sec))
+		track_changed.emit(get_current_title())
+		return
 	if not _player.playing:
 		_play_current_track()
 		return
-	_player.stream_paused = not _player.stream_paused
+	_paused_position_sec = _player.get_playback_position()
+	_player.stream_paused = true
 	track_changed.emit(get_current_title())
 
 
@@ -158,6 +170,7 @@ func _play_current_track() -> void:
 	if st is AudioStreamMP3:
 		(st as AudioStreamMP3).loop = false
 	_player.stream = st
+	_paused_position_sec = 0.0
 	_player.stream_paused = false
 	_player.play()
 	_apply_player_volume()
