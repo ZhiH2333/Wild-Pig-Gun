@@ -28,12 +28,6 @@ var _popup_count_this_frame: int = 0
 
 ## 类型名称，子类设置，用于 debug 标签显示
 var enemy_type_name: String = "敌人"
-## 脚下类型名 / HP 等标签字号（CanvasItem.draw_string）
-const OVERHEAD_FONT_SIZE_NAME: int = 15
-const OVERHEAD_FONT_SIZE_HP: int = 14
-## Boss 标签略大
-const OVERHEAD_FONT_SIZE_BOSS_NAME: int = 20
-const OVERHEAD_FONT_SIZE_BOSS_HP: int = 16
 ## 元素状态：移速倍率（1=正常，越小越慢）
 var _status_slow_mult: float = 1.0
 var _status_slow_time_left: float = 0.0

@@ -72,6 +72,6 @@ func _draw() -> void:
 	# debug 信息
 	var font := ThemeDB.fallback_font
 	draw_string(font, Vector2(-22, 30), "[%s]" % enemy_type_name,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_NAME, Color(0.0, 1.0, 1.0))
-	draw_string(font, Vector2(-22, 46), "逃:%.1fs" % remaining,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_HP, Color(1.0, 0.6, 0.1))
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(0.0, 1.0, 1.0))
+	draw_string(font, Vector2(-22, 42), "逃:%.1fs" % remaining,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1.0, 0.6, 0.1))

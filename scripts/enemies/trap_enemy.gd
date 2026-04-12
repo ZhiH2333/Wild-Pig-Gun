@@ -53,4 +53,4 @@ func _draw() -> void:
 	draw_rect(Rect2(-10, -10, 20, 8), Color(0.9, 0.2, 0.2, 0.7))
 	var font := ThemeDB.fallback_font
 	draw_string(font, Vector2(-24, 28), "[%s]" % enemy_type_name,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_NAME, Color(0.85, 0.75, 1.0))
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.85, 0.75, 1.0))
