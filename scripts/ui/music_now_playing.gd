@@ -6,7 +6,7 @@ const _CARD_W: float = 292.0
 const _MARGIN: float = 12.0
 const _EDGE_MARGIN: float = 16.0
 const _FAB_SIZE: float = 52.0
-const _DRAG_START_DISTANCE: float = 6.0
+const _ICON_TEX_PX: int = 48
 
 var _tracked: AudioStreamPlayer
 var _host: Control
@@ -26,12 +26,6 @@ var _vol_slider: HSlider
 var _vol_label: Label
 var _anim_tween: Tween
 var _music_sync_block: bool = false
-var _is_fab_pressing: bool = false
-var _is_dragging_fab: bool = false
-var _suppress_toggle_click: bool = false
-var _drag_start_mouse: Vector2 = Vector2.ZERO
-var _drag_start_bar_pos: Vector2 = Vector2.ZERO
-var _has_custom_bar_pos: bool = false
 
 
 func _ready() -> void:
@@ -86,10 +80,14 @@ func _build_ui() -> void:
 	bar.add_theme_constant_override("separation", 10)
 	bar.alignment = BoxContainer.ALIGNMENT_END
 	_host.add_child(bar)
-	bar.anchor_left = 0.0
-	bar.anchor_top = 0.0
-	bar.anchor_right = 0.0
-	bar.anchor_bottom = 0.0
+	bar.anchor_left = 1.0
+	bar.anchor_right = 1.0
+	bar.anchor_top = 1.0
+	bar.anchor_bottom = 1.0
+	bar.offset_left = -_CARD_W - _EDGE_MARGIN
+	bar.offset_right = -_EDGE_MARGIN
+	bar.offset_top = -420.0
+	bar.offset_bottom = -_EDGE_MARGIN
 	_card = PanelContainer.new()
 	_card.visible = false
 	_card.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -178,15 +176,14 @@ func _build_ui() -> void:
 	_vol_slider.value_changed.connect(_on_vol_slider_changed)
 	vol_row.add_child(_vol_slider)
 	_toggle_btn = Button.new()
-	_toggle_btn.text = "♫"
+	_toggle_btn.text = ""
 	_toggle_btn.tooltip_text = "音乐"
-	_toggle_btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_toggle_btn.add_theme_font_size_override("font_size", 26)
-	_toggle_btn.add_theme_color_override("font_color", Color(0.94, 0.92, 0.86, 1.0))
+	_toggle_btn.icon = _make_music_icon_texture()
+	_toggle_btn.expand_icon = true
 	_toggle_btn.custom_minimum_size = Vector2(_FAB_SIZE, _FAB_SIZE)
 	_toggle_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	_toggle_btn.add_theme_constant_override("icon_max_width", 26)
 	_apply_fab_styles(_toggle_btn)
-	_toggle_btn.gui_input.connect(_on_fab_gui_input)
 	_toggle_btn.pressed.connect(_on_toggle_pressed)
 	var fab_row: HBoxContainer = HBoxContainer.new()
 	fab_row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -201,18 +198,12 @@ func _refit_layout() -> void:
 	if vp == null:
 		return
 	var vw: float = vp.get_visible_rect().size.x
-	var vh: float = vp.get_visible_rect().size.y
 	var avail: float = maxf(0.0, vw - _EDGE_MARGIN * 2.0)
 	var card_w: float = mini(_CARD_W, avail)
-	_bar.custom_minimum_size = Vector2(card_w, _FAB_SIZE)
+	_bar.offset_right = -_EDGE_MARGIN
+	_bar.offset_left = -_EDGE_MARGIN - card_w
 	_card.custom_minimum_size.x = card_w
 	_refit_button_row(card_w)
-	var bar_size: Vector2 = _bar.get_combined_minimum_size()
-	var default_pos: Vector2 = Vector2(vw - _EDGE_MARGIN - bar_size.x, vh - _EDGE_MARGIN - bar_size.y)
-	if _has_custom_bar_pos:
-		_set_bar_position_clamped(_bar.position, _panel_open)
-		return
-	_set_bar_position_clamped(default_pos)
 
 
 func _refit_button_row(card_w: float) -> void:
@@ -226,6 +217,26 @@ func _refit_button_row(card_w: float) -> void:
 	_btn_prev.custom_minimum_size = Vector2(btn_w, h)
 	_btn_pause.custom_minimum_size = Vector2(btn_w, h)
 	_btn_next.custom_minimum_size = Vector2(btn_w, h)
+
+
+func _make_music_icon_texture() -> Texture2D:
+	var img: Image = Image.create(_ICON_TEX_PX, _ICON_TEX_PX, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var col: Color = Color(0.94, 0.92, 0.86, 1.0)
+	var stem_x: int = 29
+	for y in range(7, 36):
+		img.set_pixel(stem_x, y, col)
+		img.set_pixel(stem_x + 1, y, col)
+	for x in range(19, 33):
+		img.set_pixel(x, 7, col)
+		img.set_pixel(x, 8, col)
+	var cx: int = 15
+	var cy: int = 30
+	for dy in range(-5, 6):
+		for dx in range(-8, 9):
+			if float(dx * dx) / 64.0 + float(dy * dy) / 30.0 <= 1.0:
+				img.set_pixel(cx + dx, cy + dy, col)
+	return ImageTexture.create_from_image(img)
 
 
 func _apply_fab_styles(btn: Button) -> void:
@@ -252,62 +263,11 @@ func _apply_fab_styles(btn: Button) -> void:
 
 
 func _on_toggle_pressed() -> void:
-	if _suppress_toggle_click:
-		_suppress_toggle_click = false
-		return
 	_panel_open = not _panel_open
 	if _panel_open:
 		_show_card_animated()
 	else:
 		_hide_card_animated()
-
-
-func _on_fab_gui_input(ev: InputEvent) -> void:
-	if ev is InputEventMouseButton:
-		var mb: InputEventMouseButton = ev as InputEventMouseButton
-		if mb.button_index != MOUSE_BUTTON_LEFT:
-			return
-		if mb.pressed:
-			_is_fab_pressing = true
-			_is_dragging_fab = false
-			_drag_start_mouse = mb.position
-			_drag_start_bar_pos = _bar.position
-			return
-		_is_fab_pressing = false
-		if _is_dragging_fab:
-			_suppress_toggle_click = true
-		_is_dragging_fab = false
-		return
-	if not (ev is InputEventMouseMotion):
-		return
-	if not _is_fab_pressing:
-		return
-	var mm: InputEventMouseMotion = ev as InputEventMouseMotion
-	var delta: Vector2 = mm.position - _drag_start_mouse
-	if not _is_dragging_fab and delta.length() < _DRAG_START_DISTANCE:
-		return
-	_is_dragging_fab = true
-	_has_custom_bar_pos = true
-	_suppress_toggle_click = true
-	_set_bar_position_clamped(_drag_start_bar_pos + delta, _panel_open)
-
-
-func _set_bar_position_clamped(target: Vector2, constrain_as_open: bool = false) -> void:
-	if _bar == null:
-		return
-	var vp: Viewport = get_viewport()
-	if vp == null:
-		return
-	var vp_size: Vector2 = vp.get_visible_rect().size
-	var bar_size: Vector2 = _bar.get_combined_minimum_size()
-	if constrain_as_open and _card != null:
-		_card.visible = true
-		var open_size: Vector2 = _bar.get_combined_minimum_size()
-		bar_size.x = maxf(bar_size.x, open_size.x)
-		bar_size.y = maxf(bar_size.y, open_size.y)
-	var max_x: float = maxf(_EDGE_MARGIN, vp_size.x - _EDGE_MARGIN - bar_size.x)
-	var max_y: float = maxf(_EDGE_MARGIN, vp_size.y - _EDGE_MARGIN - bar_size.y)
-	_bar.position = Vector2(clampf(target.x, _EDGE_MARGIN, max_x), clampf(target.y, _EDGE_MARGIN, max_y))
 
 
 func _on_vol_slider_changed(v: float) -> void:
@@ -363,7 +323,6 @@ func _show_card_animated() -> void:
 	if _anim_tween != null and is_instance_valid(_anim_tween):
 		_anim_tween.kill()
 	_card.visible = true
-	_set_bar_position_clamped(_bar.position, true)
 	_card.modulate.a = 0.0
 	_anim_tween = create_tween()
 	_anim_tween.tween_property(_card, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)

@@ -3,7 +3,6 @@ extends Node2D
 ## 近战武器：周期性对范围内敌人造成伤害（风险：需贴近怪群）
 
 var weapon_id: String = "hammer"
-var weapon_level: int = 1
 var damage: int = 16
 var _base_fire_interval: float = 0.55
 var melee_radius: float = 78.0
@@ -24,14 +23,6 @@ func setup_from_catalog(wid: String) -> void:
 	_base_fire_interval = float(def.get("fire_interval", 0.55))
 	melee_radius = float(def.get("melee_radius", 78.0))
 	set_meta("catalog_applied", true)
-	if fire_timer != null:
-		_sync_wait()
-
-
-func upgrade_weapon() -> void:
-	weapon_level += 1
-	damage = int(round(float(damage) * 1.15))
-	_base_fire_interval = maxf(0.1, _base_fire_interval * 0.9)
 	if fire_timer != null:
 		_sync_wait()
 

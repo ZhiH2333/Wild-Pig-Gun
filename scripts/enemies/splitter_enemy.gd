@@ -27,4 +27,4 @@ func _draw() -> void:
 	draw_circle(Vector2(8, -8), 7.0, Color(0.55, 0.85, 0.4))
 	var font := ThemeDB.fallback_font
 	draw_string(font, Vector2(-26, 30), "[%s]" % enemy_type_name,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, OVERHEAD_FONT_SIZE_NAME, Color(0.7, 1.0, 0.65))
+		HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(0.7, 1.0, 0.65))

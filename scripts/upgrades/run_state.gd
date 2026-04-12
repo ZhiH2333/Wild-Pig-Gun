@@ -43,8 +43,6 @@ var player_level: int = 1
 var player_xp: int = 0
 ## 困难倍率：放大受击伤害并略增材料拾取（≥1）
 var run_risk_mult: float = 1.0
-## 设置页返回目标场景（默认主菜单）
-var settings_return_scene_path: String = "res://scenes/main_menu.tscn"
 
 func _ready() -> void:
 	_register_default_input_actions()
@@ -69,7 +67,6 @@ func begin_new_run(p_character_id: String = "default", risk_mult: float = 1.0) -
 	material_savings = 0
 	player_level = 1
 	player_xp = 0
-	settings_return_scene_path = "res://scenes/main_menu.tscn"
 
 
 func enter_interstitial_pause() -> void:

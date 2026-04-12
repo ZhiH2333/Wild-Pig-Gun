@@ -32,7 +32,4 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("pause_game"):
 		return
 	var arena: Node = get_tree().get_first_node_in_group("arena")
-	if arena != null and arena.has_method("_on_pause_resume_pressed"):
-		arena._on_pause_resume_pressed()
-		return
 	RunState.try_toggle_user_pause(arena)
