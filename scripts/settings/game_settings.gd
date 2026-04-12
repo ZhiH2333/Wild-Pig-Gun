@@ -6,6 +6,11 @@ signal ui_scale_changed(new_value: float)
 signal view_scale_changed(new_value: float)
 signal show_fps_changed(enabled: bool)
 const SETTINGS_PATH: String = "user://game_settings.json"
+const MASTER_LINEAR_DEFAULT: float = 1.0
+const MUSIC_LINEAR_DEFAULT: float = 1.0
+const SFX_LINEAR_DEFAULT: float = 1.0
+const FULLSCREEN_DEFAULT: bool = false
+const VSYNC_ENABLED_DEFAULT: bool = true
 const UI_SCALE_MIN: float = 0.75
 const UI_SCALE_MAX: float = 1.45
 const UI_SCALE_DEFAULT: float = 1.0
@@ -16,11 +21,11 @@ const VSYNC_FPS_MIN: int = 30
 const VSYNC_FPS_MAX: int = 240
 const VSYNC_FPS_DEFAULT: int = 60
 
-var master_linear: float = 1.0
-var music_linear: float = 1.0
-var sfx_linear: float = 1.0
-var fullscreen: bool = false
-var vsync_enabled: bool = true
+var master_linear: float = MASTER_LINEAR_DEFAULT
+var music_linear: float = MUSIC_LINEAR_DEFAULT
+var sfx_linear: float = SFX_LINEAR_DEFAULT
+var fullscreen: bool = FULLSCREEN_DEFAULT
+var vsync_enabled: bool = VSYNC_ENABLED_DEFAULT
 var vsync_fps: int = VSYNC_FPS_DEFAULT
 var ui_scale: float = UI_SCALE_DEFAULT
 var view_scale: float = VIEW_SCALE_DEFAULT
@@ -46,11 +51,11 @@ func load_from_disk() -> void:
 	if not d is Dictionary:
 		return
 	var dict: Dictionary = d as Dictionary
-	master_linear = clampf(float(dict.get("master_linear", 1.0)), 0.0, 1.0)
-	music_linear = clampf(float(dict.get("music_linear", 1.0)), 0.0, 1.0)
-	sfx_linear = clampf(float(dict.get("sfx_linear", 1.0)), 0.0, 1.0)
-	fullscreen = bool(dict.get("fullscreen", false))
-	vsync_enabled = bool(dict.get("vsync_enabled", true))
+	master_linear = clampf(float(dict.get("master_linear", MASTER_LINEAR_DEFAULT)), 0.0, 1.0)
+	music_linear = clampf(float(dict.get("music_linear", MUSIC_LINEAR_DEFAULT)), 0.0, 1.0)
+	sfx_linear = clampf(float(dict.get("sfx_linear", SFX_LINEAR_DEFAULT)), 0.0, 1.0)
+	fullscreen = bool(dict.get("fullscreen", FULLSCREEN_DEFAULT))
+	vsync_enabled = bool(dict.get("vsync_enabled", VSYNC_ENABLED_DEFAULT))
 	vsync_fps = clampi(int(dict.get("vsync_fps", VSYNC_FPS_DEFAULT)), VSYNC_FPS_MIN, VSYNC_FPS_MAX)
 	ui_scale = clampf(float(dict.get("ui_scale", UI_SCALE_DEFAULT)), UI_SCALE_MIN, UI_SCALE_MAX)
 	view_scale = clampf(float(dict.get("view_scale", VIEW_SCALE_DEFAULT)), VIEW_SCALE_MIN, VIEW_SCALE_MAX)
@@ -137,6 +142,32 @@ func set_show_fps(enabled: bool) -> void:
 	show_fps = enabled
 	save_to_disk()
 	show_fps_changed.emit(show_fps)
+
+
+func has_settings_file() -> bool:
+	return FileAccess.file_exists(SETTINGS_PATH)
+
+
+func clear_all_settings_data() -> bool:
+	master_linear = MASTER_LINEAR_DEFAULT
+	music_linear = MUSIC_LINEAR_DEFAULT
+	sfx_linear = SFX_LINEAR_DEFAULT
+	fullscreen = FULLSCREEN_DEFAULT
+	vsync_enabled = VSYNC_ENABLED_DEFAULT
+	vsync_fps = VSYNC_FPS_DEFAULT
+	ui_scale = UI_SCALE_DEFAULT
+	view_scale = VIEW_SCALE_DEFAULT
+	mobile_controls_enabled = false
+	show_fps = false
+	_apply_all()
+	if not FileAccess.file_exists(SETTINGS_PATH):
+		return true
+	var abs_path: String = ProjectSettings.globalize_path(SETTINGS_PATH)
+	var err: Error = DirAccess.remove_absolute(abs_path)
+	if err == OK:
+		return true
+	save_to_disk()
+	return false
 
 
 func _apply_all() -> void:
