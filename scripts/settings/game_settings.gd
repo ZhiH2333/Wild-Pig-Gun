@@ -2,10 +2,15 @@ extends Node
 
 signal music_linear_changed(new_value: float)
 signal mobile_controls_changed(enabled: bool)
+signal ui_scale_changed(new_value: float)
+signal view_scale_changed(new_value: float)
 const SETTINGS_PATH: String = "user://game_settings.json"
 const UI_SCALE_MIN: float = 0.75
 const UI_SCALE_MAX: float = 1.45
 const UI_SCALE_DEFAULT: float = 1.0
+const VIEW_SCALE_MIN: float = 0.75
+const VIEW_SCALE_MAX: float = 1.45
+const VIEW_SCALE_DEFAULT: float = 1.0
 
 var master_linear: float = 1.0
 var music_linear: float = 1.0
@@ -13,6 +18,7 @@ var sfx_linear: float = 1.0
 var fullscreen: bool = false
 var vsync_enabled: bool = true
 var ui_scale: float = UI_SCALE_DEFAULT
+var view_scale: float = VIEW_SCALE_DEFAULT
 var mobile_controls_enabled: bool = false
 
 
@@ -40,6 +46,7 @@ func load_from_disk() -> void:
 	fullscreen = bool(dict.get("fullscreen", false))
 	vsync_enabled = bool(dict.get("vsync_enabled", true))
 	ui_scale = clampf(float(dict.get("ui_scale", UI_SCALE_DEFAULT)), UI_SCALE_MIN, UI_SCALE_MAX)
+	view_scale = clampf(float(dict.get("view_scale", VIEW_SCALE_DEFAULT)), VIEW_SCALE_MIN, VIEW_SCALE_MAX)
 	mobile_controls_enabled = bool(dict.get("mobile_controls_enabled", false))
 
 
@@ -51,6 +58,7 @@ func save_to_disk() -> void:
 		"fullscreen": fullscreen,
 		"vsync_enabled": vsync_enabled,
 		"ui_scale": ui_scale,
+		"view_scale": view_scale,
 		"mobile_controls_enabled": mobile_controls_enabled,
 	}
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
@@ -94,6 +102,13 @@ func set_ui_scale(value: float) -> void:
 	ui_scale = clampf(value, UI_SCALE_MIN, UI_SCALE_MAX)
 	_apply_ui_scale()
 	save_to_disk()
+	ui_scale_changed.emit(ui_scale)
+
+
+func set_view_scale(value: float) -> void:
+	view_scale = clampf(value, VIEW_SCALE_MIN, VIEW_SCALE_MAX)
+	save_to_disk()
+	view_scale_changed.emit(view_scale)
 
 
 func set_mobile_controls_enabled(enabled: bool) -> void:
@@ -107,6 +122,8 @@ func _apply_all() -> void:
 	_apply_window()
 	_apply_vsync()
 	_apply_ui_scale()
+	ui_scale_changed.emit(ui_scale)
+	view_scale_changed.emit(view_scale)
 
 
 func _apply_audio_buses() -> void:
