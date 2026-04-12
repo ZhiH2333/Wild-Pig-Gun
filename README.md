@@ -35,6 +35,19 @@
 | **Web** | 使用与引擎版本一致的 Web 导出模板；注意浏览器性能与包体大小。 |
 | **Android** | 导出 APK/AAB；虚拟摇杆在 Android 上自动启用（见 `VirtualJoystick`）。 |
 
+#### Web：在线试玩与本地预览
+
+- **在线试玩（托管）**：[https://wpgun.netlify.app/](https://wpgun.netlify.app/)
+- **本地预览**：Web 导出目录需通过 **http(s)://** 访问；若用浏览器直接打开 `index.html`（`file://`），可能出现 **Failed to fetch** 等加载失败。原因与排查可参考 [JinzStudio：Godot Web 包无法打开显示 fetch](https://jinzstudio.com/posts/2025/09/godot-web%E5%8C%85%E6%97%A0%E6%B3%95%E6%89%93%E5%BC%80%E6%98%BE%E7%A4%BAfetch/)。
+
+在导出产物所在目录（含 `index.html`）打开终端，启动本地 HTTP 服务后，用浏览器访问提示的地址（一般为 `http://localhost:8000`）：
+
+```bash
+python3 -m http.server 8000
+```
+
+按 `Ctrl+C` 可停止服务。
+
 数据在运行时从 `res://data/*.json` 读取；修改 JSON 后需重新导出或随 PCK 发布。
 
 ### 仓库与许可
@@ -84,6 +97,19 @@ See **[docs/EXPORT.md](docs/EXPORT.md)** for details. Short version:
 | **Desktop** (Windows / macOS / Linux) | **Project → Export**, add templates, export. |
 | **Web** | Use Web export templates matching your engine build; test FPS and size in target browsers. |
 | **Android** | Export APK/AAB; on-device **virtual joystick** is enabled when `OS.has_feature("android")`. |
+
+#### Web: hosted build & local preview
+
+- **Play online (hosted)**: [https://wpgun.netlify.app/](https://wpgun.netlify.app/)
+- **Local preview**: serve the export folder over **http(s)://**. Opening `index.html` directly as **`file://`** may fail with **Failed to fetch** and similar errors. For background and troubleshooting, see [JinzStudio: Godot Web export “fetch” issues](https://jinzstudio.com/posts/2025/09/godot-web%E5%8C%85%E6%97%A0%E6%B3%95%E6%89%93%E5%BC%80%E6%98%BE%E7%A4%BAfetch/) (Chinese).
+
+From the export output directory (the folder that contains `index.html`), start a simple HTTP server, then open the printed URL in your browser (often `http://localhost:8000`):
+
+```bash
+python3 -m http.server 8000
+```
+
+Press `Ctrl+C` to stop the server.
 
 Game data is loaded from `res://data/*.json`; after editing JSON, re-export or ship updated PCK.
 
