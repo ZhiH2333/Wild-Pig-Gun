@@ -2,6 +2,8 @@
 
 [中文](#中文) · [English](#english)
 
+![Wild Pig Gun Icon](assets/sprites/icon.png)
+
 ---
 
 ## 中文
@@ -40,6 +42,18 @@
 - 远程仓库：<https://github.com/ZhiH2333/Wild-Pig-Gun>  
 - 许可证：见仓库内 `LICENSE`（与上游一致时请以其为准）。
 
+### 发行与统计
+
+- 1.0.0 发布说明：见 `release-notes/v1.0.0.md`
+- Stars 曲线图：  
+  [![Star History Chart](https://api.star-history.com/svg?repos=ZhiH2333/Wild-Pig-Gun&type=Date)](https://www.star-history.com/#ZhiH2333/Wild-Pig-Gun&Date)
+
+### 版权声明
+
+- 代码许可证：MIT（`LICENSE`）。
+- Copyright (c) 2026 ZhiH.
+- 第三方资源请按各自来源与许可证要求使用与分发。
+
 ---
 
 ## English
@@ -77,3 +91,15 @@ Game data is loaded from `res://data/*.json`; after editing JSON, re-export or s
 
 - GitHub: <https://github.com/ZhiH2333/Wild-Pig-Gun>  
 - License: see `LICENSE` in this repository.
+
+### Release & stats
+
+- 1.0.0 release notes: `release-notes/v1.0.0.md`
+- Star history chart:  
+  [![Star History Chart](https://api.star-history.com/svg?repos=ZhiH2333/Wild-Pig-Gun&type=Date)](https://www.star-history.com/#ZhiH2333/Wild-Pig-Gun&Date)
+
+### Copyright
+
+- Code license: MIT (`LICENSE`).
+- Copyright (c) 2026 ZhiH.
+- Please comply with third-party asset licenses before redistribution.

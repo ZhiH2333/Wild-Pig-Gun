@@ -44,59 +44,6 @@ func add_weapon_slot_by_id(weapon_id: String) -> bool:
 	return true
 
 
-func has_weapon_id(wid: String) -> bool:
-	for c in get_children():
-		if "weapon_id" in c and str(c.weapon_id) == wid:
-			return true
-	return false
-
-
-func upgrade_weapon_by_id(wid: String) -> bool:
-	for c in get_children():
-		if "weapon_id" in c and str(c.weapon_id) == wid:
-			if c.has_method("upgrade_weapon"):
-				c.upgrade_weapon()
-				_notify_synergy()
-				_schedule_loadout_notify()
-				return true
-	return false
-
-
-func get_weapon_level(wid: String) -> int:
-	for c in get_children():
-		if "weapon_id" in c and str(c.weapon_id) == wid:
-			if "weapon_level" in c:
-				return int(c.weapon_level)
-	return 1
-
-
-func remove_weapon_by_id(wid: String) -> bool:
-	if get_child_count() <= 1:
-		return false
-	for c in get_children():
-		if "weapon_id" in c and str(c.weapon_id) == wid:
-			remove_child(c)
-			c.queue_free()
-			_notify_synergy()
-			_schedule_loadout_notify()
-			return true
-	return false
-
-
-func remove_weapon_node(node: Node) -> bool:
-	if get_child_count() <= 1:
-		return false
-	if not is_instance_valid(node):
-		return false
-	if node.get_parent() != self:
-		return false
-	remove_child(node)
-	node.queue_free()
-	_notify_synergy()
-	_schedule_loadout_notify()
-	return true
-
-
 func _add_weapon_by_id(weapon_id: String) -> void:
 	var def: Dictionary = WeaponCatalog.find_def(weapon_id)
 	var kind: String = str(def.get("kind", "projectile"))
