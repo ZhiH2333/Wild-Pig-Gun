@@ -3,6 +3,9 @@ extends Node
 const SAVE_PATH: String = "user://wild_pig_gun_save.json"
 const KEY_PENDING_RUN: String = "pending_run"
 
+func has_save_file() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
 func load_save_data() -> Dictionary:
 	if not FileAccess.file_exists(SAVE_PATH):
 		return {}
@@ -83,3 +86,13 @@ func get_pending_run_summary() -> Dictionary:
 			"character_id": str(d.get("character_id", "default")),
 		}
 	return {}
+
+
+func delete_all_save_data() -> bool:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return true
+	var abs_path: String = ProjectSettings.globalize_path(SAVE_PATH)
+	var err: Error = DirAccess.remove_absolute(abs_path)
+	if err == OK:
+		return true
+	return save_save_data({})
