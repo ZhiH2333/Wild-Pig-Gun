@@ -38,6 +38,18 @@ var arena_rect: Rect2 = Rect2()
 @onready var elite_check_timer: Timer = $EliteCheckTimer
 
 
+## 预警 / Boss 生成前的等待：必须不受 SceneTree 暂停影响（波间 ESC、系统暂停菜单）
+func _delay_unpaused_sec(seconds: float) -> void:
+	var t := Timer.new()
+	t.one_shot = true
+	t.wait_time = maxf(0.02, seconds)
+	t.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(t)
+	t.start()
+	await t.timeout
+	t.queue_free()
+
+
 func _ready() -> void:
 	_wave_file_config = WaveData.load_config()
 	spawn_timer.one_shot = true
@@ -97,7 +109,7 @@ func _try_spawn_boss_wave(boss_type: String) -> void:
 		return
 	var pos: Vector2 = _get_safe_spawn_position()
 	emit_signal("spawn_warning_shown", pos)
-	await get_tree().create_timer(SPAWN_WARNING_DURATION).timeout
+	await _delay_unpaused_sec(SPAWN_WARNING_DURATION)
 	if not is_wave_active:
 		return
 	if _is_spawn_blocked_by_player(pos):
@@ -153,16 +165,21 @@ func apply_save_snapshot(d: Dictionary) -> void:
 	var wave_left: float = float(d.get("wave_timer_left", _get_wave_duration(widx)))
 	wave_timer.wait_time = maxf(0.08, wave_left)
 	wave_timer.start()
+	var boss_t: String = WaveData.get_boss_type(_wave_file_config, widx)
 	var elite_cfg: Dictionary = WaveData.get_elite_focus_settings(_wave_file_config, widx)
 	_elite_chance_bonus = float(elite_cfg.get("chance_bonus", 0.0))
-	if widx >= 10 or bool(elite_cfg.get("active", false)):
+	if boss_t.is_empty() and (widx >= 10 or bool(elite_cfg.get("active", false))):
 		var elite_iv: float = float(elite_cfg.get("interval", 15.0))
 		if bool(d.get("elite_timer_running", false)):
 			elite_check_timer.wait_time = maxf(0.15, float(d.get("elite_timer_left", elite_iv)))
 		else:
 			elite_check_timer.wait_time = elite_iv
 		elite_check_timer.start()
-	if bool(d.get("spawn_timer_running", false)):
+	elif boss_t.is_empty():
+		elite_check_timer.stop()
+	if not boss_t.is_empty():
+		_try_spawn_boss_wave(boss_t)
+	elif bool(d.get("spawn_timer_running", false)):
 		var stl: float = float(d.get("spawn_timer_left", 0.5))
 		spawn_timer.wait_time = maxf(0.08, stl)
 		spawn_timer.start()
@@ -249,7 +266,7 @@ func _try_spawn_batch() -> void:
 		})
 	for s in slots:
 		emit_signal("spawn_warning_shown", s["pos"] as Vector2)
-	await get_tree().create_timer(SPAWN_WARNING_DURATION).timeout
+	await _delay_unpaused_sec(SPAWN_WARNING_DURATION)
 	if not is_wave_active:
 		return
 	for s in slots:
@@ -270,7 +287,7 @@ func _spawn_elite_sequence() -> void:
 	if current_wave >= MAX_WAVES:
 		var pos_boss := _get_safe_spawn_position()
 		emit_signal("spawn_warning_shown", pos_boss)
-		await get_tree().create_timer(SPAWN_WARNING_DURATION).timeout
+		await _delay_unpaused_sec(SPAWN_WARNING_DURATION)
 		if not is_wave_active:
 			return
 		if not _is_spawn_blocked_by_player(pos_boss):
@@ -284,7 +301,7 @@ func _spawn_elite_sequence() -> void:
 		return
 	var pos := _get_safe_spawn_position()
 	emit_signal("spawn_warning_shown", pos)
-	await get_tree().create_timer(SPAWN_WARNING_DURATION).timeout
+	await _delay_unpaused_sec(SPAWN_WARNING_DURATION)
 	if not is_wave_active:
 		return
 	if _is_spawn_blocked_by_player(pos):
