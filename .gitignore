@@ -12,4 +12,6 @@
 # Editor
 .kiro/**
 .vscode/**
-.cursor/
+.cursor/*
+!.cursor/skills/
+!.cursor/skills/**
