@@ -330,14 +330,14 @@ func build_run_snapshot() -> Dictionary:
 		"player": pstats,
 		"weapons": weapons,
 		"wave": wave_manager.get_save_snapshot(),
+		"interstitial_open": interstitial_hub != null and interstitial_hub.visible,
 	}
 
 
 func save_run_and_return_to_menu() -> void:
+	var data: Dictionary = build_run_snapshot()
 	if interstitial_hub != null and interstitial_hub.visible:
 		interstitial_hub.visible = false
-		RunState.leave_interstitial_pause()
-	var data: Dictionary = build_run_snapshot()
 	SaveManager.save_pending_run(data)
 	RunState.pause_reason = RunState.PauseReason.NONE
 	get_tree().paused = false
@@ -377,6 +377,10 @@ func _restore_run_from_snapshot(snap: Dictionary) -> void:
 	var ws: Variant = snap.get("wave", {})
 	if ws is Dictionary:
 		wave_manager.apply_save_snapshot(ws as Dictionary)
+	if bool(snap.get("interstitial_open", false)) and interstitial_hub != null:
+		var finished: int = wave_manager.current_wave
+		if finished > 0:
+			interstitial_hub.show_for_finished_wave(finished)
 	RunState.emit_hud_sync_signals()
 
 
