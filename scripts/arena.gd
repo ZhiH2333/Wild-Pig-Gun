@@ -23,7 +23,6 @@ const ENEMY_SCENE_MAP: Dictionary = {
 }
 
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
-const BOSS_SPAWN_WARNING_SEC: float = 0.8
 const RUN_SNAPSHOT_VERSION: int = 1
 const SETTINGS_SCENE_PATH: String = "res://scenes/settings.tscn"
 
@@ -227,18 +226,6 @@ func _on_wave_started(wave_index: int, duration_sec: float = 30.0) -> void:
 	RunState.wave_changed.emit(wave_index)
 	if hud != null and hud.has_method("on_wave_timer_reset"):
 		hud.on_wave_timer_reset(duration_sec)
-	var boss_type: String = WaveData.get_boss_type(_wave_cfg, wave_index)
-	if not boss_type.is_empty():
-		_begin_boss_spawn_async(boss_type)
-
-
-func _begin_boss_spawn_async(boss_type: String) -> void:
-	await get_tree().create_timer(0.55).timeout
-	var center: Vector2 = get_arena_rect().get_center()
-	_on_spawn_warning_shown(center)
-	await get_tree().create_timer(BOSS_SPAWN_WARNING_SEC).timeout
-	var cfg: Dictionary = {"type": boss_type}
-	_on_enemy_spawn_requested(cfg, center)
 
 
 ## 通关（需求 7.5）
@@ -347,6 +334,9 @@ func build_run_snapshot() -> Dictionary:
 
 
 func save_run_and_return_to_menu() -> void:
+	if interstitial_hub != null and interstitial_hub.visible:
+		interstitial_hub.visible = false
+		RunState.leave_interstitial_pause()
 	var data: Dictionary = build_run_snapshot()
 	SaveManager.save_pending_run(data)
 	RunState.pause_reason = RunState.PauseReason.NONE
