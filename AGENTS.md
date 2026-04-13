@@ -36,3 +36,10 @@ This is a **Godot 4.6 GDScript** game project (top-down roguelite shooter). No b
 - Godot editor in headless mode (`--headless --import`) is needed to regenerate `.godot/imported/` cache after pulling new assets.
 - Game data lives in `data/*.json`; changes require re-export for packaged builds but work immediately from the editor.
 - The cloud VM uses OpenGL compatibility renderer (no Vulkan). Godot falls back automatically; the game runs fine.
+
+### Git commits (Codex)
+
+- Use the repo template: `git config commit.template .gitmessage` (optional, recommended).
+- **Subject** (one line): `<emoji> <type>(<scope>): <subject>` — imperative mood, lowercase after the colon, no trailing period, **≤ 72 characters**.
+- **Merge commits**: start the subject with **`🔀 merge:`** (for example `🔀 merge: cursor/feature-x into main`).
+- Allowed emoji/type pairs and scopes are listed in `.gitmessage`.
