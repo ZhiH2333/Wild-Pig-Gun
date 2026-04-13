@@ -1,0 +1,19 @@
+# <emoji> <type>(<scope>): <subject line, imperative, no period, ≤72 chars>
+#
+# [optional body, wrap at 72]
+#
+# [optional footer: Fixes #123 | BREAKING CHANGE: ... | SAFETY: ...]
+#
+# Emojis: ✨ feat 🐛 fix 🔧 chore 📝 docs 💄 style ♻️ refactor ⚡ perf
+#         ✅ test 🚑 hotfix 🔒 security 🌐 i18n 🗃️ db 🔀 merge
+#
+# Merge commits (before merging branches / PR completion):
+#   🔀 merge: <source> into <target>
+#
+# Scopes (pick closest): core, ui, audio, settings, combat, wave, shop,
+#   enemy, weapon, projectile, arena, build, tests, readme, docs, cursor
+#
+# Examples:
+# ✨ feat(ui): add pause menu shortcut hints
+# 🐛 fix(shop): prevent duplicate purchase on rapid clicks
+# 🔀 merge: feature/menu into develop
