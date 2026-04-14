@@ -17,6 +17,9 @@ const CLEAR_HOLD_SECONDS: float = 3.0
 @onready var vsync_fps_value: Label = $Center/MainColumn/Scroll/Contents/VsyncFpsRow/VsyncFpsValue
 @onready var show_fps_check: CheckBox = $Center/MainColumn/Scroll/Contents/ShowFpsCheck
 @onready var mobile_controls_check: CheckBox = $Center/MainColumn/Scroll/Contents/MobileControlsCheck
+@onready var joystick_size_row: HBoxContainer = $Center/MainColumn/Scroll/Contents/JoystickSizeRow
+@onready var joystick_size_slider: HSlider = $Center/MainColumn/Scroll/Contents/JoystickSizeRow/JoystickSizeSlider
+@onready var joystick_size_value: Label = $Center/MainColumn/Scroll/Contents/JoystickSizeRow/JoystickSizeValue
 @onready var data_summary_label: Label = $Center/MainColumn/Scroll/Contents/DataSummaryLabel
 @onready var clear_hint_label: Label = $Center/MainColumn/Scroll/Contents/ClearHintLabel
 @onready var clear_all_data_button: Button = $Center/MainColumn/Scroll/Contents/ClearAllDataButton
@@ -45,6 +48,7 @@ func _ready() -> void:
 	vsync_fps_slider.value_changed.connect(_on_vsync_fps_changed)
 	show_fps_check.toggled.connect(_on_show_fps_toggled)
 	mobile_controls_check.toggled.connect(_on_mobile_controls_toggled)
+	joystick_size_slider.value_changed.connect(_on_joystick_size_changed)
 	clear_all_data_button.pressed.connect(_on_clear_all_button_pressed)
 	clear_all_data_button.button_down.connect(_on_clear_all_button_down)
 	clear_all_data_button.button_up.connect(_on_clear_all_button_up)
@@ -63,10 +67,13 @@ func _ready() -> void:
 	vsync_fps_slider.value = GameSettings.vsync_fps
 	show_fps_check.button_pressed = GameSettings.show_fps
 	mobile_controls_check.button_pressed = GameSettings.mobile_controls_enabled
+	joystick_size_slider.value = GameSettings.joystick_size
 	_refresh_ui_scale_label()
 	_refresh_view_scale_label()
 	_refresh_vsync_fps_label()
 	_refresh_vsync_fps_visibility()
+	_refresh_joystick_size_label()
+	_refresh_joystick_size_visibility()
 	_refresh_data_summary()
 	_refresh_clear_button_idle_text()
 	if OS.get_name() == "Web":
@@ -117,6 +124,12 @@ func _on_show_fps_toggled(pressed: bool) -> void:
 
 func _on_mobile_controls_toggled(pressed: bool) -> void:
 	GameSettings.set_mobile_controls_enabled(pressed)
+	_refresh_joystick_size_visibility()
+
+
+func _on_joystick_size_changed(v: float) -> void:
+	GameSettings.set_joystick_size(v)
+	_refresh_joystick_size_label()
 
 
 func _refresh_ui_scale_label() -> void:
@@ -133,6 +146,14 @@ func _refresh_vsync_fps_label() -> void:
 
 func _refresh_vsync_fps_visibility() -> void:
 	vsync_fps_row.visible = vsync_check.button_pressed
+
+
+func _refresh_joystick_size_label() -> void:
+	joystick_size_value.text = "%d%%" % int(round(GameSettings.joystick_size * 100.0))
+
+
+func _refresh_joystick_size_visibility() -> void:
+	joystick_size_row.visible = GameSettings.mobile_controls_enabled
 
 
 func _refresh_data_summary() -> void:

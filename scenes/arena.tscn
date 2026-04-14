@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://rena"]
+[gd_scene load_steps=21 format=3 uid="uid://rena"]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/arena/arena_backdrop.gd" id="14_backdrop"]
@@ -15,6 +15,7 @@
 [ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="11_ui"]
 [ext_resource type="Script" path="res://scripts/ui/pause_overlay_menu.gd" id="13_pause_menu"]
 [ext_resource type="Script" path="res://scripts/ui/mobile_pause_button.gd" id="16_mobile_pause"]
+[ext_resource type="Script" path="res://scripts/ui/touch_scroll_container.gd" id="17_touch_scroll"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
@@ -269,7 +270,7 @@ theme_override_font_sizes/font_size = 22
 text = "商店（消耗材料）"
 horizontal_alignment = 1
 
-[node name="ShopScroll" type="ScrollContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+[node name="ShopScroll" type="ScrollContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox" script=ExtResource("17_touch_scroll")]
 custom_minimum_size = Vector2(0, 280)
 horizontal_scroll_mode = 0
 

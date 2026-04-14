@@ -5,6 +5,7 @@ signal mobile_controls_changed(enabled: bool)
 signal ui_scale_changed(new_value: float)
 signal view_scale_changed(new_value: float)
 signal show_fps_changed(enabled: bool)
+signal joystick_size_changed(new_value: float)
 const SETTINGS_PATH: String = "user://game_settings.json"
 const MASTER_LINEAR_DEFAULT: float = 1.0
 const MUSIC_LINEAR_DEFAULT: float = 1.0
@@ -20,6 +21,9 @@ const VIEW_SCALE_DEFAULT: float = 1.0
 const VSYNC_FPS_MIN: int = 30
 const VSYNC_FPS_MAX: int = 240
 const VSYNC_FPS_DEFAULT: int = 60
+const JOYSTICK_SIZE_MIN: float = 0.5
+const JOYSTICK_SIZE_MAX: float = 2.0
+const JOYSTICK_SIZE_DEFAULT: float = 1.0
 
 var master_linear: float = MASTER_LINEAR_DEFAULT
 var music_linear: float = MUSIC_LINEAR_DEFAULT
@@ -31,6 +35,8 @@ var ui_scale: float = UI_SCALE_DEFAULT
 var view_scale: float = VIEW_SCALE_DEFAULT
 var mobile_controls_enabled: bool = false
 var show_fps: bool = false
+var joystick_size: float = JOYSTICK_SIZE_DEFAULT
+var has_selected_control_mode: bool = false
 
 
 func _ready() -> void:
@@ -61,6 +67,8 @@ func load_from_disk() -> void:
 	view_scale = clampf(float(dict.get("view_scale", VIEW_SCALE_DEFAULT)), VIEW_SCALE_MIN, VIEW_SCALE_MAX)
 	mobile_controls_enabled = bool(dict.get("mobile_controls_enabled", false))
 	show_fps = bool(dict.get("show_fps", false))
+	joystick_size = clampf(float(dict.get("joystick_size", JOYSTICK_SIZE_DEFAULT)), JOYSTICK_SIZE_MIN, JOYSTICK_SIZE_MAX)
+	has_selected_control_mode = bool(dict.get("has_selected_control_mode", false))
 
 
 func save_to_disk() -> void:
@@ -75,6 +83,8 @@ func save_to_disk() -> void:
 		"view_scale": view_scale,
 		"mobile_controls_enabled": mobile_controls_enabled,
 		"show_fps": show_fps,
+		"joystick_size": joystick_size,
+		"has_selected_control_mode": has_selected_control_mode,
 	}
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
 	if f == null:
@@ -144,6 +154,17 @@ func set_show_fps(enabled: bool) -> void:
 	show_fps_changed.emit(show_fps)
 
 
+func set_joystick_size(value: float) -> void:
+	joystick_size = clampf(value, JOYSTICK_SIZE_MIN, JOYSTICK_SIZE_MAX)
+	save_to_disk()
+	joystick_size_changed.emit(joystick_size)
+
+
+func set_has_selected_control_mode(value: bool) -> void:
+	has_selected_control_mode = value
+	save_to_disk()
+
+
 func has_settings_file() -> bool:
 	return FileAccess.file_exists(SETTINGS_PATH)
 
@@ -159,6 +180,8 @@ func clear_all_settings_data() -> bool:
 	view_scale = VIEW_SCALE_DEFAULT
 	mobile_controls_enabled = false
 	show_fps = false
+	joystick_size = JOYSTICK_SIZE_DEFAULT
+	has_selected_control_mode = false
 	_apply_all()
 	if not FileAccess.file_exists(SETTINGS_PATH):
 		return true

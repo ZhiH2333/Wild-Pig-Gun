@@ -216,6 +216,28 @@ text = "显示帧率（右下角）"
 theme_override_font_sizes/font_size = 22
 text = "启用虚拟摇杆与虚拟暂停按钮"
 
+[node name="JoystickSizeRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
+theme_override_constants/separation = 12
+
+[node name="JoystickSizeLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/JoystickSizeRow"]
+custom_minimum_size = Vector2(140, 0)
+theme_override_font_sizes/font_size = 22
+text = "摇杆大小"
+
+[node name="JoystickSizeSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/JoystickSizeRow"]
+custom_minimum_size = Vector2(240, 32)
+size_flags_horizontal = 3
+min_value = 0.5
+max_value = 2.0
+step = 0.1
+value = 1.0
+
+[node name="JoystickSizeValue" type="Label" parent="Center/MainColumn/Scroll/Contents/JoystickSizeRow"]
+custom_minimum_size = Vector2(72, 0)
+theme_override_font_sizes/font_size = 22
+text = "100%"
+horizontal_alignment = 2
+
 [node name="DataDangerHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
 theme_override_colors/font_color = Color(0.88, 0.42, 0.42, 1)
 theme_override_font_sizes/font_size = 26
