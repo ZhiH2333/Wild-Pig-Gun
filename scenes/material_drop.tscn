@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://material_drop"]
+
+[ext_resource type="Script" path="res://scripts/items/material_drop.gd" id="1_material_drop"]
+
+[node name="MaterialDrop" type="Node2D"]
+script = ExtResource("1_material_drop")
+
+[node name="CoinSprite" type="Sprite2D" parent="."]
+visible = false

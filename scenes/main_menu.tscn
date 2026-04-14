@@ -1,0 +1,123 @@
+[gd_scene format=3 uid="uid://dctlwroemrtu0"]
+
+[ext_resource type="Script" uid="uid://o0fto51q77ev" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
+[ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
+[ext_resource type="FontFile" uid="uid://cfxigihcadfuq" path="res://assets/fonts/ZhanKuKuaiLeTi2016XiuDingBan-1.ttf" id="4_zhan_ku_kuai_le"]
+
+[node name="MainMenu" type="Control" unique_id=1151415159]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_ui")
+script = ExtResource("1_main_menu")
+
+[node name="Background" type="TextureRect" parent="." unique_id=322324325]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="DimOverlay" type="ColorRect" parent="." unique_id=1794882965]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.06, 0.05, 0.08, 0.52)
+
+[node name="TitleBlock" type="VBoxContainer" parent="." unique_id=778202529]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -88.0
+offset_right = 340.0
+offset_bottom = 88.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleZh" type="Label" parent="TitleBlock" unique_id=1055004951]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 62
+text = "野猪乱打手枪"
+horizontal_alignment = 1
+
+[node name="TitleEn" type="Label" parent="TitleBlock" unique_id=1426475162]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+theme_override_colors/font_color = Color(0.65, 0.62, 0.58, 1)
+theme_override_font_sizes/font_size = 28
+text = "WildPigGun"
+horizontal_alignment = 1
+
+[node name="ButtonColumn" type="VBoxContainer" parent="." unique_id=800017249]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -376.0
+offset_right = 308.0
+offset_bottom = -28.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 14
+
+[node name="ContinueButton" type="Button" parent="ButtonColumn" unique_id=1364847846]
+visible = false
+custom_minimum_size = Vector2(300, 52)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+text = "继续游戏"
+
+[node name="StartButton" type="Button" parent="ButtonColumn" unique_id=1607436261]
+custom_minimum_size = Vector2(300, 52)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+text = "开始"
+
+[node name="SettingsButton" type="Button" parent="ButtonColumn" unique_id=1022545876]
+custom_minimum_size = Vector2(300, 52)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+text = "设置"
+
+[node name="ProgressButton" type="Button" parent="ButtonColumn" unique_id=1089814915]
+custom_minimum_size = Vector2(300, 52)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+text = "进度"
+
+[node name="CreditsButton" type="Button" parent="ButtonColumn" unique_id=1307126427]
+custom_minimum_size = Vector2(300, 52)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+text = "制作人名单"
+
+[node name="QuitButton" type="Button" parent="ButtonColumn" unique_id=1682175575]
+custom_minimum_size = Vector2(300, 52)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+text = "退出"
+
+[node name="InfoDialog" type="AcceptDialog" parent="." unique_id=1339375067]
+theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+ok_button_text = "确定"
+dialog_text = "占位"

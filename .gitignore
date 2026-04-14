@@ -1,0 +1,17 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+
+.import/
+.export/
+.export_presets.cfg
+*.tmp
+.DS_Store
+
+# Editor
+.kiro/**
+.vscode/**
+.cursor/*
+!.cursor/skills/
+!.cursor/skills/**

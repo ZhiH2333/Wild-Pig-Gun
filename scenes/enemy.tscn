@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://enemy"]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy.gd" id="1_enemy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 18.0
+
+[node name="Enemy" type="CharacterBody2D"]
+script = ExtResource("1_enemy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="DamageTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true

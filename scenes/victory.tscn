@@ -1,0 +1,95 @@
+[gd_scene load_steps=3 format=3 uid="uid://victory_screen"]
+
+[ext_resource type="Script" path="res://scripts/ui/victory_screen.gd" id="1_victory"]
+[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
+
+[node name="Victory" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_ui")
+script = ExtResource("1_victory")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.06, 0.12, 0.08, 1)
+
+[node name="RootMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 80
+theme_override_constants/margin_bottom = 36
+
+[node name="RootVBox" type="VBoxContainer" parent="RootMargin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TitleLabel" type="Label" parent="RootMargin/RootVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.98, 0.72, 1)
+theme_override_font_sizes/font_size = 42
+text = "通  关"
+horizontal_alignment = 1
+
+[node name="SummaryLabel" type="Label" parent="RootMargin/RootVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.88, 0.74, 1)
+theme_override_font_sizes/font_size = 18
+text = "摘要"
+horizontal_alignment = 1
+
+[node name="HSep1" type="HSeparator" parent="RootMargin/RootVBox"]
+layout_mode = 2
+theme_override_colors/color = Color(0.2, 0.4, 0.25, 0.8)
+
+[node name="ScrollArea" type="ScrollContainer" parent="RootMargin/RootVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DetailRich" type="RichTextLabel" parent="RootMargin/RootVBox/ScrollArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 17
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = ""
+
+[node name="HSep2" type="HSeparator" parent="RootMargin/RootVBox"]
+layout_mode = 2
+theme_override_colors/color = Color(0.2, 0.4, 0.25, 0.8)
+
+[node name="BottomBar" type="HBoxContainer" parent="RootMargin/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MainMenuButton" type="Button" parent="RootMargin/RootVBox/BottomBar"]
+custom_minimum_size = Vector2(260, 52)
+layout_mode = 2
+text = "返回主菜单"
+
+[node name="Spacer" type="Control" parent="RootMargin/RootVBox/BottomBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CopyButton" type="Button" parent="RootMargin/RootVBox/BottomBar"]
+custom_minimum_size = Vector2(160, 52)
+layout_mode = 2
+text = "复制报告"

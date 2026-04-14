@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://boss_enemy"]
+
+[ext_resource type="Script" path="res://scripts/enemies/boss_enemy.gd" id="1_boss"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 34.0
+
+[node name="BossEnemy" type="CharacterBody2D"]
+script = ExtResource("1_boss")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="DamageTimer" type="Timer" parent="."]
+wait_time = 0.45
+one_shot = true

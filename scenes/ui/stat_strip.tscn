@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://statstripwp"]
+
+[ext_resource type="Script" path="res://scripts/ui/stat_strip.gd" id="1_ss"]
+
+[node name="StatStrip" type="HBoxContainer"]
+theme_override_constants/separation = 14
+script = ExtResource("1_ss")
+
+[node name="DmgLabel" type="Label" parent="."]
+theme_override_colors/font_color = Color(1, 0.82, 0.78, 1)
+theme_override_font_sizes/font_size = 18
+text = "伤×1.00"
+
+[node name="FireLabel" type="Label" parent="."]
+theme_override_colors/font_color = Color(0.88, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "速×1.00"
+
+[node name="MoveLabel" type="Label" parent="."]
+theme_override_colors/font_color = Color(0.78, 1, 0.88, 1)
+theme_override_font_sizes/font_size = 18
+text = "移×1.00"
+
+[node name="RangeLabel" type="Label" parent="."]
+theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "程540"
+
+[node name="LuckLabel" type="Label" parent="."]
+theme_override_colors/font_color = Color(0.95, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "幸 0"
+
+[node name="SynLabel" type="Label" parent="."]
+visible = false
+theme_override_colors/font_color = Color(1, 0.85, 0.55, 1)
+theme_override_font_sizes/font_size = 18
+text = "羁×1.00"

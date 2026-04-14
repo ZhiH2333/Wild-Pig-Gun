@@ -1,0 +1,41 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="WildPigGun"
+run/main_scene="uid://dctlwroemrtu0"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/icon="res://assets/sprites/icon.png"
+
+[autoload]
+
+SaveManager="*res://scripts/save/save_manager.gd"
+RunState="*res://scripts/upgrades/run_state.gd"
+GameSettings="*res://scripts/settings/game_settings.gd"
+GameFlow="*res://scripts/game_flow.gd"
+GameAudio="*res://scripts/audio/game_audio.gd"
+GameMusic="*res://scripts/audio/game_music.gd"
+MusicNowPlaying="*res://scripts/ui/music_now_playing.gd"
+UiSoundFeedback="*res://scripts/ui/ui_sound_feedback.gd"
+DamagePopupSpawner="*res://scripts/ui/damage_popup_spawner.gd"
+
+[gui]
+
+theme/custom="res://themes/game_ui_theme.tres"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true
+rendering_device/driver.windows="d3d12"
