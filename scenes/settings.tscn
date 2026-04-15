@@ -361,6 +361,12 @@ theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
+[node name="CustomLayoutBtn" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+visible = false
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 22
+text = "自定义控件位置..."
+
 [node name="GameScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer"]
 layout_mode = 2
 horizontal_scroll_mode = 0

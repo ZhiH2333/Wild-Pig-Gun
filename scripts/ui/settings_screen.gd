@@ -48,6 +48,7 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var joystick_size_row: HBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow
 @onready var joystick_size_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow/JoystickSizeSlider
 @onready var joystick_size_value: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow/JoystickSizeValue
+@onready var custom_layout_btn: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/CustomLayoutBtn
 @onready var data_summary_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/DataSummaryLabel
 @onready var clear_hint_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearHintLabel
 @onready var clear_all_data_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton
@@ -92,6 +93,7 @@ func _ready() -> void:
 	show_fps_check.toggled.connect(_on_show_fps_toggled)
 	mobile_controls_check.toggled.connect(_on_mobile_controls_toggled)
 	joystick_size_slider.value_changed.connect(_on_joystick_size_changed)
+	custom_layout_btn.pressed.connect(_on_custom_layout_pressed)
 	clear_all_data_button.pressed.connect(_on_clear_all_button_pressed)
 	clear_all_data_button.button_down.connect(_on_clear_all_button_down)
 	clear_all_data_button.button_up.connect(_on_clear_all_button_up)
@@ -370,8 +372,14 @@ func _on_mobile_controls_toggled(pressed: bool) -> void:
 
 
 func _on_joystick_size_changed(v: float) -> void:
+	if _is_syncing_ui:
+		return
 	GameSettings.set_joystick_size(v)
 	_refresh_joystick_size_label()
+
+
+func _on_custom_layout_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/ui/mobile_control_layout_editor.tscn")
 
 
 func _refresh_ui_scale_label() -> void:
@@ -405,6 +413,7 @@ func _refresh_joystick_size_label() -> void:
 
 func _refresh_joystick_size_visibility() -> void:
 	joystick_size_row.visible = GameSettings.mobile_controls_enabled
+	custom_layout_btn.visible = GameSettings.mobile_controls_enabled
 
 
 func _refresh_data_summary() -> void:

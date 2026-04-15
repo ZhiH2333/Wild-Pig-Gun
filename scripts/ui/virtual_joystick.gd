@@ -5,13 +5,19 @@ const BASE_OUTER_RADIUS: float = 88.0
 const BASE_INNER_RADIUS: float = 28.0
 const DEAD_ZONE: float = 12.0
 
+@export var register_in_group: bool = true
+@export var allow_input: bool = true
+@export var force_visible: bool = false
+
 var output_vector: Vector2 = Vector2.ZERO
 var _active_index: int = -1
 var _is_mouse_dragging: bool = false
+var _manual_scale: float = -1.0
 
 
 func _ready() -> void:
-	add_to_group("virtual_joystick")
+	if register_in_group:
+		add_to_group("virtual_joystick")
 	GameSettings.mobile_controls_changed.connect(_on_mobile_controls_changed)
 	GameSettings.joystick_size_changed.connect(_on_joystick_size_changed)
 	_refresh_visibility()
@@ -22,7 +28,19 @@ func get_output() -> Vector2:
 	return output_vector
 
 
+func set_manual_scale(scale_value: float) -> void:
+	_manual_scale = clampf(scale_value, GameSettings.JOYSTICK_SIZE_MIN, GameSettings.JOYSTICK_SIZE_MAX)
+	_apply_size()
+
+
+func clear_manual_scale() -> void:
+	_manual_scale = -1.0
+	_apply_size()
+
+
 func _gui_input(event: InputEvent) -> void:
+	if not allow_input:
+		return
 	if event is InputEventScreenTouch:
 		var st: InputEventScreenTouch = event as InputEventScreenTouch
 		if st.pressed:
@@ -55,7 +73,7 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _update_vector(local_pos: Vector2) -> void:
-	var scale: float = GameSettings.joystick_size
+	var scale: float = _get_effective_scale()
 	var stick_max: float = STICK_MAX_BASE * scale
 	var dead_zone: float = DEAD_ZONE * scale
 	var center: Vector2 = size * 0.5
@@ -73,7 +91,7 @@ func _update_vector(local_pos: Vector2) -> void:
 func _draw() -> void:
 	if not visible:
 		return
-	var scale: float = GameSettings.joystick_size
+	var scale: float = _get_effective_scale()
 	var outer_r: float = BASE_OUTER_RADIUS * scale
 	var inner_r: float = BASE_INNER_RADIUS * scale
 	var stick_max: float = STICK_MAX_BASE * scale
@@ -93,13 +111,18 @@ func _on_joystick_size_changed(_new_size: float) -> void:
 
 
 func _apply_size() -> void:
-	var scale: float = GameSettings.joystick_size
+	var scale: float = _get_effective_scale()
 	var total_size: float = BASE_OUTER_RADIUS * 2.0 * scale
 	custom_minimum_size = Vector2(total_size, total_size)
 	queue_redraw()
 
 
 func _refresh_visibility() -> void:
+	if force_visible:
+		visible = true
+		mouse_filter = Control.MOUSE_FILTER_IGNORE if not allow_input else Control.MOUSE_FILTER_STOP
+		queue_redraw()
+		return
 	visible = GameSettings.mobile_controls_enabled
 	mouse_filter = Control.MOUSE_FILTER_STOP if visible else Control.MOUSE_FILTER_IGNORE
 	if not visible:
@@ -107,3 +130,9 @@ func _refresh_visibility() -> void:
 		_active_index = -1
 		_is_mouse_dragging = false
 	queue_redraw()
+
+
+func _get_effective_scale() -> float:
+	if _manual_scale > 0.0:
+		return _manual_scale
+	return GameSettings.joystick_size

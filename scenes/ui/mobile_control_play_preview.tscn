@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://mctrlpreview"]
+
+[ext_resource type="Script" path="res://scripts/arena/arena_backdrop.gd" id="1_backdrop"]
+[ext_resource type="Texture2D" uid="uid://hl4liug2oblp" path="res://assets/sprites/wildpig.png" id="2_pig"]
+
+[node name="PlayPreview" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -3
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.11, 0.12, 0.15, 1)
+
+[node name="GridBackdrop" type="Node2D" parent="."]
+z_index = -2
+script = ExtResource("1_backdrop")
+
+[node name="PlayerPreview" type="Sprite2D" parent="."]
+position = Vector2(960, 540)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("2_pig")
