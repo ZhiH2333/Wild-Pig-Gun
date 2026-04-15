@@ -37,5 +37,5 @@ theme/custom="res://themes/game_ui_theme.tres"
 
 [rendering]
 
-textures/vram_compression/import_etc2_astc=true
 rendering_device/driver.windows="d3d12"
+textures/vram_compression/import_etc2_astc=true
