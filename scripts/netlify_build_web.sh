@@ -6,7 +6,13 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPO_ROOT}"
 
 GODOT_VERSION="${GODOT_VERSION:-4.6}"
-CACHE="${NETLIFY_CACHE_DIR:-${REPO_ROOT}/.netlify-cache}"
+if [ -n "${NETLIFY_CACHE_DIR:-}" ]; then
+	CACHE="${NETLIFY_CACHE_DIR}/godot-${GODOT_VERSION}"
+elif [ -d "/opt/build/cache" ]; then
+	CACHE="/opt/build/cache/godot-${GODOT_VERSION}"
+else
+	CACHE="${REPO_ROOT}/.netlify-cache"
+fi
 mkdir -p "${CACHE}" dist
 
 GODOT_URL="${GODOT_URL:-https://downloads.godotengine.org/?version=${GODOT_VERSION}&flavor=stable&slug=linux.x86_64.zip&platform=linux.64}"
