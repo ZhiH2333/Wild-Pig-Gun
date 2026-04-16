@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://game_over"]
+[gd_scene load_steps=4 format=3 uid="uid://game_over"]
 
 [ext_resource type="Script" path="res://scripts/ui/game_over.gd" id="1_game_over"]
 [ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="Script" path="res://scripts/ui/touch_scroll_container.gd" id="3_touch_scroll"]
 
 [node name="GameOver" type="Control"]
 layout_mode = 3
@@ -50,7 +51,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/color = Color(0.35, 0.2, 0.2, 0.8)
 
-[node name="ScrollArea" type="ScrollContainer" parent="RootMargin/RootVBox"]
+[node name="ScrollArea" type="ScrollContainer" parent="RootMargin/RootVBox" script=ExtResource("3_touch_scroll")]
 layout_mode = 2
 size_flags_vertical = 3
 

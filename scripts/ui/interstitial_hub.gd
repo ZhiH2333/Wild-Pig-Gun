@@ -8,6 +8,7 @@ const SHOP_OFFER_COUNT: int = 5
 const REFRESH_SHOP_COST: int = 3
 const REFRESH_UPGRADE_COST: int = 8
 const ITEM_CARD_SCENE: PackedScene = preload("res://scenes/ui/item_card.tscn")
+const TOUCH_SCROLL_SCRIPT: Script = preload("res://scripts/ui/touch_scroll_container.gd")
 
 @onready var title_label: Label = $CenterContainer/Panel/MarginContainer/VBox/TitleLabel
 @onready var upgrade_row: HBoxContainer = $CenterContainer/Panel/MarginContainer/VBox/UpgradeRow
@@ -119,6 +120,7 @@ func _build_left_status_panel() -> void:
 	margin.add_theme_constant_override("margin_bottom", 8)
 	panel.add_child(margin)
 	var scroll: ScrollContainer = ScrollContainer.new()
+	scroll.set_script(TOUCH_SCROLL_SCRIPT)
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	margin.add_child(scroll)
