@@ -13,6 +13,8 @@ config_version=5
 config/name="WildPigGun"
 run/main_scene="uid://dctlwroemrtu0"
 config/features=PackedStringArray("4.6", "Forward Plus")
+config/version="1.0.2"
+config/version_code=3
 config/icon="res://assets/sprites/icon.png"
 
 [autoload]
