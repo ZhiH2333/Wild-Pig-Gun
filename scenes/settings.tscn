@@ -60,208 +60,369 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MainColumn" type="VBoxContainer" parent="Center"]
-custom_minimum_size = Vector2(560, 0)
+custom_minimum_size = Vector2(700, 0)
 theme_override_constants/separation = 20
 
-[node name="Title" type="Label" parent="Center/MainColumn"]
+[node name="MainCard" type="PanelContainer" parent="Center/MainColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 22
+
+[node name="CardColumn" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn"]
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 42
 text = "设置"
 horizontal_alignment = 1
 
-[node name="Scroll" type="ScrollContainer" parent="Center/MainColumn"]
-custom_minimum_size = Vector2(0, 440)
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
+[node name="TabButtonRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn"]
+layout_mode = 2
+theme_override_constants/separation = 10
 
-[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/Scroll"]
+[node name="TabBtn0" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 22
-
-[node name="AudioHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+custom_minimum_size = Vector2(0, 58)
 theme_override_font_sizes/font_size = 26
 text = "音频"
 
-[node name="MasterRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_constants/separation = 12
-
-[node name="MasterLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/MasterRow"]
-custom_minimum_size = Vector2(140, 0)
-theme_override_font_sizes/font_size = 22
-text = "总音量"
-
-[node name="MasterSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/MasterRow"]
-custom_minimum_size = Vector2(360, 32)
+[node name="TabBtn1" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+layout_mode = 2
 size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="MusicRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_constants/separation = 12
-
-[node name="MusicLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/MusicRow"]
-custom_minimum_size = Vector2(140, 0)
-theme_override_font_sizes/font_size = 22
-text = "音乐"
-
-[node name="MusicSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/MusicRow"]
-custom_minimum_size = Vector2(360, 32)
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="SfxRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_constants/separation = 12
-
-[node name="SfxLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/SfxRow"]
-custom_minimum_size = Vector2(140, 0)
-theme_override_font_sizes/font_size = 22
-text = "音效（含开火）"
-
-[node name="SfxSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/SfxRow"]
-custom_minimum_size = Vector2(360, 32)
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.05
-value = 1.0
-
-[node name="DisplayHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+custom_minimum_size = Vector2(0, 58)
 theme_override_font_sizes/font_size = 26
 text = "显示"
 
-[node name="UiScaleRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_constants/separation = 12
+[node name="TabBtn2" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 58)
+theme_override_font_sizes/font_size = 26
+text = "控制"
 
-[node name="UiScaleLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/UiScaleRow"]
-custom_minimum_size = Vector2(140, 0)
+[node name="TabBtn3" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 58)
+theme_override_font_sizes/font_size = 26
+text = "游戏"
+
+[node name="TabBtn4" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 58)
+theme_override_font_sizes/font_size = 26
+text = "数据"
+
+[node name="SettingsTabContainer" type="TabContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn"]
+custom_minimum_size = Vector2(0, 440)
+size_flags_vertical = 3
+theme_override_constants/side_margin = 0
+tabs_visible = false
+current_tab = 0
+
+[node name="AudioScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="AudioHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents"]
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 20
+text = "音量与混音总线"
+
+[node name="MasterRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents"]
+theme_override_constants/separation = 18
+
+[node name="MasterLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow"]
+custom_minimum_size = Vector2(152, 0)
+theme_override_font_sizes/font_size = 22
+text = "总音量"
+
+[node name="MasterSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow"]
+custom_minimum_size = Vector2(360, 44)
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="MusicRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents"]
+theme_override_constants/separation = 18
+
+[node name="MusicLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow"]
+custom_minimum_size = Vector2(152, 0)
+theme_override_font_sizes/font_size = 22
+text = "音乐"
+
+[node name="MusicSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow"]
+custom_minimum_size = Vector2(360, 44)
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="SfxRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents"]
+theme_override_constants/separation = 18
+
+[node name="SfxLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow"]
+custom_minimum_size = Vector2(152, 0)
+theme_override_font_sizes/font_size = 22
+text = "音效（含开火）"
+
+[node name="SfxSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow"]
+custom_minimum_size = Vector2(360, 44)
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="DisplayScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="DisplayHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 20
+text = "分辨率与窗口在「窗口化」下生效；网页版不支持下列项。"
+
+[node name="ResolutionRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+theme_override_constants/separation = 18
+
+[node name="ResolutionLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow"]
+custom_minimum_size = Vector2(152, 0)
+theme_override_font_sizes/font_size = 22
+text = "分辨率"
+
+[node name="ResolutionOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow"]
+custom_minimum_size = Vector2(360, 48)
+size_flags_horizontal = 3
+
+[node name="WindowModeRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+theme_override_constants/separation = 18
+
+[node name="WindowModeLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow"]
+custom_minimum_size = Vector2(152, 0)
+theme_override_font_sizes/font_size = 22
+text = "窗口模式"
+
+[node name="WindowModeOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow"]
+custom_minimum_size = Vector2(360, 48)
+size_flags_horizontal = 3
+
+[node name="FpsLimitRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+theme_override_constants/separation = 18
+
+[node name="FpsLimitLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/FpsLimitRow"]
+custom_minimum_size = Vector2(152, 0)
+theme_override_font_sizes/font_size = 22
+text = "帧率上限"
+
+[node name="FpsLimitOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/FpsLimitRow"]
+custom_minimum_size = Vector2(360, 48)
+size_flags_horizontal = 3
+
+[node name="QualityRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+theme_override_constants/separation = 18
+
+[node name="QualityLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/QualityRow"]
+custom_minimum_size = Vector2(152, 0)
+theme_override_font_sizes/font_size = 22
+text = "画质预设"
+
+[node name="QualityOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/QualityRow"]
+custom_minimum_size = Vector2(360, 48)
+size_flags_horizontal = 3
+
+[node name="UiScaleRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+theme_override_constants/separation = 18
+
+[node name="UiScaleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow"]
+custom_minimum_size = Vector2(152, 0)
 theme_override_font_sizes/font_size = 22
 text = "界面缩放"
 
-[node name="UiScaleSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/UiScaleRow"]
-custom_minimum_size = Vector2(240, 32)
+[node name="UiScaleSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow"]
+custom_minimum_size = Vector2(240, 44)
 size_flags_horizontal = 3
 min_value = 0.75
 max_value = 1.45
 step = 0.05
 value = 1.0
 
-[node name="UiScaleValue" type="Label" parent="Center/MainColumn/Scroll/Contents/UiScaleRow"]
+[node name="UiScaleValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow"]
 custom_minimum_size = Vector2(72, 0)
 theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="ViewScaleRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_constants/separation = 12
+[node name="ViewScaleRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+theme_override_constants/separation = 18
 
-[node name="ViewScaleLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
-custom_minimum_size = Vector2(140, 0)
+[node name="ViewScaleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow"]
+custom_minimum_size = Vector2(152, 0)
 theme_override_font_sizes/font_size = 22
 text = "视野范围"
 
-[node name="ViewScaleSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
-custom_minimum_size = Vector2(240, 32)
+[node name="ViewScaleSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow"]
+custom_minimum_size = Vector2(240, 44)
 size_flags_horizontal = 3
 min_value = 0.75
 max_value = 1.45
 step = 0.05
 value = 1.0
 
-[node name="ViewScaleValue" type="Label" parent="Center/MainColumn/Scroll/Contents/ViewScaleRow"]
+[node name="ViewScaleValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow"]
 custom_minimum_size = Vector2(72, 0)
 theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="FullscreenCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_font_sizes/font_size = 22
-text = "全屏（桌面）"
-
-[node name="VsyncCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_font_sizes/font_size = 22
+[node name="VsyncCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 24
 text = "垂直同步"
 
-[node name="VsyncFpsRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
+[node name="VsyncFpsRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
 visible = false
-theme_override_constants/separation = 12
+theme_override_constants/separation = 18
 
-[node name="VsyncFpsLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
-custom_minimum_size = Vector2(140, 0)
+[node name="VsyncFpsLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow"]
+custom_minimum_size = Vector2(152, 0)
 theme_override_font_sizes/font_size = 22
 text = "垂直同步帧率"
 
-[node name="VsyncFpsSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
-custom_minimum_size = Vector2(240, 32)
+[node name="VsyncFpsSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow"]
+custom_minimum_size = Vector2(240, 44)
 size_flags_horizontal = 3
 min_value = 30.0
 max_value = 240.0
 step = 10.0
 value = 60.0
 
-[node name="VsyncFpsValue" type="Label" parent="Center/MainColumn/Scroll/Contents/VsyncFpsRow"]
+[node name="VsyncFpsValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow"]
 custom_minimum_size = Vector2(72, 0)
 theme_override_font_sizes/font_size = 22
 text = "60 FPS"
 horizontal_alignment = 2
 
-[node name="ShowFpsCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_font_sizes/font_size = 22
-text = "显示帧率（右下角）"
+[node name="ControlScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
 
-[node name="MobileControlsCheck" type="CheckBox" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_font_sizes/font_size = 22
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="ControlHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 20
+text = "触控与屏幕操作"
+
+[node name="MobileControlsCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 24
 text = "启用虚拟摇杆与虚拟暂停按钮"
 
-[node name="JoystickSizeRow" type="HBoxContainer" parent="Center/MainColumn/Scroll/Contents"]
-theme_override_constants/separation = 12
+[node name="JoystickSizeRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+theme_override_constants/separation = 18
 
-[node name="JoystickSizeLabel" type="Label" parent="Center/MainColumn/Scroll/Contents/JoystickSizeRow"]
-custom_minimum_size = Vector2(140, 0)
+[node name="JoystickSizeLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow"]
+custom_minimum_size = Vector2(152, 0)
 theme_override_font_sizes/font_size = 22
 text = "摇杆大小"
 
-[node name="JoystickSizeSlider" type="HSlider" parent="Center/MainColumn/Scroll/Contents/JoystickSizeRow"]
-custom_minimum_size = Vector2(240, 32)
+[node name="JoystickSizeSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow"]
+custom_minimum_size = Vector2(240, 44)
 size_flags_horizontal = 3
 min_value = 0.5
 max_value = 2.0
 step = 0.1
 value = 1.0
 
-[node name="JoystickSizeValue" type="Label" parent="Center/MainColumn/Scroll/Contents/JoystickSizeRow"]
+[node name="JoystickSizeValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow"]
 custom_minimum_size = Vector2(72, 0)
 theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="DataDangerHeading" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+[node name="CustomLayoutBtn" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+visible = false
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 22
+text = "自定义控件位置..."
+
+[node name="GameScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="GameHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents"]
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 20
+text = "游戏内辅助显示"
+
+[node name="ShowFpsCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents"]
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 24
+text = "显示帧率（右下角）"
+
+[node name="DataScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 22
+
+[node name="DataDangerHeading" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents"]
 theme_override_colors/font_color = Color(0.88, 0.42, 0.42, 1)
 theme_override_font_sizes/font_size = 26
 text = "数据管理"
 
-[node name="DataSummaryLabel" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+[node name="DataSummaryLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents"]
 custom_minimum_size = Vector2(0, 144)
 theme_override_font_sizes/font_size = 18
 text = "当前数据：加载中..."
 autowrap_mode = 3
 
-[node name="ClearHintLabel" type="Label" parent="Center/MainColumn/Scroll/Contents"]
+[node name="ClearHintLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents"]
 theme_override_colors/font_color = Color(0.95, 0.76, 0.76, 1)
 theme_override_font_sizes/font_size = 18
 text = "先点击确认，再长按 3 秒清除全部数据"
 
-[node name="ClearAllDataButton" type="Button" parent="Center/MainColumn/Scroll/Contents"]
-custom_minimum_size = Vector2(0, 56)
+[node name="ClearAllDataButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 64)
+theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "清除所有数据"
 self_modulate = Color(1, 0.34, 0.34, 1)
 
 [node name="BackButton" type="Button" parent="Center/MainColumn"]
-custom_minimum_size = Vector2(280, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 58)
+theme_override_font_sizes/font_size = 24
 text = "返回"
 
 [node name="DeleteConfirmOverlay" type="Control" parent="."]
@@ -346,18 +507,18 @@ autowrap_mode = 3
 
 [node name="ButtonRow" type="HBoxContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 18
 alignment = 1
 
 [node name="CancelButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow"]
-custom_minimum_size = Vector2(180, 48)
+custom_minimum_size = Vector2(200, 56)
 layout_mode = 2
 theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 22
 text = "取消"
 
 [node name="ConfirmButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow"]
-custom_minimum_size = Vector2(180, 48)
+custom_minimum_size = Vector2(200, 56)
 layout_mode = 2
 theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 22
@@ -418,7 +579,7 @@ horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="BackToMenuButton" type="Button" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin/Content"]
-custom_minimum_size = Vector2(220, 50)
+custom_minimum_size = Vector2(280, 56)
 layout_mode = 2
 theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 22

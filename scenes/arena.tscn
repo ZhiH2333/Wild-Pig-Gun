@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://rena"]
+[gd_scene load_steps=22 format=3 uid="uid://rena"]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/arena/arena_backdrop.gd" id="14_backdrop"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/ui/pause_overlay_menu.gd" id="13_pause_menu"]
 [ext_resource type="Script" path="res://scripts/ui/mobile_pause_button.gd" id="16_mobile_pause"]
 [ext_resource type="Script" path="res://scripts/ui/touch_scroll_container.gd" id="17_touch_scroll"]
+[ext_resource type="Script" path="res://scripts/ui/virtual_controls_layout_host.gd" id="18_layout_host"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
@@ -293,6 +294,7 @@ text = "开始下一波"
 
 [node name="VirtualJoystickLayer" type="CanvasLayer" parent="."]
 layer = 25
+script = ExtResource("18_layout_host")
 
 [node name="VirtualJoystick" type="Control" parent="VirtualJoystickLayer"]
 layout_mode = 1

@@ -1,0 +1,254 @@
+[gd_scene load_steps=7 format=3 uid="uid://mctrl_editor"]
+
+[ext_resource type="Script" path="res://scripts/ui/mobile_control_layout_editor.gd" id="1_editor"]
+[ext_resource type="PackedScene" uid="uid://mctrlpreview" path="res://scenes/ui/mobile_control_play_preview.tscn" id="2_preview"]
+[ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="3_ui"]
+[ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="4_vjoy"]
+
+[sub_resource type="Shader" id="Shader_blur_darken"]
+code = "shader_type canvas_item;\n\nuniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;\nuniform float blur_lod = 3.5;\nuniform float dim_strength = 0.5;\n\nvoid fragment() {\n\tvec4 col = textureLod(screen_tex, SCREEN_UV, blur_lod);\n\tcol.rgb *= (1.0 - dim_strength);\n\tCOLOR = col;\n}\n"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur_darken"]
+shader = SubResource("Shader_blur_darken")
+
+[node name="LayoutEditor" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme = ExtResource("3_ui")
+script = ExtResource("1_editor")
+
+[node name="PreviewContainer" type="SubViewportContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="PreviewViewport" type="SubViewport" parent="PreviewContainer"]
+disable_input = true
+handle_input_locally = false
+size = Vector2i(1920, 1080)
+
+[node name="PlayPreview" parent="PreviewContainer/PreviewViewport" instance=ExtResource("2_preview")]
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_blur_darken")
+color = Color(1, 1, 1, 1)
+
+[node name="ControlsOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="JoystickWidget" type="Control" parent="ControlsOverlay"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 540.0
+offset_right = 196.0
+offset_bottom = 716.0
+mouse_filter = 2
+script = ExtResource("4_vjoy")
+register_in_group = false
+allow_input = false
+force_visible = true
+
+[node name="PauseWidget" type="Button" parent="ControlsOverlay"]
+layout_mode = 0
+offset_left = 850.0
+offset_top = 968.0
+offset_right = 1070.0
+offset_bottom = 1052.0
+focus_mode = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 30
+text = "暂停"
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -280.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 64.0
+grow_horizontal = 0
+theme_override_constants/separation = 8
+
+[node name="BackBtn" type="Button" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 22
+text = "← 返回设置"
+
+[node name="HintLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -18.0
+offset_right = 240.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.88, 0.75, 0.7)
+theme_override_font_sizes/font_size = 20
+text = "点击选择控件，拖动可移动位置"
+horizontal_alignment = 1
+
+[node name="SelectionMenu" type="Control" parent="."]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 700.0
+offset_right = 820.0
+offset_bottom = 758.0
+visible = false
+
+[node name="PanelContainer" type="PanelContainer" parent="SelectionMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Row" type="HBoxContainer" parent="SelectionMenu/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ScaleDownBtn" type="Button" parent="SelectionMenu/PanelContainer/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(52, 0)
+theme_override_font_sizes/font_size = 24
+text = "−"
+
+[node name="ScaleLabel" type="Label" parent="SelectionMenu/PanelContainer/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(72, 0)
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScaleUpBtn" type="Button" parent="SelectionMenu/PanelContainer/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(52, 0)
+theme_override_font_sizes/font_size = 24
+text = "+"
+
+[node name="VSep" type="VSeparator" parent="SelectionMenu/PanelContainer/Row"]
+layout_mode = 2
+
+[node name="ResetBtn" type="Button" parent="SelectionMenu/PanelContainer/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+theme_override_font_sizes/font_size = 20
+text = "重置"
+
+[node name="SaveBtn" type="Button" parent="SelectionMenu/PanelContainer/Row"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+theme_override_font_sizes/font_size = 20
+text = "保存"
+
+[node name="SavedToast" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -80.0
+offset_right = 160.0
+offset_bottom = -36.0
+grow_horizontal = 2
+grow_vertical = 0
+visible = false
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.4, 0.95, 0.5, 1.0)
+theme_override_font_sizes/font_size = 24
+text = "✓ 已保存"
+horizontal_alignment = 1
+
+[node name="ExitConfirmOverlay" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="ExitConfirmOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.03, 0.06, 0.72)
+
+[node name="CenterContainer" type="CenterContainer" parent="ExitConfirmOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ExitCard" type="PanelContainer" parent="ExitConfirmOverlay/CenterContainer"]
+custom_minimum_size = Vector2(520, 0)
+
+[node name="MarginContainer" type="MarginContainer" parent="ExitConfirmOverlay/CenterContainer/ExitCard"]
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer"]
+theme_override_constants/separation = 14
+
+[node name="HintLabel" type="Label" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer/VBoxContainer"]
+theme_override_font_sizes/font_size = 22
+text = "你已修改控件布局但还未保存。\n是否保存并退出？"
+autowrap_mode = 2
+horizontal_alignment = 1
+
+[node name="ButtonRow" type="HBoxContainer" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer/VBoxContainer"]
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="SaveAndExitBtn" type="Button" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer/VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(180, 46)
+layout_mode = 2
+text = "保存并退出"
+
+[node name="DiscardAndExitBtn" type="Button" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer/VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(180, 46)
+layout_mode = 2
+text = "不保存退出"
