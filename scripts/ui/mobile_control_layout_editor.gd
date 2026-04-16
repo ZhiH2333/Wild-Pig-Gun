@@ -15,6 +15,7 @@ var _selected_id: ControlId = ControlId.NONE
 var _is_dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
 var _toast_timer: float = 0.0
+var _has_unsaved_changes: bool = false
 
 @onready var _back_btn: Button = $TopBar/BackBtn
 @onready var _preview_container: Control = $PreviewContainer
@@ -29,11 +30,31 @@ var _toast_timer: float = 0.0
 @onready var _save_btn: Button = $SelectionMenu/PanelContainer/Row/SaveBtn
 @onready var _saved_toast: Label = $SavedToast
 
+@onready var _exit_confirm_overlay: Control = $ExitConfirmOverlay
+@onready var _exit_card: PanelContainer = $ExitConfirmOverlay/CenterContainer/ExitCard
+@onready var _exit_margin_container: MarginContainer = (
+	_exit_card.get_node("MarginContainer") as MarginContainer
+)
+@onready var _exit_vbox_container: VBoxContainer = (
+	_exit_margin_container.get_node("VBoxContainer") as VBoxContainer
+)
+@onready var _exit_button_row: HBoxContainer = (
+	_exit_vbox_container.get_node("ButtonRow") as HBoxContainer
+)
+@onready var _exit_save_and_exit_btn: Button = (
+	_exit_button_row.get_node("SaveAndExitBtn") as Button
+)
+@onready var _exit_discard_and_exit_btn: Button = (
+	_exit_button_row.get_node("DiscardAndExitBtn") as Button
+)
+
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	# 允许子控件（例如保存按钮）正常接收鼠标事件
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	_selection_menu.visible = false
 	_saved_toast.visible = false
+	_exit_confirm_overlay.visible = false
 	_pending_layout = {
 		"virtual_joystick": GameSettings.get_mobile_control_entry("virtual_joystick"),
 		"mobile_pause": GameSettings.get_mobile_control_entry("mobile_pause"),
@@ -43,6 +64,8 @@ func _ready() -> void:
 	_scale_up_btn.pressed.connect(_on_scale_up)
 	_reset_btn.pressed.connect(_on_reset_pressed)
 	_save_btn.pressed.connect(_on_save_pressed)
+	_exit_save_and_exit_btn.pressed.connect(_on_exit_save_and_exit_pressed)
+	_exit_discard_and_exit_btn.pressed.connect(_on_exit_discard_and_exit_pressed)
 	if _joystick_widget.has_method("set_allow_input"):
 		_joystick_widget.set_allow_input(false)
 	if _joystick_widget.has_method("set_force_visible"):
@@ -68,6 +91,12 @@ func _gui_input(event: InputEvent) -> void:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
 		if mb.button_index != MOUSE_BUTTON_LEFT:
 			return
+		# 点击预览区域之外时，不接管事件，避免阻断子按钮点击
+		if mb.pressed and not container_rect.has_point(mb.global_position):
+			_is_dragging = false
+			_selected_id = ControlId.NONE
+			_refresh_selection_menu()
+			return
 		if mb.pressed:
 			var hit: ControlId = _hit_test(mb.global_position, container_rect)
 			if hit != ControlId.NONE:
@@ -86,6 +115,7 @@ func _gui_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion and _is_dragging:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
 		_drag_widget(mm.global_position, container_rect)
+		_position_selection_menu()
 		accept_event()
 
 
@@ -120,6 +150,8 @@ func _drag_widget(global_pos: Vector2, container_rect: Rect2) -> void:
 			(center_x - container_rect.position.x) / container_rect.size.x, 0.0, 1.0)
 		_pending_layout[key]["norm_bottom_margin"] = clampf(
 			(container_rect.end.y - new_pos.y - PAUSE_BTN_REF_H * s) / container_rect.size.y, 0.0, 0.5)
+
+	_has_unsaved_changes = true
 
 
 func _refresh_all_widgets() -> void:
@@ -183,9 +215,18 @@ func _refresh_selection_menu() -> void:
 	var entry: Dictionary = _pending_layout.get(key, {}) as Dictionary
 	var s: float = clampf(float(entry.get("scale", 1.0)), 0.5, 2.0)
 	_scale_label.text = "%d%%" % int(round(s * 100.0))
+	await get_tree().process_frame
+	_position_selection_menu()
+
+
+func _position_selection_menu() -> void:
+	if _selected_id == ControlId.NONE:
+		_selection_menu.visible = false
+		return
+	if not _selection_menu.visible:
+		return
 	var widget: Control = _get_widget(_selected_id)
 	var container_rect: Rect2 = _preview_container.get_global_rect()
-	await get_tree().process_frame
 	var menu_w: float = _selection_menu.size.x
 	var menu_h: float = _selection_menu.size.y
 	var wx: float = widget.global_position.x
@@ -199,7 +240,10 @@ func _refresh_selection_menu() -> void:
 
 
 func _on_back_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/settings.tscn")
+	if not _has_unsaved_changes:
+		_exit_to_settings()
+		return
+	_exit_confirm_overlay.visible = true
 
 
 func _on_scale_down() -> void:
@@ -210,6 +254,7 @@ func _on_scale_down() -> void:
 	_pending_layout[key]["scale"] = clampf(roundf((current - 0.25) * 4.0) / 4.0, 0.5, 2.0)
 	_apply_widget(_selected_id)
 	_refresh_selection_menu()
+	_has_unsaved_changes = true
 
 
 func _on_scale_up() -> void:
@@ -220,6 +265,7 @@ func _on_scale_up() -> void:
 	_pending_layout[key]["scale"] = clampf(roundf((current + 0.25) * 4.0) / 4.0, 0.5, 2.0)
 	_apply_widget(_selected_id)
 	_refresh_selection_menu()
+	_has_unsaved_changes = true
 
 
 func _on_reset_pressed() -> void:
@@ -232,6 +278,7 @@ func _on_reset_pressed() -> void:
 		_pending_layout[key] = GameSettings.LAYOUT_PAUSE_DEFAULT.duplicate()
 	_apply_widget(_selected_id)
 	_refresh_selection_menu()
+	_has_unsaved_changes = true
 
 
 func _on_save_pressed() -> void:
@@ -240,8 +287,25 @@ func _on_save_pressed() -> void:
 	var vj_scale: float = clampf(float(_pending_layout["virtual_joystick"].get("scale", 1.0)),
 		GameSettings.JOYSTICK_SIZE_MIN, GameSettings.JOYSTICK_SIZE_MAX)
 	GameSettings.set_joystick_size(vj_scale)
+	_has_unsaved_changes = false
 	_saved_toast.visible = true
 	_toast_timer = TOAST_DURATION
+
+
+func _exit_to_settings() -> void:
+	get_tree().change_scene_to_file("res://scenes/settings.tscn")
+
+
+func _on_exit_save_and_exit_pressed() -> void:
+	_exit_confirm_overlay.visible = false
+	_on_save_pressed()
+	_exit_to_settings()
+
+
+func _on_exit_discard_and_exit_pressed() -> void:
+	_exit_confirm_overlay.visible = false
+	_has_unsaved_changes = false
+	_exit_to_settings()
 
 
 func _get_widget(id: ControlId) -> Control:

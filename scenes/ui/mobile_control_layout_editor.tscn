@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="4_vjoy"]
 
 [sub_resource type="Shader" id="Shader_blur_darken"]
-code = "shader_type canvas_item;\n\nuniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;\nuniform float blur_strength = 1.6;\nuniform float dim_strength = 0.42;\n\nvoid fragment() {\n\tvec2 uv = SCREEN_UV;\n\tvec2 px = SCREEN_PIXEL_SIZE * blur_strength;\n\tvec4 col = textureLod(screen_tex, uv, 0.0) * 0.28;\n\tcol += textureLod(screen_tex, uv + vec2(px.x, 0.0), 0.0) * 0.18;\n\tcol += textureLod(screen_tex, uv - vec2(px.x, 0.0), 0.0) * 0.18;\n\tcol += textureLod(screen_tex, uv + vec2(0.0, px.y), 0.0) * 0.18;\n\tcol += textureLod(screen_tex, uv - vec2(0.0, px.y), 0.0) * 0.18;\n\tcol.rgb = mix(col.rgb, vec3(0.0), dim_strength);\n\tCOLOR = col;\n}\n"
+code = "shader_type canvas_item;\n\nuniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;\nuniform float blur_lod = 3.5;\nuniform float dim_strength = 0.5;\n\nvoid fragment() {\n\tvec4 col = textureLod(screen_tex, SCREEN_UV, blur_lod);\n\tcol.rgb *= (1.0 - dim_strength);\n\tCOLOR = col;\n}\n"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blur_darken"]
 shader = SubResource("Shader_blur_darken")
@@ -193,3 +193,62 @@ theme_override_colors/font_color = Color(0.4, 0.95, 0.5, 1.0)
 theme_override_font_sizes/font_size = 24
 text = "✓ 已保存"
 horizontal_alignment = 1
+
+[node name="ExitConfirmOverlay" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+visible = false
+
+[node name="Dim" type="ColorRect" parent="ExitConfirmOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.03, 0.06, 0.72)
+
+[node name="CenterContainer" type="CenterContainer" parent="ExitConfirmOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ExitCard" type="PanelContainer" parent="ExitConfirmOverlay/CenterContainer"]
+custom_minimum_size = Vector2(520, 0)
+
+[node name="MarginContainer" type="MarginContainer" parent="ExitConfirmOverlay/CenterContainer/ExitCard"]
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer"]
+theme_override_constants/separation = 14
+
+[node name="HintLabel" type="Label" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer/VBoxContainer"]
+theme_override_font_sizes/font_size = 22
+text = "你已修改控件布局但还未保存。\n是否保存并退出？"
+autowrap_mode = 2
+horizontal_alignment = 1
+
+[node name="ButtonRow" type="HBoxContainer" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer/VBoxContainer"]
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="SaveAndExitBtn" type="Button" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer/VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(180, 46)
+layout_mode = 2
+text = "保存并退出"
+
+[node name="DiscardAndExitBtn" type="Button" parent="ExitConfirmOverlay/CenterContainer/ExitCard/MarginContainer/VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(180, 46)
+layout_mode = 2
+text = "不保存退出"
