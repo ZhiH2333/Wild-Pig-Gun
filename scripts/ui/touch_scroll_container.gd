@@ -1,8 +1,9 @@
 extends ScrollContainer
 
 ## 支持触控拖动滚动的容器
-## 解决 Godot 4 中子按钮消耗触控事件导致无法手指滑动列表的问题
-## 使用 _input 级别拦截触控拖拽，绕过子节点的事件消耗
+## 双重防护策略：
+##   1. project.godot 关闭 emulate_mouse_from_touch，从源头阻断触控→鼠标模拟
+##   2. 若仍有模拟鼠标事件漏入，在滚动结束后拦截一次鼠标释放，防止触发子按钮
 
 const _DRAG_THRESHOLD: float = 8.0
 
@@ -10,6 +11,7 @@ var _touch_index: int = -1
 var _drag_start: Vector2 = Vector2.ZERO
 var _scroll_start_v: int = 0
 var _is_scrolling: bool = false
+var _block_next_mouse_release: bool = false
 
 
 func _input(event: InputEvent) -> void:
@@ -19,6 +21,8 @@ func _input(event: InputEvent) -> void:
 		_handle_touch(event as InputEventScreenTouch)
 	elif event is InputEventScreenDrag:
 		_handle_drag(event as InputEventScreenDrag)
+	elif event is InputEventMouseButton:
+		_guard_simulated_mouse_release(event as InputEventMouseButton)
 
 
 func _handle_touch(st: InputEventScreenTouch) -> void:
@@ -30,6 +34,8 @@ func _handle_touch(st: InputEventScreenTouch) -> void:
 			_scroll_start_v = scroll_vertical
 			_is_scrolling = false
 	elif st.index == _touch_index:
+		if _is_scrolling:
+			_block_next_mouse_release = true
 		_touch_index = -1
 		_is_scrolling = false
 
@@ -43,3 +49,14 @@ func _handle_drag(sd: InputEventScreenDrag) -> void:
 	if _is_scrolling:
 		scroll_vertical = _scroll_start_v - int(delta.y)
 		get_viewport().set_input_as_handled()
+
+
+func _guard_simulated_mouse_release(mb: InputEventMouseButton) -> void:
+	if not _block_next_mouse_release:
+		return
+	if not get_global_rect().has_point(mb.global_position):
+		_block_next_mouse_release = false
+		return
+	get_viewport().set_input_as_handled()
+	if not mb.pressed:
+		_block_next_mouse_release = false
