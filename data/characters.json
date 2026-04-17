@@ -46,6 +46,26 @@
       "traits": [
         {"kind": "stat_harvest", "value": 1.1}
       ]
+    },
+    {
+      "id": "chicken",
+      "display_name": "野鸡",
+      "description": "占位角色：轻盈灵活，后续将补充专属特性。",
+      "sprite_path": "res://assets/sprites/wildpig.png",
+      "max_hp": 90,
+      "speed_mult": 1.08,
+      "damage_mult": 0.96,
+      "starting_weapons": ["smg"]
+    },
+    {
+      "id": "pigchicken",
+      "display_name": "野猪鸡",
+      "description": "占位角色：均衡偏生存，后续将补充专属特性。",
+      "sprite_path": "res://assets/sprites/wildpig.png",
+      "max_hp": 108,
+      "speed_mult": 1.0,
+      "damage_mult": 1.02,
+      "starting_weapons": ["rifle"]
     }
   ]
 }
