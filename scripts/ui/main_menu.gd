@@ -142,11 +142,12 @@ func _on_continue_pressed() -> void:
 
 func _on_start_pressed() -> void:
 	GameMusic.duck_for_subpage()
-	get_tree().change_scene_to_file("res://scenes/char_select.tscn")
+	get_tree().change_scene_to_file("res://scenes/pre_start.tscn")
 
 
 func _on_character_pressed() -> void:
 	GameMusic.duck_for_subpage()
+	RunState.gallery_return_scene_path = "res://scenes/main_menu.tscn"
 	get_tree().change_scene_to_file("res://scenes/char_gallery.tscn")
 
 
