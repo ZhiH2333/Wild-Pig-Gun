@@ -102,7 +102,7 @@ func _on_select_button_pressed() -> void:
 
 func _on_back_button_pressed() -> void:
 	GameMusic.ensure_playing_main_volume()
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	get_tree().change_scene_to_file(str(RunState.gallery_return_scene_path))
 
 
 func _default_character() -> Dictionary:

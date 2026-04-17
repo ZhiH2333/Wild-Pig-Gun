@@ -1,0 +1,162 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/pre_start.gd" id="1_pre_start"]
+[ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
+[ext_resource type="ShaderMaterial" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
+[ext_resource type="FontFile" uid="uid://cfxigihcadfuq" path="res://assets/fonts/ZhanKuKuaiLeTi2016XiuDingBan-1.ttf" id="5_font"]
+
+[node name="PreStart" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_ui")
+script = ExtResource("1_pre_start")
+
+[node name="BlurredBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+material = ExtResource("4_blur")
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.06, 0.05, 0.08, 0.58)
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 24.0
+offset_right = 220.0
+offset_bottom = 82.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 44
+text = "开始前..."
+horizontal_alignment = 1
+
+[node name="MainRow" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 102.0
+offset_right = -40.0
+offset_bottom = -106.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="LeftPanel" type="PanelContainer" parent="MainRow"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LeftVBox" type="VBoxContainer" parent="MainRow/LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="CharSprite" type="TextureRect" parent="MainRow/LeftPanel/LeftVBox"]
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CharNameLabel" type="Label" parent="MainRow/LeftPanel/LeftVBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 36
+text = "角色名称"
+horizontal_alignment = 1
+
+[node name="CharDescLabel" type="Label" parent="MainRow/LeftPanel/LeftVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "角色描述"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ChangeCharButton" type="Button" parent="MainRow/LeftPanel/LeftVBox"]
+custom_minimum_size = Vector2(260, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("5_font")
+text = "更换角色"
+
+[node name="RightPanel" type="PanelContainer" parent="MainRow"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RightVBox" type="VBoxContainer" parent="MainRow/RightPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="WeaponTitle" type="Label" parent="MainRow/RightPanel/RightVBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 30
+text = "选择初始武器"
+horizontal_alignment = 1
+
+[node name="WeaponPlaceholder" type="Label" parent="MainRow/RightPanel/RightVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 20
+text = "下一步将在此处加入武器选择与属性条"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="BottomBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -86.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+theme_override_constants/separation = 24
+
+[node name="BackButton" type="Button" parent="BottomBar"]
+custom_minimum_size = Vector2(240, 54)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_font")
+text = "返回"
+
+[node name="StartButton" type="Button" parent="BottomBar"]
+custom_minimum_size = Vector2(260, 54)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
+text = "开始游戏"
+
+[connection signal="pressed" from="MainRow/LeftPanel/LeftVBox/ChangeCharButton" to="." method="_on_change_char_button_pressed"]
+[connection signal="pressed" from="BottomBar/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="BottomBar/StartButton" to="." method="_on_start_button_pressed"]
