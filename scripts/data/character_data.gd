@@ -72,7 +72,10 @@ static func apply_to_player(player: Node, character_id: String) -> void:
 	player.emit_signal("hp_changed", player.current_hp, player.max_hp)
 	var lo: Node = player.get_node_or_null("WeaponLoadout")
 	if lo != null and lo.has_method("equip_default_start"):
-		lo.equip_default_start(get_starting_weapon_ids(character_id))
+		var weapon_ids: Array = get_starting_weapon_ids(character_id)
+		if not RunState.selected_starting_weapon_ids.is_empty():
+			weapon_ids = RunState.selected_starting_weapon_ids.duplicate()
+		lo.equip_default_start(weapon_ids)
 
 
 static func _apply_sprite(player: Node, d: Dictionary) -> void:
