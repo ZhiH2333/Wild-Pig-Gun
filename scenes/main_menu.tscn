@@ -109,7 +109,7 @@ text = "进度"
 custom_minimum_size = Vector2(300, 52)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-text = "制作人名单"
+text = "关于"
 
 [node name="QuitButton" type="Button" parent="ButtonColumn" unique_id=1682175575]
 custom_minimum_size = Vector2(300, 52)

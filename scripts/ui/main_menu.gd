@@ -154,7 +154,8 @@ func _on_progress_pressed() -> void:
 	_show_info_dialog("最高到达波次：%d\n累计局数：%d\n通关次数：%d" % [best, runs, wins])
 
 func _on_credits_pressed() -> void:
-	_show_info_dialog("@ZhiH2333\n感谢游玩! \n特别鸣谢：诺诺@解放战争论证者")
+	GameMusic.duck_for_subpage()
+	get_tree().change_scene_to_file("res://scenes/about.tscn")
 
 func _show_info_dialog(message: String) -> void:
 	info_dialog.dialog_text = message

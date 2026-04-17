@@ -1,0 +1,276 @@
+[gd_scene load_steps=11 format=3 uid="uid://about_wpg"]
+
+[ext_resource type="Script" path="res://scripts/ui/about_screen.gd" id="1_about"]
+[ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
+[ext_resource type="ShaderMaterial" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
+[ext_resource type="FontFile" uid="uid://cfxigihcadfuq" path="res://assets/fonts/ZhanKuKuaiLeTi2016XiuDingBan-1.ttf" id="5_font"]
+[ext_resource type="Texture2D" uid="uid://dbvp81pw2m304" path="res://assets/sprites/icon.png" id="6_icon"]
+[ext_resource type="Texture2D" uid="uid://bi8rqxv21lypk" path="res://assets/about/zhih.png" id="7_zhih"]
+[ext_resource type="Texture2D" uid="uid://cxs8kbwycbnmq" path="res://assets/about/nn.JPG" id="8_nn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avatar"]
+bg_color = Color(0.10, 0.09, 0.14, 1.0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.30, 0.45, 0.70)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_link"]
+bg_color = Color(0.18, 0.15, 0.24, 1.0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.45, 0.40, 0.60, 0.60)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[node name="About" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_ui")
+script = ExtResource("1_about")
+
+[node name="BlurredBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+material = ExtResource("4_blur")
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.06, 0.05, 0.08, 0.62)
+
+[node name="Vignette" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.18)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OuterColumn" type="VBoxContainer" parent="Center"]
+custom_minimum_size = Vector2(700, 0)
+theme_override_constants/separation = 14
+
+[node name="MainCard" type="PanelContainer" parent="Center/OuterColumn"]
+layout_mode = 2
+
+[node name="Margins" type="MarginContainer" parent="Center/OuterColumn/MainCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 26
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 26
+theme_override_constants/margin_bottom = 20
+
+[node name="CardScroll" type="ScrollContainer" parent="Center/OuterColumn/MainCard/Margins"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 420)
+horizontal_scroll_mode = 0
+
+[node name="CardContent" type="VBoxContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 42
+text = "关  于"
+horizontal_alignment = 1
+
+[node name="HSep1" type="HSeparator" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+
+[node name="GameRow" type="HBoxContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="GameIconFrame" type="PanelContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/GameRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_avatar")
+
+[node name="GameIcon" type="TextureRect" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/GameRow/GameIconFrame"]
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("6_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GameInfoBox" type="VBoxContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/GameRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 7
+
+[node name="GameTitle" type="Label" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/GameRow/GameInfoBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_colors/font_color = Color(0.95, 0.91, 0.82, 1)
+theme_override_font_sizes/font_size = 24
+text = "野猪乱打手枪"
+
+[node name="GameDesc" type="Label" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/GameRow/GameInfoBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.68, 0.56, 1)
+theme_override_font_sizes/font_size = 16
+text = "一款用 Godot 4 制作的俯视角射击肉鸽（Roguelite）：在竞技场里抵御一波波敌人，波次之间进入商店与构筑，用掉落材料购买武器、数值强化与被动，角色与成长路线由每局选择决定，单局内逐步变强，死亡后重新开始新一局。"
+autowrap_mode = 3
+
+[node name="HSep2" type="HSeparator" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+
+[node name="AuthorHeader" type="Label" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 17
+text = "作  者"
+
+[node name="AuthorRow" type="HBoxContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="AuthorAvatarFrame" type="PanelContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/AuthorRow"]
+layout_mode = 2
+size_flags_vertical = 4
+clip_children = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_avatar")
+
+[node name="AuthorAvatar" type="TextureRect" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/AuthorRow/AuthorAvatarFrame"]
+custom_minimum_size = Vector2(68, 68)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("7_zhih")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="AuthorInfo" type="VBoxContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/AuthorRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 5
+
+[node name="AuthorName" type="Label" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/AuthorRow/AuthorInfo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.97, 0.93, 0.87, 1)
+theme_override_font_sizes/font_size = 22
+text = "ZhiH2333"
+
+[node name="AuthorLinkBtn" type="Button" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/AuthorRow/AuthorInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxFlat_link")
+text = "github.com/ZhiH2333"
+
+[node name="HSep3" type="HSeparator" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+
+[node name="ThanksHeader" type="Label" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 17
+text = "特别鸣谢"
+
+[node name="ThanksRow" type="HBoxContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ThanksAvatarFrame" type="PanelContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/ThanksRow"]
+layout_mode = 2
+size_flags_vertical = 4
+clip_children = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_avatar")
+
+[node name="ThanksAvatar" type="TextureRect" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/ThanksRow/ThanksAvatarFrame"]
+custom_minimum_size = Vector2(68, 68)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("8_nn")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ThanksInfo" type="VBoxContainer" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/ThanksRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 5
+
+[node name="ThanksName" type="Label" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent/ThanksRow/ThanksInfo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.97, 0.93, 0.87, 1)
+theme_override_font_sizes/font_size = 22
+text = "诺诺@解放战争论证者"
+
+[node name="HSep4" type="HSeparator" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+
+[node name="RepoHeader" type="Label" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 17
+text = "项目仓库"
+
+[node name="RepoLinkBtn" type="Button" parent="Center/OuterColumn/MainCard/Margins/CardScroll/CardContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBoxFlat_link")
+text = "github.com/ZhiH2333/Wild-Pig-Gun"
+
+[node name="BackButton" type="Button" parent="Center/OuterColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 56)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 24
+text = "返回"
