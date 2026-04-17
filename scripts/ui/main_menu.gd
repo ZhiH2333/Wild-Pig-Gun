@@ -8,6 +8,8 @@ const BACKGROUND_SWAY_OVERSCALE: float = 1.14
 
 @onready var info_dialog: AcceptDialog = $InfoDialog
 @onready var background: TextureRect = $Background
+@onready var char_name_label: Label = $CharPanel/CharNameLabel
+@onready var char_sprite: TextureRect = $CharPanel/CharSprite
 
 var background_sway_phase: float = 0.0
 var background_sway_angle: float = 0.0
@@ -17,14 +19,16 @@ var _control_mode_dialog: Window = null
 
 func _ready() -> void:
 	GameMusic.ensure_playing_main_volume()
-	var continue_btn: Button = $ButtonColumn/ContinueButton
+	var continue_btn: Button = $LeftButtons/ContinueButton
 	continue_btn.pressed.connect(_on_continue_pressed)
 	_refresh_continue_button()
-	$ButtonColumn/StartButton.pressed.connect(_on_start_pressed)
-	$ButtonColumn/SettingsButton.pressed.connect(_on_settings_pressed)
-	$ButtonColumn/ProgressButton.pressed.connect(_on_progress_pressed)
-	$ButtonColumn/CreditsButton.pressed.connect(_on_credits_pressed)
-	$ButtonColumn/QuitButton.pressed.connect(_on_quit_pressed)
+	$LeftButtons/StartButton.pressed.connect(_on_start_pressed)
+	$LeftButtons/ProgressButton.pressed.connect(_on_progress_pressed)
+	$LeftButtons/CharacterButton.pressed.connect(_on_character_pressed)
+	$RightButtons/SettingsButton.pressed.connect(_on_settings_pressed)
+	$RightButtons/CreditsButton.pressed.connect(_on_credits_pressed)
+	$RightButtons/QuitButton.pressed.connect(_on_quit_pressed)
+	_refresh_char_panel()
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
 	_update_background_sway_pivot()
@@ -122,7 +126,7 @@ func _process(delta: float) -> void:
 
 
 func _refresh_continue_button() -> void:
-	var continue_btn: Button = $ButtonColumn/ContinueButton
+	var continue_btn: Button = $LeftButtons/ContinueButton
 	var has_save: bool = SaveManager.has_pending_run()
 	continue_btn.visible = has_save
 	if not has_save:
@@ -139,6 +143,11 @@ func _on_continue_pressed() -> void:
 func _on_start_pressed() -> void:
 	GameMusic.duck_for_subpage()
 	get_tree().change_scene_to_file("res://scenes/char_select.tscn")
+
+
+func _on_character_pressed() -> void:
+	GameMusic.duck_for_subpage()
+	get_tree().change_scene_to_file("res://scenes/char_gallery.tscn")
 
 
 func _on_settings_pressed() -> void:
@@ -163,3 +172,16 @@ func _show_info_dialog(message: String) -> void:
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
+
+
+func _refresh_char_panel() -> void:
+	var character_id: String = str(GameSettings.selected_character_id)
+	var character: Dictionary = CharacterData.find_character(character_id)
+	var display_name: String = str(character.get("display_name", "标准野猪"))
+	var sprite_path: String = str(character.get("sprite_path", "res://assets/sprites/wildpig.png"))
+	char_name_label.text = "当前角色：%s" % display_name
+	if not ResourceLoader.exists(sprite_path):
+		char_sprite.texture = null
+		return
+	var texture: Texture2D = load(sprite_path) as Texture2D
+	char_sprite.texture = texture
