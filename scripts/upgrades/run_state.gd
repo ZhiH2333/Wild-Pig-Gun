@@ -1,5 +1,7 @@
 extends Node
 
+signal run_started(character_id: String)
+
 enum PauseReason {
 	NONE,
 	USER,
@@ -76,6 +78,7 @@ func begin_new_run(p_character_id: String = "default", risk_mult: float = 1.0) -
 	settings_return_scene_path = "res://scenes/main_menu.tscn"
 	gallery_return_scene_path = "res://scenes/main_menu.tscn"
 	selected_starting_weapon_ids.clear()
+	run_started.emit(character_id)
 
 
 func enter_interstitial_pause() -> void:
