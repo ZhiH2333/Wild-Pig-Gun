@@ -1,5 +1,10 @@
 extends Node
 
+enum InputMode {
+	TOUCH,
+	KEYBOARD_MOUSE,
+}
+
 signal music_linear_changed(new_value: float)
 signal mobile_controls_changed(enabled: bool)
 signal ui_scale_changed(new_value: float)
@@ -59,6 +64,7 @@ var vsync_fps: int = VSYNC_FPS_DEFAULT
 var ui_scale: float = UI_SCALE_DEFAULT
 var view_scale: float = VIEW_SCALE_DEFAULT
 var mobile_controls_enabled: bool = false
+var input_mode: InputMode = InputMode.KEYBOARD_MOUSE
 var show_fps: bool = false
 var joystick_size: float = JOYSTICK_SIZE_DEFAULT
 var mobile_control_layout: Dictionary = _make_default_layout()
@@ -97,7 +103,12 @@ func load_from_disk() -> void:
 	ui_scale = clampf(float(dict.get("ui_scale", UI_SCALE_DEFAULT)), UI_SCALE_MIN, UI_SCALE_MAX)
 	view_scale = clampf(
 		float(dict.get("view_scale", VIEW_SCALE_DEFAULT)), VIEW_SCALE_MIN, VIEW_SCALE_MAX)
-	mobile_controls_enabled = bool(dict.get("mobile_controls_enabled", false))
+	if dict.has("input_mode"):
+		input_mode = int(dict.get("input_mode", 0)) as InputMode
+	else:
+		var legacy_mobile: bool = bool(dict.get("mobile_controls_enabled", false))
+		input_mode = InputMode.TOUCH if legacy_mobile else InputMode.KEYBOARD_MOUSE
+	mobile_controls_enabled = input_mode == InputMode.TOUCH
 	show_fps = bool(dict.get("show_fps", false))
 	joystick_size = clampf(
 		float(dict.get("joystick_size", JOYSTICK_SIZE_DEFAULT)), JOYSTICK_SIZE_MIN, JOYSTICK_SIZE_MAX)
@@ -131,6 +142,7 @@ func save_to_disk() -> void:
 		"ui_scale": ui_scale,
 		"view_scale": view_scale,
 		"mobile_controls_enabled": mobile_controls_enabled,
+		"input_mode": input_mode as int,
 		"show_fps": show_fps,
 		"joystick_size": joystick_size,
 		"has_selected_control_mode": has_selected_control_mode,
@@ -195,6 +207,14 @@ func set_view_scale(value: float) -> void:
 
 func set_mobile_controls_enabled(enabled: bool) -> void:
 	mobile_controls_enabled = enabled
+	input_mode = InputMode.TOUCH if enabled else InputMode.KEYBOARD_MOUSE
+	save_to_disk()
+	mobile_controls_changed.emit(mobile_controls_enabled)
+
+
+func set_input_mode(mode: InputMode) -> void:
+	input_mode = mode
+	mobile_controls_enabled = mode == InputMode.TOUCH
 	save_to_disk()
 	mobile_controls_changed.emit(mobile_controls_enabled)
 
@@ -267,6 +287,7 @@ func clear_all_settings_data() -> bool:
 	ui_scale = UI_SCALE_DEFAULT
 	view_scale = VIEW_SCALE_DEFAULT
 	mobile_controls_enabled = false
+	input_mode = InputMode.KEYBOARD_MOUSE
 	show_fps = false
 	joystick_size = JOYSTICK_SIZE_DEFAULT
 	has_selected_control_mode = false
