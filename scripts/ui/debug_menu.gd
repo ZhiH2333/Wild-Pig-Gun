@@ -7,6 +7,7 @@ const TRIPLE_Z_WINDOW_MS: int = 500
 const DEBUG_SPIN_MAX_FLOAT: float = 9999.0
 const DEBUG_SPIN_MAX_INT: int = 9999
 const DEBUG_SPIN_MAX_HP: int = 99999
+const TOUCH_SCROLL_SCRIPT: Script = preload("res://scripts/ui/touch_scroll_container.gd")
 
 var _font_names: PackedStringArray = PackedStringArray([
 	"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI",
@@ -147,6 +148,7 @@ func _build_ui() -> void:
 	var sep2 := HSeparator.new()
 	outer.add_child(sep2)
 	var scroll := ScrollContainer.new()
+	scroll.set_script(TOUCH_SCROLL_SCRIPT)
 	scroll.custom_minimum_size = Vector2(0, 260)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	outer.add_child(scroll)

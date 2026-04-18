@@ -39,7 +39,7 @@ theme/custom="res://themes/game_ui_theme.tres"
 
 [input_devices]
 
-pointing/emulate_mouse_from_touch=false
+pointing/emulate_mouse_from_touch=true
 
 [rendering]
 

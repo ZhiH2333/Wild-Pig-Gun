@@ -6,6 +6,8 @@
 .import/
 .export/
 .export_presets.cfg
+export_build/
+dist/
 *.tmp
 .DS_Store
 
