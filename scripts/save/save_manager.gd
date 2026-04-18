@@ -2,6 +2,7 @@ extends Node
 
 const SAVE_PATH: String = "user://wild_pig_gun_save.json"
 const KEY_PENDING_RUN: String = "pending_run"
+const KEY_TUTORIAL_COMPLETED: String = "tutorial_completed"
 
 func has_save_file() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
@@ -96,3 +97,14 @@ func delete_all_save_data() -> bool:
 	if err == OK:
 		return true
 	return save_save_data({})
+
+
+func get_tutorial_completed() -> bool:
+	var root: Dictionary = load_save_data()
+	return bool(root.get(KEY_TUTORIAL_COMPLETED, false))
+
+
+func set_tutorial_completed(value: bool) -> void:
+	var root: Dictionary = load_save_data()
+	root[KEY_TUTORIAL_COMPLETED] = value
+	save_save_data(root)
