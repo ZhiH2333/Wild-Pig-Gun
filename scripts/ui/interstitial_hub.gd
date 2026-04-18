@@ -182,6 +182,7 @@ func show_for_finished_wave(finished_wave_index: int) -> void:
 		and finished_wave_index == 1
 	):
 		TutorialSession.set_step(TutorialSession.TutorialStep.SHOP_INTRO)
+		continue_btn.disabled = true
 		var shop_popup: CanvasLayer = TUTORIAL_POPUP_SCENE.instantiate() as CanvasLayer
 		add_child(shop_popup)
 		if shop_popup.has_method("configure_shop_intro"):
@@ -313,7 +314,13 @@ func _on_upgrade_button_pressed(def: Dictionary) -> void:
 	var utitle: String = str(def.get("title", id))
 	RunState.append_run_choice("wave_upgrade", _finished_wave_for_log, id, utitle)
 	_upgrade_picked = true
-	continue_btn.disabled = false
+	var block_continue_for_tutorial_shop: bool = (
+		TutorialSession.active
+		and not SaveManager.get_tutorial_completed()
+		and _finished_wave_for_log == 1
+		and not TutorialSession.shop_intro_acknowledged
+	)
+	continue_btn.disabled = block_continue_for_tutorial_shop
 	continue_btn.custom_minimum_size = Vector2(380, 58)
 	continue_btn.add_theme_font_size_override("font_size", 24)
 	continue_btn.text = "继续 — 开始下一波"
@@ -356,6 +363,8 @@ func _finish_continue_pressed() -> void:
 
 func _on_tutorial_shop_intro_ack() -> void:
 	TutorialSession.mark_shop_intro_acknowledged()
+	if _upgrade_picked:
+		continue_btn.disabled = false
 
 
 ## 刷新左侧状态面板内容
