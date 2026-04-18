@@ -23,6 +23,16 @@
 2. 虚拟摇杆：`VirtualJoystick` 仅在 `OS.has_feature("android")` 为真时显示；移动逻辑在 `player.gd` 中与键盘合并。
 3. 建议真机测试：波间商店按钮触控区域、全屏安全区。
 
+## 预发布导出（1.0.0+4）
+
+1. 安装 **Godot 4.6** 与对应 **Export Templates**（版本需一致）。
+2. 在仓库根执行：`./scripts/export_pre_release.sh`（可选 `GODOT_BIN` 指向 Godot 可执行文件）。
+3. Android 首次会自动运行 `scripts/android_export_prep.sh` 生成 CI 用 keystore（与 `export_presets.cfg` 中密码一致；正式发布请换自有证书）。
+4. Web 导出目录会生成 **`_headers`**（`COOP` / `COEP`），便于静态托管；说明见上文 Cloudflare 脚本。
+5. 发布说明草稿：`release-notes/v1.0.0+4.md`。打 Git 标签：`git tag -a 1.0.0+4 -m "pre-release 1.0.0+4"`。
+
+**注意**：在 **Linux** 上通常无法导出 **macOS** 包（需 macOS 或 Godot 支持的主机）。其余平台可在当前环境完成 headless 导出。
+
 ## 数据文件
 
 运行时读取 `res://data/*.json`；修改后需重新导出或随 PCK 发布。
