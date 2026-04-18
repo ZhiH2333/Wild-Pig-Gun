@@ -1,0 +1,113 @@
+[gd_scene load_steps=3 format=3 uid="uid://tutorial_overlay_wp"]
+
+[ext_resource type="Script" path="res://scripts/ui/tutorial_overlay.gd" id="1_script"]
+[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_theme"]
+
+[node name="TutorialOverlay" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.03, 0.06, 0.78)
+
+[node name="WelcomeRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Center" type="CenterContainer" parent="WelcomeRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Inner" type="VBoxContainer" parent="WelcomeRoot/Center"]
+layout_mode = 2
+theme = ExtResource("2_theme")
+theme_override_constants/separation = 20
+
+[node name="Logo" type="TextureRect" parent="WelcomeRoot/Center/Inner"]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="WelcomeBody" type="RichTextLabel" parent="WelcomeRoot/Center/Inner"]
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+
+[node name="StartTutorialBtn" type="Button" parent="WelcomeRoot/Center/Inner"]
+custom_minimum_size = Vector2(320, 52)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "开始教程 →"
+
+[node name="SkipLink" type="Button" parent="WelcomeRoot/Center/Inner"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "已了解，跳过教程"
+flat = true
+
+[node name="InputSelectRoot" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Center" type="CenterContainer" parent="InputSelectRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="InputSelectRoot/Center"]
+layout_mode = 2
+theme = ExtResource("2_theme")
+theme_override_constants/separation = 24
+
+[node name="Hint" type="Label" parent="InputSelectRoot/Center/VBox"]
+layout_mode = 2
+text = "请选择你的操作方式"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+
+[node name="Row" type="HBoxContainer" parent="InputSelectRoot/Center/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="TouchBtn" type="Button" parent="InputSelectRoot/Center/VBox/Row"]
+custom_minimum_size = Vector2(380, 120)
+layout_mode = 2
+text = "触控模式
+虚拟摇杆 + 触控按钮"
+
+[node name="KeyboardBtn" type="Button" parent="InputSelectRoot/Center/VBox/Row"]
+custom_minimum_size = Vector2(380, 120)
+layout_mode = 2
+text = "键鼠模式
+WASD 移动，自动攻击"

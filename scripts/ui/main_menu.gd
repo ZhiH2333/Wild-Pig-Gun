@@ -1,5 +1,7 @@
 extends Control
 
+const TUTORIAL_OVERLAY_SCRIPT: Script = preload("res://scripts/ui/tutorial_overlay.gd")
+
 const BACKGROUND_SWAY_SPEED: float = 0.52
 const BACKGROUND_SWAY_AMP_RAD: float = deg_to_rad(5.2)
 const BACKGROUND_SWAY_SPRING: float = 13.5
@@ -33,7 +35,10 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_update_background_sway_pivot()
 	background.scale = Vector2(BACKGROUND_SWAY_OVERSCALE, BACKGROUND_SWAY_OVERSCALE)
-	if not GameSettings.has_selected_control_mode:
+	if not SaveManager.get_tutorial_completed() and not SaveManager.has_pending_run():
+		TutorialSession.begin_from_main_menu()
+		TUTORIAL_OVERLAY_SCRIPT.call("try_attach", self)
+	if SaveManager.get_tutorial_completed() and not GameSettings.has_selected_control_mode:
 		_show_control_mode_dialog()
 
 
