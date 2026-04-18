@@ -1,5 +1,7 @@
 extends Control
 
+signal layout_configured
+
 ## 自定义控件布局编辑器
 ## 坐标系：底边锚定（norm_left / norm_bottom_margin）——与 virtual_controls_layout_host 完全一致
 
@@ -16,6 +18,7 @@ var _is_dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
 var _toast_timer: float = 0.0
 var _has_unsaved_changes: bool = false
+@export var embedded_in_tutorial: bool = false
 
 @onready var _back_btn: Button = $TopBar/BackBtn
 @onready var _preview_container: Control = $PreviewContainer
@@ -293,6 +296,10 @@ func _on_save_pressed() -> void:
 
 
 func _exit_to_settings() -> void:
+	if embedded_in_tutorial:
+		layout_configured.emit()
+		queue_free()
+		return
 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 
