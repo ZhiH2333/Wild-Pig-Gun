@@ -9,6 +9,7 @@ const REFRESH_SHOP_COST: int = 3
 const REFRESH_UPGRADE_COST: int = 8
 const ITEM_CARD_SCENE: PackedScene = preload("res://scenes/ui/item_card.tscn")
 const TOUCH_SCROLL_SCRIPT: Script = preload("res://scripts/ui/touch_scroll_container.gd")
+const TUTORIAL_POPUP_SCENE: PackedScene = preload("res://scenes/ui/tutorial_popup.tscn")
 
 @onready var title_label: Label = $CenterContainer/Panel/MarginContainer/VBox/TitleLabel
 @onready var upgrade_row: HBoxContainer = $CenterContainer/Panel/MarginContainer/VBox/UpgradeRow
@@ -175,6 +176,18 @@ func show_for_finished_wave(finished_wave_index: int) -> void:
 	refresh_upgrade_btn.disabled = false
 	RunState.enter_interstitial_pause()
 	visible = true
+	if (
+		TutorialSession.active
+		and TutorialSession.current_step == TutorialSession.TutorialStep.SHOP_INTRO
+		and finished_wave_index == 1
+	):
+		TutorialSession.set_step(TutorialSession.TutorialStep.SHOP_INTRO)
+		var shop_popup: CanvasLayer = TUTORIAL_POPUP_SCENE.instantiate() as CanvasLayer
+		add_child(shop_popup)
+		if shop_popup.has_method("configure_shop_intro"):
+			shop_popup.configure_shop_intro()
+		if shop_popup.has_signal("shop_intro_acknowledged"):
+			shop_popup.shop_intro_acknowledged.connect(_on_tutorial_shop_intro_ack)
 
 
 func _effective_price(def: Dictionary) -> int:
@@ -314,9 +327,35 @@ func _on_upgrade_button_pressed(def: Dictionary) -> void:
 func _on_continue_pressed() -> void:
 	if not _upgrade_picked:
 		return
+	if (
+		TutorialSession.active
+		and not SaveManager.get_tutorial_completed()
+		and RunState.wave_index == 1
+		and TutorialSession.shop_intro_acknowledged
+		and _finished_wave_for_log == 1
+	):
+		get_tree().paused = true
+		var end_popup: CanvasLayer = TUTORIAL_POPUP_SCENE.instantiate() as CanvasLayer
+		add_child(end_popup)
+		if end_popup.has_method("configure_completion"):
+			end_popup.configure_completion(self)
+		TutorialSession.advance_to_completion()
+		return
+	_finish_continue_pressed()
+
+
+func finish_continue_after_tutorial() -> void:
+	_finish_continue_pressed()
+
+
+func _finish_continue_pressed() -> void:
 	visible = false
 	RunState.leave_interstitial_pause()
 	continue_pressed.emit()
+
+
+func _on_tutorial_shop_intro_ack() -> void:
+	TutorialSession.mark_shop_intro_acknowledged()
 
 
 ## 刷新左侧状态面板内容
