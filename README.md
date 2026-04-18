@@ -2,7 +2,7 @@
 
 [中文](#中文) · [English](#english)
 
-![Wild Pig Gun Icon](assets/sprites/icon.png)
+![Wild Pig Gun Icon](assets/icon.png)
 
 ---
 
