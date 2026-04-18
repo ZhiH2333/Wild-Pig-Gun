@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Netlify：下载 Godot 4.6 + 导出模板，导入资源后导出 Web，并写入 index.html / _headers。
-
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPO_ROOT}"
 
