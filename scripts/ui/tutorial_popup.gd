@@ -22,7 +22,6 @@ var _interstitial: Node = null
 func _ready() -> void:
 	layer = 120
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = true
 	if _panel:
 		var st: StyleBoxFlat = StyleBoxFlat.new()

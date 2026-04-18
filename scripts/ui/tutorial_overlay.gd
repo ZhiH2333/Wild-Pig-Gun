@@ -1,6 +1,5 @@
 extends CanvasLayer
 
-const OVERLAY_SCENE: PackedScene = preload("res://scenes/tutorial_overlay.tscn")
 const LAYOUT_EDITOR_SCENE: PackedScene = preload("res://scenes/ui/mobile_control_layout_editor.tscn")
 
 @onready var _dim: ColorRect = $Dim
@@ -21,7 +20,8 @@ static func try_attach(main_menu: Control) -> Node:
 		return null
 	if not TutorialSession.active:
 		return null
-	var inst: CanvasLayer = OVERLAY_SCENE.instantiate() as CanvasLayer
+	var scene: PackedScene = load("res://scenes/tutorial_overlay.tscn") as PackedScene
+	var inst: CanvasLayer = scene.instantiate() as CanvasLayer
 	main_menu.add_child(inst)
 	if inst.has_method("attach_to_menu"):
 		inst.attach_to_menu(main_menu)
@@ -32,7 +32,6 @@ func attach_to_menu(menu: Control) -> void:
 	_main_menu = menu
 	layer = 100
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	mouse_filter = Control.MOUSE_FILTER_STOP
 	_show_welcome()
 
 

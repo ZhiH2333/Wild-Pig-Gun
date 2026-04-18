@@ -25,7 +25,6 @@ func setup(wm: WaveManager) -> void:
 	_wave_manager = wm
 	layer = 110
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if _panel:
 		_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if TutorialSession.active:
