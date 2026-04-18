@@ -12,6 +12,7 @@ enum TutorialStep {
 
 var active: bool = false
 var current_step: TutorialStep = TutorialStep.DONE
+var shop_intro_acknowledged: bool = false
 
 
 func begin_from_main_menu() -> void:
@@ -19,6 +20,7 @@ func begin_from_main_menu() -> void:
 		return
 	active = true
 	current_step = TutorialStep.WELCOME
+	shop_intro_acknowledged = false
 
 
 func set_step(step: TutorialStep) -> void:
@@ -52,6 +54,11 @@ func advance_to_completion() -> void:
 func mark_done() -> void:
 	active = false
 	current_step = TutorialStep.DONE
+	shop_intro_acknowledged = false
+
+
+func mark_shop_intro_acknowledged() -> void:
+	shop_intro_acknowledged = true
 
 
 func clear() -> void:
