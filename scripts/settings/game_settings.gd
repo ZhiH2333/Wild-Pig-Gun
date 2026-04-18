@@ -63,6 +63,7 @@ var show_fps: bool = false
 var joystick_size: float = JOYSTICK_SIZE_DEFAULT
 var mobile_control_layout: Dictionary = _make_default_layout()
 var has_selected_control_mode: bool = false
+var selected_character_id: String = "default"
 var window_mode: String = WINDOW_MODE_WINDOWED
 var resolution_width: int = RESOLUTION_WIDTH_DEFAULT
 var resolution_height: int = RESOLUTION_HEIGHT_DEFAULT
@@ -101,6 +102,9 @@ func load_from_disk() -> void:
 	joystick_size = clampf(
 		float(dict.get("joystick_size", JOYSTICK_SIZE_DEFAULT)), JOYSTICK_SIZE_MIN, JOYSTICK_SIZE_MAX)
 	has_selected_control_mode = bool(dict.get("has_selected_control_mode", false))
+	selected_character_id = str(dict.get("selected_character_id", "default"))
+	if selected_character_id.is_empty():
+		selected_character_id = "default"
 	mobile_control_layout = _load_layout_dict(
 		dict.get("mobile_control_layout", null), joystick_size)
 	if dict.has("window_mode"):
@@ -130,6 +134,7 @@ func save_to_disk() -> void:
 		"show_fps": show_fps,
 		"joystick_size": joystick_size,
 		"has_selected_control_mode": has_selected_control_mode,
+		"selected_character_id": selected_character_id,
 		"mobile_control_layout": mobile_control_layout,
 		"window_mode": window_mode,
 		"resolution_width": resolution_width,
@@ -216,6 +221,13 @@ func set_has_selected_control_mode(value: bool) -> void:
 	save_to_disk()
 
 
+func set_selected_character_id(character_id: String) -> void:
+	selected_character_id = character_id
+	if selected_character_id.is_empty():
+		selected_character_id = "default"
+	save_to_disk()
+
+
 func set_window_mode(mode_id: String) -> void:
 	window_mode = _normalize_window_mode(mode_id)
 	_apply_window_and_resolution()
@@ -258,6 +270,7 @@ func clear_all_settings_data() -> bool:
 	show_fps = false
 	joystick_size = JOYSTICK_SIZE_DEFAULT
 	has_selected_control_mode = false
+	selected_character_id = "default"
 	mobile_control_layout = _make_default_layout()
 	window_mode = WINDOW_MODE_WINDOWED
 	resolution_width = RESOLUTION_WIDTH_DEFAULT

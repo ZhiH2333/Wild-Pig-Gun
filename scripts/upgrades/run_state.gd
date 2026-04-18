@@ -45,6 +45,10 @@ var player_xp: int = 0
 var run_risk_mult: float = 1.0
 ## 设置页返回目标场景（默认主菜单）
 var settings_return_scene_path: String = "res://scenes/main_menu.tscn"
+## 角色图鉴返回目标场景（默认主菜单）
+var gallery_return_scene_path: String = "res://scenes/main_menu.tscn"
+## 开局武器选择覆盖（为空时按角色默认武器）
+var selected_starting_weapon_ids: Array[String] = []
 
 func _ready() -> void:
 	_register_default_input_actions()
@@ -70,6 +74,8 @@ func begin_new_run(p_character_id: String = "default", risk_mult: float = 1.0) -
 	player_level = 1
 	player_xp = 0
 	settings_return_scene_path = "res://scenes/main_menu.tscn"
+	gallery_return_scene_path = "res://scenes/main_menu.tscn"
+	selected_starting_weapon_ids.clear()
 
 
 func enter_interstitial_pause() -> void:
