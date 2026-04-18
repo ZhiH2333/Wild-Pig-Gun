@@ -1,5 +1,7 @@
 extends Control
 
+const CHAR_TUTORIAL_TIP_SCRIPT: Script = preload("res://scripts/ui/char_tutorial_tip.gd")
+
 @onready var char_sprite: TextureRect = $MainRow/LeftPanel/LeftVBox/CharSprite
 @onready var char_name_label: Label = $MainRow/LeftPanel/LeftVBox/CharNameLabel
 @onready var char_desc_label: Label = $MainRow/LeftPanel/LeftVBox/CharDescLabel
@@ -23,6 +25,7 @@ func _ready() -> void:
 	GameMusic.duck_for_subpage()
 	_refresh_character_panel()
 	_setup_weapon_section()
+	CHAR_TUTORIAL_TIP_SCRIPT.call("try_add_to_scene_root", self)
 
 
 func _refresh_character_panel() -> void:
@@ -109,11 +112,13 @@ func _on_change_char_button_pressed() -> void:
 
 
 func _on_back_button_pressed() -> void:
+	CHAR_TUTORIAL_TIP_SCRIPT.call("remove_from", self)
 	GameMusic.ensure_playing_main_volume()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 
 func _on_start_button_pressed() -> void:
+	CHAR_TUTORIAL_TIP_SCRIPT.call("remove_from", self)
 	RunState.begin_new_run(str(GameSettings.selected_character_id), 1.0)
 	RunState.selected_starting_weapon_ids = [selected_weapon_id]
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")
