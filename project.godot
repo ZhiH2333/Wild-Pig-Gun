@@ -20,6 +20,7 @@ config/icon="res://assets/sprites/icon.png"
 [autoload]
 
 SaveManager="*res://scripts/save/save_manager.gd"
+TutorialSession="*res://scripts/tutorial_session.gd"
 RunState="*res://scripts/upgrades/run_state.gd"
 GameSettings="*res://scripts/settings/game_settings.gd"
 GameFlow="*res://scripts/game_flow.gd"
