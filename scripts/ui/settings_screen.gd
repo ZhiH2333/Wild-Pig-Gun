@@ -52,6 +52,7 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var data_summary_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/DataSummaryLabel
 @onready var clear_hint_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearHintLabel
 @onready var clear_all_data_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton
+@onready var title_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/Title
 @onready var back_button: Button = $Center/MainColumn/BackButton
 @onready var delete_confirm_overlay: Control = $DeleteConfirmOverlay
 @onready var delete_confirm_button: Button = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/ConfirmButton
@@ -64,6 +65,7 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 var is_clear_confirmed: bool = false
 var is_holding_clear_button: bool = false
 var _is_syncing_ui: bool = false
+var _is_tutorial_mode: bool = false
 var _tab_buttons: Array[Button] = []
 var _style_active_normal: StyleBoxFlat
 var _style_active_hover: StyleBoxFlat
@@ -113,6 +115,17 @@ func _ready() -> void:
 	_refresh_data_summary()
 	_refresh_clear_button_idle_text()
 	_apply_web_visibility()
+	_apply_tutorial_mode()
+
+
+func _apply_tutorial_mode() -> void:
+	if not TutorialSession.is_in_tutorial_settings:
+		return
+	_is_tutorial_mode = true
+	title_label.text = "在此之前..."
+	back_button.text = "下一步"
+	tab_btn_2.visible = false
+	tab_btn_4.visible = false
 
 
 func _build_tab_button_styles() -> void:
@@ -529,6 +542,13 @@ func _on_back_pressed() -> void:
 		var arena: Node = get_tree().get_first_node_in_group("arena")
 		if arena != null and arena.has_method("close_in_game_settings"):
 			arena.close_in_game_settings()
+		return
+	if _is_tutorial_mode:
+		TutorialSession.is_in_tutorial_settings = false
+		TutorialSession.set_step(TutorialSession.TutorialStep.INPUT_SELECT)
+		GameMusic.ensure_playing_main_volume()
+		RunState.settings_return_scene_path = MAIN_MENU_SCENE_PATH
+		get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
 		return
 	var target_scene: String = RunState.settings_return_scene_path
 	if target_scene.is_empty():

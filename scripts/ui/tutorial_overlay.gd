@@ -32,7 +32,10 @@ func attach_to_menu(menu: Control) -> void:
 	_main_menu = menu
 	layer = 100
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	_show_welcome()
+	if TutorialSession.current_step == TutorialSession.TutorialStep.INPUT_SELECT:
+		_show_input_select()
+	else:
+		_show_welcome()
 
 
 func _ready() -> void:
@@ -69,7 +72,9 @@ func _show_input_select() -> void:
 
 
 func _on_start_tutorial() -> void:
-	_show_input_select()
+	TutorialSession.is_in_tutorial_settings = true
+	RunState.settings_return_scene_path = "res://scenes/main_menu.tscn"
+	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 
 func _on_skip_tutorial() -> void:

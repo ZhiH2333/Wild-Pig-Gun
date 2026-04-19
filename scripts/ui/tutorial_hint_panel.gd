@@ -1,5 +1,6 @@
 extends CanvasLayer
 
+@onready var _root: Control = $Root
 @onready var _panel: PanelContainer = $Root/Panel
 @onready var _main_label: RichTextLabel = $Root/Panel/Margin/VBox/MainLabel
 @onready var _progress_label: Label = $Root/Panel/Margin/VBox/ProgressLabel
@@ -35,9 +36,9 @@ func setup(wm: WaveManager) -> void:
 		wm.wave_ended.connect(_on_wave_ended)
 	if not wm.wave_timer_tick.is_connected(_on_wave_timer_tick):
 		wm.wave_timer_tick.connect(_on_wave_timer_tick)
-	modulate.a = 0.0
+	_root.modulate.a = 0.0
 	var tw: Tween = create_tween()
-	tw.tween_property(self, "modulate:a", 1.0, 0.35)
+	tw.tween_property(_root, "modulate:a", 1.0, 0.35)
 
 
 func _on_wave_started(wave_index: int, duration_sec: float) -> void:
@@ -65,7 +66,7 @@ func _on_wave_ended(wave_index: int) -> void:
 		if _wave_manager.wave_timer_tick.is_connected(_on_wave_timer_tick):
 			_wave_manager.wave_timer_tick.disconnect(_on_wave_timer_tick)
 	var tw: Tween = create_tween()
-	tw.tween_property(self, "modulate:a", 0.0, 0.45)
+	tw.tween_property(_root, "modulate:a", 0.0, 0.45)
 	tw.finished.connect(queue_free)
 
 

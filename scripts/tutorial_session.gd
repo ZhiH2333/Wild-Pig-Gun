@@ -13,10 +13,13 @@ enum TutorialStep {
 var active: bool = false
 var current_step: TutorialStep = TutorialStep.DONE
 var shop_intro_acknowledged: bool = false
+var is_in_tutorial_settings: bool = false
 
 
 func begin_from_main_menu() -> void:
 	if SaveManager.get_tutorial_completed():
+		return
+	if active:
 		return
 	active = true
 	current_step = TutorialStep.WELCOME
@@ -55,6 +58,7 @@ func mark_done() -> void:
 	active = false
 	current_step = TutorialStep.DONE
 	shop_intro_acknowledged = false
+	is_in_tutorial_settings = false
 
 
 func mark_shop_intro_acknowledged() -> void:
