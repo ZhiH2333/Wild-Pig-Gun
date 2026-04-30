@@ -10,8 +10,6 @@ const BACKGROUND_SWAY_OVERSCALE: float = 1.14
 
 @onready var info_dialog: AcceptDialog = $InfoDialog
 @onready var background: TextureRect = $Background
-@onready var char_name_label: Label = $CharPanel/CharNameLabel
-@onready var char_sprite: TextureRect = $CharPanel/CharSprite
 
 var background_sway_phase: float = 0.0
 var background_sway_angle: float = 0.0
@@ -21,16 +19,14 @@ var _control_mode_dialog: Window = null
 
 func _ready() -> void:
 	GameMusic.ensure_playing_main_volume()
-	var continue_btn: Button = $LeftButtons/ContinueButton
+	var continue_btn: Button = $MenuRoot/ContinueButton
 	continue_btn.pressed.connect(_on_continue_pressed)
 	_refresh_continue_button()
-	$LeftButtons/StartButton.pressed.connect(_on_start_pressed)
-	$LeftButtons/ProgressButton.pressed.connect(_on_progress_pressed)
-	$LeftButtons/CharacterButton.pressed.connect(_on_character_pressed)
-	$RightButtons/SettingsButton.pressed.connect(_on_settings_pressed)
-	$RightButtons/CreditsButton.pressed.connect(_on_credits_pressed)
-	$RightButtons/QuitButton.pressed.connect(_on_quit_pressed)
-	_refresh_char_panel()
+	$MenuRoot/StartButton.pressed.connect(_on_start_pressed)
+	$MenuRoot/CustomizeButton.pressed.connect(_on_character_pressed)
+	$MenuRoot/SettingsButton.pressed.connect(_on_settings_pressed)
+	$MenuRoot/AboutButton.pressed.connect(_on_credits_pressed)
+	$MenuRoot/QuitButton.pressed.connect(_on_quit_pressed)
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
 	_update_background_sway_pivot()
@@ -131,14 +127,15 @@ func _process(delta: float) -> void:
 
 
 func _refresh_continue_button() -> void:
-	var continue_btn: Button = $LeftButtons/ContinueButton
+	var continue_btn: Button = $MenuRoot/ContinueButton
 	var has_save: bool = SaveManager.has_pending_run()
-	continue_btn.visible = has_save
-	if not has_save:
+	continue_btn.disabled = not has_save
+	if has_save:
+		var summary: Dictionary = SaveManager.get_pending_run_summary()
+		var wave: int = int(summary.get("wave_index", 0))
+		continue_btn.text = "继续游戏-第%d波" % wave
 		return
-	var summary: Dictionary = SaveManager.get_pending_run_summary()
-	var wave: int = int(summary.get("wave_index", 0))
-	continue_btn.text = "继续游戏 · 第 %d 波" % wave
+	continue_btn.text = "继续游戏-第0波"
 
 
 func _on_continue_pressed() -> void:
@@ -161,13 +158,6 @@ func _on_settings_pressed() -> void:
 	RunState.settings_return_scene_path = "res://scenes/main_menu.tscn"
 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
-func _on_progress_pressed() -> void:
-	var meta: Dictionary = SaveManager.load_meta_progress()
-	var best: int = int(meta.get("best_wave", 0))
-	var runs: int = int(meta.get("runs", 0))
-	var wins: int = int(meta.get("victories", 0))
-	_show_info_dialog("最高到达波次：%d\n累计局数：%d\n通关次数：%d" % [best, runs, wins])
-
 func _on_credits_pressed() -> void:
 	GameMusic.duck_for_subpage()
 	get_tree().change_scene_to_file("res://scenes/about.tscn")
@@ -178,16 +168,3 @@ func _show_info_dialog(message: String) -> void:
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
-
-
-func _refresh_char_panel() -> void:
-	var character_id: String = str(GameSettings.selected_character_id)
-	var character: Dictionary = CharacterData.find_character(character_id)
-	var display_name: String = str(character.get("display_name", "标准野猪"))
-	var sprite_path: String = str(character.get("sprite_path", "res://assets/sprites/wildpig.png"))
-	char_name_label.text = "当前角色：%s" % display_name
-	if not ResourceLoader.exists(sprite_path):
-		char_sprite.texture = null
-		return
-	var texture: Texture2D = load(sprite_path) as Texture2D
-	char_sprite.texture = texture
