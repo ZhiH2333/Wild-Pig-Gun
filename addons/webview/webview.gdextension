@@ -1,0 +1,54 @@
+[infomation]
+name = "WebView"
+version = "0.1.4"
+decription = "WebView for Godot"
+author = "Kroket Ltd."
+email = "code@kroket.io"
+repo = "https://github.com/kroketio/godot-webview"
+
+[configuration]
+entry_symbol = "gdcute_library_init"
+compatibility_minimum = "4.4"
+
+[dependencies]
+linux.debug.x86_64 = {
+    "res://addons/webview/libvitosha.so" : "",
+    "res://addons/webview/libvitosha.so.0" : "",
+    "res://addons/webview/libvitosha.so.0.1.4" : ""
+}
+linux.release.x86_64 = {
+    "res://addons/webview/libvitosha.so" : "",
+    "res://addons/webview/libvitosha.so.0" : "",
+    "res://addons/webview/libvitosha.so.0.1.4" : ""
+}
+macos.debug.arm64 = {
+    "res://addons/webview/libvitosha.dylib" : "",
+    "res://addons/webview/libvitosha_metal.dylib" : ""
+}
+macos.release.arm64 = {
+    "res://addons/webview/libvitosha.dylib" : "",
+    "res://addons/webview/libvitosha_metal.dylib" : ""
+}
+
+[libraries]
+macos.debug = "res://addons/webview/libgdwebview.macos.arm64.dylib"
+macos.release = "res://addons/webview/libgdwebview.macos.arm64.dylib"
+
+windows.debug.x86_64 = "res://addons/webview/libgdwebview.windows.x86_64.dll"
+windows.release.x86_64 = "res://addons/webview/libgdwebview.windows.x86_64.dll"
+
+linux.debug.x86_64 = "res://addons/webview/libgdwebview.linux.x86_64.so"
+linux.release.x86_64 = "res://addons/webview/libgdwebview.linux.x86_64.so"
+
+linux.debug.arm64 = "res://addons/webview/libgdwebview.linux.arm64.so"
+linux.release.arm64 = "res://addons/webview/libgdwebview.linux.arm64.so"
+
+[icons]
+WebView = "res://addons/webview/ico/webview-32x32.png"
+QuickView = "res://addons/webview/ico/quickview-32x32.png"
+QManager = "res://addons/webview/ico/qmanager-32x32.png"
+QScreenCaptureView = "res://addons/webview/ico/qscreencaptureview-32x32.png"
+QVideoPlayerView = "res://addons/webview/ico/qvideoplayerview-32x32.png"
+QCameraView = "res://addons/webview/ico/qvideoplayerview-32x32.png"
+BaseView = "res://addons/webview/ico/quickview-32x32.png"
+QWebProfile = "res://addons/webview/ico/qwebprofile-32x32.png"
