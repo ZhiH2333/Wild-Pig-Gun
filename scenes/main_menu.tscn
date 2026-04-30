@@ -3,22 +3,11 @@
 [ext_resource type="Script" uid="uid://o0fto51q77ev" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
-[ext_resource type="FontFile" uid="uid://cfxigihcadfuq" path="res://assets/fonts/ZhanKuKuaiLeTi2016XiuDingBan-1.ttf" id="4_font"]
+[ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="4_font"]
+[ext_resource type="Theme" path="res://themes/black_button_theme.tres" id="5_menu_btn_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_normal"]
-bg_color = Color(0, 0, 0, 0.56)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_hover"]
-bg_color = Color(0, 0, 0, 0.66)
+bg_color = Color(0, 0, 0, 0.65)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -36,6 +25,13 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
+[sub_resource type="StyleBoxFlat" id="StyleBox_hover"]
+bg_color = Color(1, 1, 1, 0.75)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
 [sub_resource type="StyleBoxFlat" id="StyleBox_disabled"]
 bg_color = Color(0, 0, 0, 0.38)
 border_width_left = 1
@@ -48,7 +44,7 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=590717937]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -58,7 +54,7 @@ grow_vertical = 2
 theme = ExtResource("2_ui")
 script = ExtResource("1_main_menu")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=2022484865]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -70,7 +66,7 @@ texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="DimOverlay" type="ColorRect" parent="."]
+[node name="Overlay" type="ColorRect" parent="." unique_id=1147162231]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -78,123 +74,78 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.34)
+color = Color(0, 0, 0, 0.45)
 
-[node name="MenuRoot" type="VBoxContainer" parent="."]
+[node name="MenuRoot" type="VBoxContainer" parent="." unique_id=47442798]
 layout_mode = 1
-offset_left = 54.0
-offset_top = 40.0
-offset_right = 324.0
-offset_bottom = 420.0
-theme_override_constants/separation = 7
+offset_left = 40.0
+offset_top = 38.0
+offset_right = 323.0
+offset_bottom = 575.0
 
-[node name="TitleLabel" type="Label" parent="MenuRoot"]
-custom_minimum_size = Vector2(260, 72)
+[node name="TitleLabel" type="Label" parent="MenuRoot" unique_id=122269349]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("4_font")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 52
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 48
 text = "Wild Pig Gun"
-vertical_alignment = 1
 
-[node name="ContinueButton" type="Button" parent="MenuRoot"]
-custom_minimum_size = Vector2(260, 44)
+[node name="TitleSpacer" type="Control" parent="MenuRoot" unique_id=735387959]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ButtonContainer" type="VBoxContainer" parent="MenuRoot" unique_id=570520200]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ContinueButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=204891531]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_colors/font_disabled_color = Color(0, 0, 0, 0.65)
-theme_override_styles/normal = SubResource("StyleBox_normal")
-theme_override_styles/hover = SubResource("StyleBox_hover")
-theme_override_styles/focus = SubResource("StyleBox_hover")
-theme_override_styles/pressed = SubResource("StyleBox_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_disabled")
+theme = ExtResource("5_menu_btn_theme")
 text = "继续游戏-第0波"
-alignment = 0
+alignment = 1
 
-[node name="StartButton" type="Button" parent="MenuRoot"]
-custom_minimum_size = Vector2(260, 44)
+[node name="StartButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=472004151]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_styles/normal = SubResource("StyleBox_normal")
-theme_override_styles/hover = SubResource("StyleBox_hover")
-theme_override_styles/focus = SubResource("StyleBox_hover")
-theme_override_styles/pressed = SubResource("StyleBox_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_disabled")
+theme = ExtResource("5_menu_btn_theme")
 text = "开始"
-alignment = 0
+alignment = 1
 
-[node name="CustomizeButton" type="Button" parent="MenuRoot"]
-custom_minimum_size = Vector2(260, 44)
+[node name="CustomizeButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=1558636735]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_styles/normal = SubResource("StyleBox_normal")
-theme_override_styles/hover = SubResource("StyleBox_hover")
-theme_override_styles/focus = SubResource("StyleBox_hover")
-theme_override_styles/pressed = SubResource("StyleBox_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_disabled")
+theme = ExtResource("5_menu_btn_theme")
 text = "个性化"
-alignment = 0
+alignment = 1
 
-[node name="SettingsButton" type="Button" parent="MenuRoot"]
-custom_minimum_size = Vector2(260, 44)
+[node name="SettingsButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=1954588758]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_styles/normal = SubResource("StyleBox_normal")
-theme_override_styles/hover = SubResource("StyleBox_hover")
-theme_override_styles/focus = SubResource("StyleBox_hover")
-theme_override_styles/pressed = SubResource("StyleBox_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_disabled")
+theme = ExtResource("5_menu_btn_theme")
 text = "选项"
-alignment = 0
+alignment = 1
 
-[node name="AboutButton" type="Button" parent="MenuRoot"]
-custom_minimum_size = Vector2(260, 44)
+[node name="AboutButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=1792550266]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_styles/normal = SubResource("StyleBox_normal")
-theme_override_styles/hover = SubResource("StyleBox_hover")
-theme_override_styles/focus = SubResource("StyleBox_hover")
-theme_override_styles/pressed = SubResource("StyleBox_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_disabled")
+theme = ExtResource("5_menu_btn_theme")
 text = "关于我们"
-alignment = 0
+alignment = 1
 
-[node name="QuitButton" type="Button" parent="MenuRoot"]
-custom_minimum_size = Vector2(260, 44)
+[node name="QuitButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=1248563847]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_styles/normal = SubResource("StyleBox_normal")
-theme_override_styles/hover = SubResource("StyleBox_hover")
-theme_override_styles/focus = SubResource("StyleBox_hover")
-theme_override_styles/pressed = SubResource("StyleBox_pressed")
-theme_override_styles/disabled = SubResource("StyleBox_disabled")
+theme = ExtResource("5_menu_btn_theme")
 text = "退出"
-alignment = 0
+alignment = 1
 
-[node name="InfoDialog" type="AcceptDialog" parent="."]
-theme_override_fonts/font = ExtResource("4_font")
+[node name="InfoDialog" type="AcceptDialog" parent="." unique_id=1521258567]
 ok_button_text = "确定"
 dialog_text = "占位"
