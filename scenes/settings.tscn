@@ -5,6 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
 [ext_resource type="Material" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
 [ext_resource type="Texture2D" uid="uid://cd3upfbw3oy1" path="res://assets/ui/icon_back.svg" id="6_back_icon"]
+[ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="7_black_btn"]
+[ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="8_menu_font"]
 
 [sub_resource type="SystemFont" id="SystemFont_dialog"]
 font_names = PackedStringArray("PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", "Source Han Sans SC", "Arial")
@@ -73,15 +75,41 @@ size_flags_vertical = 3
 alignment = 0
 theme_override_constants/separation = 20
 
-[node name="BackButton" type="Button" parent="Center/MainColumn" unique_id=266020726]
+[node name="HeaderMargins" type="MarginContainer" parent="Center/MainColumn" unique_id=1888123000]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 0
+
+[node name="HeaderRow" type="HBoxContainer" parent="Center/MainColumn/HeaderMargins" unique_id=1888123456]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BackButton" type="Button" parent="Center/MainColumn/HeaderMargins/HeaderRow" unique_id=266020726]
 custom_minimum_size = Vector2(168, 52)
 layout_mode = 2
 size_flags_horizontal = 0
+size_flags_vertical = 4
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_constants/icon_max_width = 30
 theme_override_font_sizes/font_size = 24
 text = "返回"
 icon = ExtResource("6_back_icon")
 alignment = 0
+
+[node name="Title" type="Label" parent="Center/MainColumn/HeaderMargins/HeaderRow" unique_id=52411686]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 42
+text = "设置"
+vertical_alignment = 1
 
 [node name="MainCard" type="PanelContainer" parent="Center/MainColumn" unique_id=1402232158]
 layout_mode = 2
@@ -99,13 +127,6 @@ theme_override_constants/margin_bottom = 22
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="Title" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=52411686]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
-theme_override_font_sizes/font_size = 42
-text = "设置"
-horizontal_alignment = 1
-
 [node name="TabButtonRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=1786734651]
 layout_mode = 2
 theme_override_constants/separation = 10
@@ -114,36 +135,51 @@ theme_override_constants/separation = 10
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "音频"
+alignment = 1
 
 [node name="TabBtn1" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=158424710]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "显示"
+alignment = 1
 
 [node name="TabBtn2" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1031118729]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "控制"
+alignment = 1
 
 [node name="TabBtn3" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=2139016715]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "游戏"
+alignment = 1
 
 [node name="TabBtn4" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=469321538]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "数据"
+alignment = 1
 
 [node name="SettingsTabContainer" type="TabContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=1580203748]
 custom_minimum_size = Vector2(0, 440)
@@ -453,8 +489,11 @@ horizontal_alignment = 2
 visible = false
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 22
 text = "自定义控件位置..."
+alignment = 1
 
 [node name="GameScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=2118254326]
 visible = false
@@ -514,9 +553,11 @@ self_modulate = Color(1, 0.34, 0.34, 1)
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 24
 text = "清除所有数据"
+alignment = 1
 
 [node name="DeleteConfirmOverlay" type="Control" parent="." unique_id=332576334]
 visible = false
@@ -605,18 +646,22 @@ alignment = 1
 [node name="CancelButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow" unique_id=522546554]
 custom_minimum_size = Vector2(200, 56)
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 22
 text = "取消"
+alignment = 1
 
 [node name="ConfirmButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow" unique_id=911116913]
 self_modulate = Color(0.78, 0.2, 0.2, 1)
 custom_minimum_size = Vector2(200, 56)
 layout_mode = 2
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_colors/font_color = Color(1, 0.88, 0.88, 1)
-theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 22
 text = "确认删除"
+alignment = 1
 
 [node name="ClearResultOverlay" type="Control" parent="." unique_id=1017547560]
 visible = false
@@ -672,9 +717,11 @@ autowrap_mode = 3
 [node name="BackToMenuButton" type="Button" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=784683516]
 custom_minimum_size = Vector2(280, 56)
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 22
 text = "返回主菜单"
+alignment = 1
 
 [node name="ClearHoldTimer" type="Timer" parent="." unique_id=1466582610]
 wait_time = 3.0

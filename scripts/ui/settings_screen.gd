@@ -53,8 +53,8 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var data_summary_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/DataSummaryLabel
 @onready var clear_hint_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearHintLabel
 @onready var clear_all_data_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton
-@onready var title_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/Title
-@onready var back_button: Button = $Center/MainColumn/BackButton
+@onready var title_label: Label = $Center/MainColumn/HeaderMargins/HeaderRow/Title
+@onready var back_button: Button = $Center/MainColumn/HeaderMargins/HeaderRow/BackButton
 @onready var delete_confirm_overlay: Control = $DeleteConfirmOverlay
 @onready var delete_confirm_button: Button = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/ConfirmButton
 @onready var delete_cancel_button: Button = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/CancelButton
@@ -132,38 +132,36 @@ func _apply_tutorial_mode() -> void:
 
 
 func _build_tab_button_styles() -> void:
+	const RADIUS := 2
+	const MG_L := 16.0
+	const MG_T := 8.0
+	const MG_R := 16.0
+	const MG_B := 8.0
+	# Matches themes/black_button_theme.tres pressed (active tab).
 	_style_active_normal = StyleBoxFlat.new()
-	_style_active_normal.bg_color = Color(0.96, 0.93, 0.86, 1)
-	_style_active_normal.border_width_left = 1
-	_style_active_normal.border_width_top = 1
-	_style_active_normal.border_width_right = 1
-	_style_active_normal.border_width_bottom = 1
-	_style_active_normal.border_color = Color(0.72, 0.64, 0.42, 1)
-	_style_active_normal.set_corner_radius_all(16)
-	_style_active_normal.content_margin_left = 24.0
-	_style_active_normal.content_margin_top = 14.0
-	_style_active_normal.content_margin_right = 24.0
-	_style_active_normal.content_margin_bottom = 14.0
-	_style_active_normal.shadow_color = Color(0, 0, 0, 0.22)
-	_style_active_normal.shadow_size = 4
-	_style_active_normal.shadow_offset = Vector2(0, 2)
+	_style_active_normal.bg_color = Color(1, 1, 1, 1)
+	_style_active_normal.set_corner_radius_all(RADIUS)
+	_style_active_normal.content_margin_left = MG_L
+	_style_active_normal.content_margin_top = MG_T
+	_style_active_normal.content_margin_right = MG_R
+	_style_active_normal.content_margin_bottom = MG_B
 	_style_active_hover = _style_active_normal.duplicate() as StyleBoxFlat
-	_style_active_hover.bg_color = Color(1.0, 0.97, 0.9, 1)
+	# Matches black_button normal + hover for inactive tabs.
 	_style_inactive_normal = StyleBoxFlat.new()
-	_style_inactive_normal.bg_color = Color(0.14, 0.16, 0.22, 0.92)
+	_style_inactive_normal.bg_color = Color(0, 0, 0, 0.55)
 	_style_inactive_normal.border_width_left = 1
 	_style_inactive_normal.border_width_top = 1
 	_style_inactive_normal.border_width_right = 1
 	_style_inactive_normal.border_width_bottom = 1
-	_style_inactive_normal.border_color = Color(0.35, 0.38, 0.48, 0.85)
-	_style_inactive_normal.set_corner_radius_all(16)
-	_style_inactive_normal.content_margin_left = 22.0
-	_style_inactive_normal.content_margin_top = 14.0
-	_style_inactive_normal.content_margin_right = 22.0
-	_style_inactive_normal.content_margin_bottom = 14.0
+	_style_inactive_normal.border_color = Color(1, 1, 1, 1)
+	_style_inactive_normal.set_corner_radius_all(RADIUS)
+	_style_inactive_normal.content_margin_left = MG_L
+	_style_inactive_normal.content_margin_top = MG_T
+	_style_inactive_normal.content_margin_right = MG_R
+	_style_inactive_normal.content_margin_bottom = MG_B
 	_style_inactive_hover = _style_inactive_normal.duplicate() as StyleBoxFlat
-	_style_inactive_hover.bg_color = Color(0.22, 0.26, 0.34, 1)
-	_style_inactive_hover.border_color = Color(0.5, 0.55, 0.68, 1)
+	_style_inactive_hover.bg_color = Color(1, 1, 1, 0.75)
+	_style_inactive_hover.border_color = Color(1, 1, 1, 1)
 
 
 func _switch_tab(index: int) -> void:
@@ -175,8 +173,10 @@ func _switch_tab(index: int) -> void:
 			btn.add_theme_stylebox_override("hover", _style_active_hover)
 			btn.add_theme_stylebox_override("pressed", _style_active_normal)
 			btn.add_theme_stylebox_override("focus", _style_active_normal)
-			btn.add_theme_color_override("font_color", Color(0.14, 0.12, 0.1, 1))
-			btn.add_theme_color_override("font_hover_color", Color(0.14, 0.12, 0.1, 1))
+			btn.add_theme_color_override("font_color", Color.BLACK)
+			btn.add_theme_color_override("font_hover_color", Color.BLACK)
+			btn.add_theme_color_override("font_pressed_color", Color.BLACK)
+			btn.add_theme_color_override("font_focus_color", Color.BLACK)
 		else:
 			btn.add_theme_stylebox_override("normal", _style_inactive_normal)
 			btn.add_theme_stylebox_override("hover", _style_inactive_hover)
@@ -184,6 +184,8 @@ func _switch_tab(index: int) -> void:
 			btn.add_theme_stylebox_override("focus", _style_inactive_normal)
 			btn.remove_theme_color_override("font_color")
 			btn.remove_theme_color_override("font_hover_color")
+			btn.remove_theme_color_override("font_pressed_color")
+			btn.remove_theme_color_override("font_focus_color")
 
 
 func _build_static_option_buttons() -> void:
