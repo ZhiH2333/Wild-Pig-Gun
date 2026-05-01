@@ -8,6 +8,7 @@
 [ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="7_black_btn"]
 [ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="8_menu_font"]
 [ext_resource type="Theme" uid="uid://d7h2k9tabtheme1" path="res://themes/settings_tab_theme.tres" id="9_tab_theme"]
+[ext_resource type="Theme" uid="uid://c8k3settingspanel1" path="res://themes/settings_panel_theme.tres" id="10_settings_panel"]
 
 [sub_resource type="SystemFont" id="SystemFont_dialog"]
 font_names = PackedStringArray("PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", "Source Han Sans SC", "Arial")
@@ -218,6 +219,7 @@ alignment = 1
 custom_minimum_size = Vector2(0, 440)
 layout_mode = 2
 size_flags_vertical = 3
+theme = ExtResource("10_settings_panel")
 theme_override_constants/side_margin = 0
 current_tab = 0
 tabs_visible = false
