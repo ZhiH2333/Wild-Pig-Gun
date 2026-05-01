@@ -24,6 +24,10 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var tab_btn_2: Button = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabBtn2
 @onready var tab_btn_3: Button = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabBtn3
 @onready var tab_btn_4: Button = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabBtn4
+@onready var tab_sep_01: ColorRect = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabSep01
+@onready var tab_sep_12: ColorRect = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabSep12
+@onready var tab_sep_23: ColorRect = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabSep23
+@onready var tab_sep_34: ColorRect = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabSep34
 @onready var master_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow/MasterSlider
 @onready var music_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow/MusicSlider
 @onready var sfx_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow/SfxSlider
@@ -68,6 +72,7 @@ var is_holding_clear_button: bool = false
 var _is_syncing_ui: bool = false
 var _is_tutorial_mode: bool = false
 var _tab_buttons: Array[Button] = []
+var _tab_separators: Array[ColorRect] = []
 var _style_active_normal: StyleBoxFlat
 var _style_active_hover: StyleBoxFlat
 var _style_inactive_normal: StyleBoxFlat
@@ -77,6 +82,7 @@ var _style_inactive_hover: StyleBoxFlat
 func _ready() -> void:
 	GameMusic.duck_for_subpage()
 	_tab_buttons = [tab_btn_0, tab_btn_1, tab_btn_2, tab_btn_3, tab_btn_4]
+	_tab_separators = [tab_sep_01, tab_sep_12, tab_sep_23, tab_sep_34]
 	_build_tab_button_styles()
 	for i: int in range(_tab_buttons.size()):
 		_tab_buttons[i].pressed.connect(_switch_tab.bind(i))
@@ -119,6 +125,7 @@ func _ready() -> void:
 	_refresh_clear_button_idle_text()
 	_apply_web_visibility()
 	_apply_tutorial_mode()
+	_refresh_tab_separator_visibility()
 
 
 func _apply_tutorial_mode() -> void:
@@ -131,13 +138,21 @@ func _apply_tutorial_mode() -> void:
 	tab_btn_4.visible = false
 
 
+func _refresh_tab_separator_visibility() -> void:
+	for i: int in range(_tab_separators.size()):
+		var sep: ColorRect = _tab_separators[i]
+		var left_tab: CanvasItem = _tab_buttons[i]
+		var right_tab: CanvasItem = _tab_buttons[i + 1]
+		sep.visible = left_tab.visible and right_tab.visible
+
+
 func _build_tab_button_styles() -> void:
 	const RADIUS := 2
 	const MG_L := 16.0
 	const MG_T := 8.0
 	const MG_R := 16.0
 	const MG_B := 8.0
-	# Matches themes/black_button_theme.tres pressed (active tab).
+	# Matches themes/settings_tab_theme.tres pressed (active tab), no border.
 	_style_active_normal = StyleBoxFlat.new()
 	_style_active_normal.bg_color = Color(1, 1, 1, 1)
 	_style_active_normal.set_corner_radius_all(RADIUS)
@@ -146,14 +161,9 @@ func _build_tab_button_styles() -> void:
 	_style_active_normal.content_margin_right = MG_R
 	_style_active_normal.content_margin_bottom = MG_B
 	_style_active_hover = _style_active_normal.duplicate() as StyleBoxFlat
-	# Matches black_button normal + hover for inactive tabs.
+	# Matches settings_tab_theme normal + hover for inactive tabs, no border.
 	_style_inactive_normal = StyleBoxFlat.new()
 	_style_inactive_normal.bg_color = Color(0, 0, 0, 0.55)
-	_style_inactive_normal.border_width_left = 1
-	_style_inactive_normal.border_width_top = 1
-	_style_inactive_normal.border_width_right = 1
-	_style_inactive_normal.border_width_bottom = 1
-	_style_inactive_normal.border_color = Color(1, 1, 1, 1)
 	_style_inactive_normal.set_corner_radius_all(RADIUS)
 	_style_inactive_normal.content_margin_left = MG_L
 	_style_inactive_normal.content_margin_top = MG_T
@@ -161,7 +171,6 @@ func _build_tab_button_styles() -> void:
 	_style_inactive_normal.content_margin_bottom = MG_B
 	_style_inactive_hover = _style_inactive_normal.duplicate() as StyleBoxFlat
 	_style_inactive_hover.bg_color = Color(1, 1, 1, 0.75)
-	_style_inactive_hover.border_color = Color(1, 1, 1, 1)
 
 
 func _switch_tab(index: int) -> void:

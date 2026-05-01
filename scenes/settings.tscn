@@ -7,9 +7,13 @@
 [ext_resource type="Texture2D" uid="uid://cd3upfbw3oy1" path="res://assets/ui/icon_back.svg" id="6_back_icon"]
 [ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="7_black_btn"]
 [ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="8_menu_font"]
+[ext_resource type="Theme" uid="uid://d7h2k9tabtheme1" path="res://themes/settings_tab_theme.tres" id="9_tab_theme"]
 
 [sub_resource type="SystemFont" id="SystemFont_dialog"]
 font_names = PackedStringArray("PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", "Source Han Sans SC", "Arial")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_maincard_transparent"]
+bg_color = Color(0, 0, 0, 0)
 
 [node name="Settings" type="Control" unique_id=1304227534]
 layout_mode = 3
@@ -115,6 +119,7 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_maincard_transparent")
 
 [node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard" unique_id=1034729908]
 layout_mode = 2
@@ -129,53 +134,81 @@ theme_override_constants/separation = 14
 
 [node name="TabButtonRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=1786734651]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 0
 
 [node name="TabBtn0" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=673557788]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-theme = ExtResource("7_black_btn")
+theme = ExtResource("9_tab_theme")
 theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "音频"
 alignment = 1
 
+[node name="TabSep01" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1786734652]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
 [node name="TabBtn1" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=158424710]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-theme = ExtResource("7_black_btn")
+theme = ExtResource("9_tab_theme")
 theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "显示"
 alignment = 1
 
+[node name="TabSep12" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1786734653]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
 [node name="TabBtn2" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1031118729]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-theme = ExtResource("7_black_btn")
+theme = ExtResource("9_tab_theme")
 theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "控制"
 alignment = 1
 
+[node name="TabSep23" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1786734654]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
 [node name="TabBtn3" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=2139016715]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-theme = ExtResource("7_black_btn")
+theme = ExtResource("9_tab_theme")
 theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "游戏"
 alignment = 1
 
+[node name="TabSep34" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1786734655]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
 [node name="TabBtn4" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=469321538]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-theme = ExtResource("7_black_btn")
+theme = ExtResource("9_tab_theme")
 theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "数据"
