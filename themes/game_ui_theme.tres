@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://cvj5mwkwvskxl"]
 
-[ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="1_pixel_font"]
+[ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="1_pixel_font"]
 
 [sub_resource type="StyleBoxFlat" id="sb_btn_disabled"]
 content_margin_left = 26.0
