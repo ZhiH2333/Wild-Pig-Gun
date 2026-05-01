@@ -1,30 +1,8 @@
 extends Control
 
 const HOLD_PURCHASE_SECONDS: float = 3.0
-
-const SHOP_PLACEHOLDERS: Array[Dictionary] = [
-	{
-		"id": "demo_skin_frost",
-		"title": "冰蓝迷彩",
-		"desc": "占位：未来可解锁的角色外观。当前为演示商品。",
-		"price": 1200,
-		"sprite_path": "res://assets/sprites/wildpig.png",
-	},
-	{
-		"id": "demo_bundle",
-		"title": "野猪补给包",
-		"desc": "占位：内含随机强化素材（演示，不写入存档）。",
-		"price": 800,
-		"sprite_path": "res://assets/sprites/wildpig.png",
-	},
-	{
-		"id": "demo_voice",
-		"title": "战吼语音包",
-		"desc": "占位：额外战斗语音与结算台词。",
-		"price": 500,
-		"sprite_path": "res://assets/sprites/wildpig.png",
-	},
-]
+const PROFILE_TAB_HOLD_SECONDS: float = 1.2
+const SETTINGS_PATH_DISPLAY: String = "user://game_settings.json"
 
 @onready var tab_container: TabContainer = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer
 @onready var tab_btn_0: Button = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabBtn0
@@ -47,6 +25,7 @@ const SHOP_PLACEHOLDERS: Array[Dictionary] = [
 @onready var yes_progress: ProgressBar = $PurchaseOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/YesHoldButton/YesProgress
 @onready var purchase_hold_timer: Timer = $PurchaseHoldTimer
 @onready var shop_result_dialog: AcceptDialog = $ShopResultDialog
+@onready var character_contents: VBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents
 
 var characters: Array = []
 var current_index: int = 0
@@ -58,10 +37,17 @@ var _style_inactive_normal: StyleBoxFlat
 var _style_inactive_hover: StyleBoxFlat
 var _pending_shop: Dictionary = {}
 var _is_holding_yes: bool = false
+var _more_button: Button
+var _intro_dialog: AcceptDialog
+var _profile_hold_timer: Timer
+var _holding_profile_tab: bool = false
 
 
 func _ready() -> void:
+	CharacterData.sanitize_selected_character_setting()
 	GameMusic.duck_for_subpage()
+	_setup_more_button_and_intro_dialog()
+	_setup_profile_tab_long_press()
 	_tab_buttons = [tab_btn_0, tab_btn_1, tab_btn_2]
 	_tab_separators = [tab_sep_01, tab_sep_12]
 	_build_tab_button_styles()
@@ -88,11 +74,127 @@ func _ready() -> void:
 	yes_progress.value = 0.0
 
 
+func _setup_more_button_and_intro_dialog() -> void:
+	var top_bar: HBoxContainer = HBoxContainer.new()
+	top_bar.alignment = BoxContainer.ALIGNMENT_END
+	top_bar.add_theme_constant_override("separation", 8)
+	var spacer: Control = Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_bar.add_child(spacer)
+	_more_button = Button.new()
+	_more_button.text = "更多"
+	_more_button.custom_minimum_size = Vector2(108, 44)
+	_more_button.theme = load("res://themes/black_button_theme.tres") as Theme
+	var font_bold: Font = load("res://assets/fonts/SourceHanSansSC-Bold.otf") as Font
+	if font_bold:
+		_more_button.add_theme_font_override("font", font_bold)
+	_more_button.add_theme_font_size_override("font_size", 20)
+	_more_button.pressed.connect(_on_more_button_pressed)
+	top_bar.add_child(_more_button)
+	character_contents.add_child(top_bar)
+	character_contents.move_child(top_bar, 0)
+	_intro_dialog = AcceptDialog.new()
+	_intro_dialog.title = "角色档案"
+	_intro_dialog.min_size = Vector2i(520, 420)
+	var rtl: RichTextLabel = RichTextLabel.new()
+	rtl.name = "IntroRich"
+	rtl.bbcode_enabled = true
+	rtl.fit_content = false
+	rtl.scroll_active = true
+	rtl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	rtl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rtl.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	rtl.custom_minimum_size = Vector2(480, 320)
+	_intro_dialog.add_child(rtl)
+	add_child(_intro_dialog)
+
+
+func _setup_profile_tab_long_press() -> void:
+	_profile_hold_timer = Timer.new()
+	_profile_hold_timer.one_shot = true
+	_profile_hold_timer.wait_time = PROFILE_TAB_HOLD_SECONDS
+	add_child(_profile_hold_timer)
+	_profile_hold_timer.timeout.connect(_on_profile_tab_hold_timeout)
+	tab_btn_2.button_down.connect(_on_profile_tab_button_down)
+	tab_btn_2.button_up.connect(_on_profile_tab_button_up)
+
+
+func _on_profile_tab_button_down() -> void:
+	_holding_profile_tab = true
+	_profile_hold_timer.start(PROFILE_TAB_HOLD_SECONDS)
+
+
+func _on_profile_tab_button_up() -> void:
+	if _profile_hold_timer.time_left > 0.0:
+		_profile_hold_timer.stop()
+	_holding_profile_tab = false
+
+
+func _on_profile_tab_hold_timeout() -> void:
+	if not _holding_profile_tab:
+		return
+	_show_archive_source_dialog()
+
+
+func _on_more_button_pressed() -> void:
+	var d: Dictionary = _get_current_character()
+	var lore: String = str(d.get("lore", d.get("description", "暂无档案")))
+	var skill_name: String = str(d.get("skill_name", "—"))
+	var skill_desc: String = str(d.get("skill_desc", "—"))
+	var atk_fx: String = str(d.get("attack_effect_desc", "—"))
+	var rtl: RichTextLabel = _intro_dialog.find_child("IntroRich", true, false) as RichTextLabel
+	if rtl == null:
+		return
+	rtl.clear()
+	rtl.append_text("[b]%s[/b]\n\n" % str(d.get("display_name", "角色")))
+	rtl.append_text("[color=#c8b8e8]背景[/color]\n%s\n\n" % lore)
+	rtl.append_text("[color=#c8b8e8]技能 · %s[/color]\n%s\n\n" % [skill_name, skill_desc])
+	rtl.append_text("[color=#c8b8e8]攻击表现[/color]\n%s" % atk_fx)
+	_intro_dialog.popup_centered()
+
+
+func _show_archive_source_dialog() -> void:
+	var dlg: AcceptDialog = AcceptDialog.new()
+	dlg.title = "存档与路径"
+	dlg.min_size = Vector2i(560, 480)
+	var scroll: ScrollContainer = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(520, 400)
+	var lbl: Label = Label.new()
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.custom_minimum_size = Vector2(500, 0)
+	lbl.add_theme_font_size_override("font_size", 16)
+	lbl.add_theme_color_override("font_color", Color(0.92, 0.9, 0.86, 1))
+	var save_logical: String = SaveManager.SAVE_PATH
+	var save_abs: String = ProjectSettings.globalize_path(save_logical)
+	var settings_abs: String = ProjectSettings.globalize_path(SETTINGS_PATH_DISPLAY)
+	var raw: String = ""
+	if FileAccess.file_exists(save_logical):
+		var f: FileAccess = FileAccess.open(save_logical, FileAccess.READ)
+		if f != null:
+			raw = f.get_as_text()
+	if raw.length() > 3500:
+		raw = raw.substr(0, 3500) + "\n…（已截断）"
+	var head: String = (
+		"存档资源名：\n%s\n\n存档绝对路径：\n%s\n\n设置资源名：\n%s\n\n设置绝对路径：\n%s\n\n长按「个人」%.1f 秒可再次打开本窗口。"
+		% [save_logical, save_abs, SETTINGS_PATH_DISPLAY, settings_abs, PROFILE_TAB_HOLD_SECONDS]
+	)
+	lbl.text = head + "\n\n—— 存档 JSON 原文（节选）——\n" + (raw if not raw.is_empty() else "（无文件）")
+	scroll.add_child(lbl)
+	dlg.add_child(scroll)
+	add_child(dlg)
+	dlg.close_requested.connect(dlg.queue_free)
+	dlg.confirmed.connect(dlg.queue_free)
+	dlg.popup_centered()
+
+
 func _process(_delta: float) -> void:
 	if not _is_holding_yes or purchase_hold_timer.is_stopped():
 		return
 	var elapsed: float = HOLD_PURCHASE_SECONDS - purchase_hold_timer.time_left
+	if elapsed < 0.0:
+		elapsed = 0.0
 	yes_progress.value = clampf((elapsed / HOLD_PURCHASE_SECONDS) * 100.0, 0.0, 100.0)
+	yes_hold_button.text = "正在确认：%.1f / %.1f 秒" % [elapsed, HOLD_PURCHASE_SECONDS]
 
 
 func _build_tab_button_styles() -> void:
@@ -177,7 +279,32 @@ func _build_shop_cards() -> void:
 	for c in shop_vbox.get_children():
 		c.queue_free()
 	var font_bold: Font = load("res://assets/fonts/SourceHanSansSC-Bold.otf") as Font
-	for item: Dictionary in SHOP_PLACEHOLDERS:
+	var offers: Array = CharacterData.list_shop_character_offers()
+	var wallet: int = SaveManager.get_wallet_gold()
+	if offers.is_empty():
+		var empty_lbl: Label = Label.new()
+		empty_lbl.text = "暂无可购角色（已解锁全部）。\n元进度钱包：%d 金币（局内拾取的金币在结算时并入）。" % wallet
+		empty_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		empty_lbl.add_theme_font_size_override("font_size", 20)
+		empty_lbl.add_theme_color_override("font_color", Color(0.88, 0.9, 0.95, 0.9))
+		shop_vbox.add_child(empty_lbl)
+		return
+	var hint: Label = Label.new()
+	hint.text = "元进度钱包：%d 金币 · 长按「是」%d 秒确认购买" % [wallet, int(HOLD_PURCHASE_SECONDS)]
+	hint.add_theme_font_size_override("font_size", 18)
+	hint.add_theme_color_override("font_color", Color(0.78, 0.82, 0.95, 0.95))
+	shop_vbox.add_child(hint)
+	for entry in offers:
+		if not entry is Dictionary:
+			continue
+		var d: Dictionary = entry as Dictionary
+		var item: Dictionary = {
+			"character_id": str(d.get("id", "")),
+			"title": str(d.get("display_name", "角色")),
+			"desc": str(d.get("description", "")),
+			"price": int(d.get("purchase_price", 0)),
+			"sprite_path": str(d.get("sprite_path", "")),
+		}
 		var card: PanelContainer = PanelContainer.new()
 		card.add_theme_stylebox_override("panel", _shop_card_style())
 		shop_vbox.add_child(card)
@@ -208,7 +335,7 @@ func _build_shop_cards() -> void:
 		desc_lbl.add_theme_color_override("font_color", Color(0.9, 0.92, 0.96, 0.92))
 		text_col.add_child(desc_lbl)
 		var price_lbl: Label = Label.new()
-		price_lbl.text = "%d 金币（演示）" % int(item.get("price", 0))
+		price_lbl.text = "%d 金币" % int(item.get("price", 0))
 		price_lbl.add_theme_font_size_override("font_size", 17)
 		price_lbl.add_theme_color_override("font_color", Color(0.85, 0.9, 1.0, 0.85))
 		text_col.add_child(price_lbl)
@@ -224,9 +351,11 @@ func _build_shop_cards() -> void:
 
 func _on_shop_buy_pressed(item: Dictionary) -> void:
 	_pending_shop = item
-	purchase_message.text = "是否购买「%s」？\n价格：%d 金币（演示，不扣款）" % [
+	var wallet: int = SaveManager.get_wallet_gold()
+	purchase_message.text = "是否购买「%s」？\n价格：%d 金币 · 当前钱包：%d 金币" % [
 		str(item.get("title", "")),
 		int(item.get("price", 0)),
+		wallet,
 	]
 	yes_progress.value = 0.0
 	yes_hold_button.text = "是"
@@ -262,10 +391,26 @@ func _cancel_yes_hold() -> void:
 func _on_purchase_hold_completed() -> void:
 	_is_holding_yes = false
 	yes_progress.value = 100.0
+	yes_hold_button.text = "是"
+	var char_id: String = str(_pending_shop.get("character_id", ""))
 	var title: String = str(_pending_shop.get("title", "商品"))
-	_close_purchase_overlay()
-	shop_result_dialog.dialog_text = "演示：已确认购买「%s」。\n（占位功能，未写入存档或解锁内容）" % title
-	shop_result_dialog.popup_centered()
+	var price: int = int(_pending_shop.get("price", 0))
+	if char_id.is_empty():
+		_close_purchase_overlay()
+		shop_result_dialog.dialog_text = "购买数据无效。"
+		shop_result_dialog.popup_centered()
+		return
+	if SaveManager.try_wallet_purchase_character(char_id, price):
+		_close_purchase_overlay()
+		shop_result_dialog.dialog_text = "已购买并解锁「%s」。\n可在「角色」分页选择出战。" % title
+		shop_result_dialog.popup_centered()
+		_build_shop_cards()
+		_refresh_display()
+		_build_profile_sections()
+	else:
+		_close_purchase_overlay()
+		shop_result_dialog.dialog_text = "元进度金币不足（需要 %d）。\n完成一局后，局内拾取的金币会并入钱包。" % price
+		shop_result_dialog.popup_centered()
 
 
 func _on_shop_result_closed() -> void:
@@ -293,7 +438,10 @@ func _stat_line(label: String, value: String) -> HBoxContainer:
 	a.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(a)
 	var b: Label = Label.new()
-	b.text = value
+	var safe_value: String = value
+	if safe_value.length() > 64:
+		safe_value = safe_value.substr(0, 64) + "…"
+	b.text = safe_value
 	b.add_theme_font_size_override("font_size", 20)
 	b.add_theme_color_override("font_color", Color(0.95, 0.93, 0.88, 1))
 	b.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -326,10 +474,25 @@ func _build_profile_sections() -> void:
 		profile_contents.add_child(_stat_line("续玩进度", "第 %d 波 · 角色 %s" % [pending_wave, pending_char]))
 	else:
 		profile_contents.add_child(_stat_line("续玩进度", "无进行中存档"))
+	var wallet: int = SaveManager.get_wallet_gold()
+	profile_contents.add_child(_section_title("元进度与角色"))
+	profile_contents.add_child(_stat_line("元进度钱包", "%d 金币" % wallet))
+	var owned_parts: PackedStringArray = PackedStringArray()
+	for c in CharacterData.list_characters():
+		if not c is Dictionary:
+			continue
+		var cd: Dictionary = c as Dictionary
+		var oid: String = str(cd.get("id", ""))
+		if oid.is_empty():
+			continue
+		if CharacterData.is_character_unlocked(cd):
+			owned_parts.append(str(cd.get("display_name", oid)))
+	profile_contents.add_child(_stat_line("已拥有角色", "、".join(owned_parts) if owned_parts.size() > 0 else "—"))
 	profile_contents.add_child(_section_title("当前选择"))
 	var sel_id: String = str(GameSettings.selected_character_id)
 	var ch: Dictionary = CharacterData.find_character(sel_id)
 	profile_contents.add_child(_stat_line("出战角色", str(ch.get("display_name", sel_id))))
+	profile_contents.add_child(_stat_line("角色 ID", sel_id))
 
 
 func _find_selected_index() -> int:
@@ -372,7 +535,10 @@ func _refresh_display() -> void:
 	_refresh_sprite(character)
 	if not unlocked:
 		select_button.disabled = true
-		select_button.text = "未解锁"
+		if bool(character.get("requires_purchase", false)):
+			select_button.text = "未解锁 · 商店购买"
+		else:
+			select_button.text = "未解锁"
 	elif is_selected:
 		select_button.disabled = true
 		select_button.text = "已选择 ✓"
@@ -422,7 +588,7 @@ func _on_back_button_pressed() -> void:
 func _default_character() -> Dictionary:
 	return {
 		"id": "default",
-		"display_name": "标准野猪",
+		"display_name": "野猪",
 		"description": "平衡型角色。",
 		"sprite_path": "res://assets/sprites/wildpig.png",
 	}
