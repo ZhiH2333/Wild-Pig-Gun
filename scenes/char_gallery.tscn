@@ -1,9 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://char_gallery_scene"]
+[gd_scene load_steps=10 format=3 uid="uid://char_gallery_scene"]
 
 [ext_resource type="Script" path="res://scripts/ui/char_gallery.gd" id="1_gallery"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
-[ext_resource type="Material" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
 [ext_resource type="Texture2D" uid="uid://cd3upfbw3oy1" path="res://assets/ui/icon_back.svg" id="5_back_icon"]
 [ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="6_black_btn"]
 [ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="7_menu_font"]
@@ -24,7 +23,6 @@ theme = ExtResource("2_ui")
 script = ExtResource("1_gallery")
 
 [node name="BlurredBackground" type="TextureRect" parent="."]
-material = ExtResource("4_blur")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
