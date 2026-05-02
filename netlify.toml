@@ -4,4 +4,3 @@
 
 [build.environment]
   GODOT_VERSION = "4.6"
-  GIT_FETCH_DEPTH = "0"

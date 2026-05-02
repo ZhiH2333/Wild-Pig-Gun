@@ -3,6 +3,9 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
 
+git fetch --tags --force 2>/dev/null || true
+git fetch --unshallow 2>/dev/null || true
+
 # shellcheck source=install_godot_linux.sh
 source "${REPO_ROOT}/scripts/ci/install_godot_linux.sh"
 
@@ -10,14 +13,22 @@ mkdir -p "${REPO_ROOT}/dist"
 
 if [ -n "${RELEASE_VERSION:-}" ]; then
 	:
-elif git describe --tags --exact-match 2>/dev/null | grep -q .; then
-	export RELEASE_VERSION="$(git describe --tags --exact-match | sed 's/^v//')"
+elif tag="$(git describe --tags --exact-match 2>/dev/null)" && [ -n "${tag}" ]; then
+	export RELEASE_VERSION="${tag#v}"
 else
 	LATEST="$(git describe --tags --match 'v[0-9]*.[0-9]*.[0-9]*' --abbrev=0 2>/dev/null || true)"
 	if [ -n "${LATEST}" ]; then
 		export RELEASE_VERSION="${LATEST#v}"
 	else
-		export RELEASE_VERSION="0.0.0-dev"
+		pg_ver=""
+		if [ -f "${REPO_ROOT}/project.godot" ]; then
+			pg_ver="$(grep -E '^config/version=' "${REPO_ROOT}/project.godot" | head -1 | sed 's/^config\/version="\(.*\)"/\1/')"
+		fi
+		if [[ "${pg_ver}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+			export RELEASE_VERSION="${pg_ver}"
+		else
+			export RELEASE_VERSION="0.0.0"
+		fi
 	fi
 fi
 
