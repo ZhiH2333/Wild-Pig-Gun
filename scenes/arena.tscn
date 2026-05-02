@@ -185,7 +185,7 @@ custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme = ExtResource("19_black_btn")
 theme_override_fonts/font = ExtResource("20_font_bold")
-text = "设置"
+text = "选项"
 alignment = 1
 
 [node name="SaveMenuButton" type="Button" parent="PauseOverlay/MenuButtonsWrap/LeftMenuColumn/ButtonContainer"]

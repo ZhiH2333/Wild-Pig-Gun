@@ -113,7 +113,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
 theme_override_font_sizes/font_size = 42
-text = "设置"
+text = "选项"
 vertical_alignment = 1
 
 [node name="MainCard" type="PanelContainer" parent="Center/MainColumn" unique_id=1402232158]
