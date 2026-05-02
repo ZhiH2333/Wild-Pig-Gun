@@ -8,6 +8,8 @@
 .export_presets.cfg
 export_build/
 dist/
+artifacts/
+.ci-godot-cache/
 *.tmp
 .DS_Store
 

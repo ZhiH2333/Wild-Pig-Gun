@@ -1,5 +1,7 @@
 extends Control
 
+const CHAR_TUTORIAL_TIP_SCRIPT: Script = preload("res://scripts/ui/char_tutorial_tip.gd")
+
 @onready var character_vbox: VBoxContainer = $ScrollContainer/CharacterVBox
 @onready var risk_check: CheckBox = $RiskCheck
 
@@ -20,6 +22,7 @@ func _ready() -> void:
 		if unlocked:
 			b.pressed.connect(_on_character_chosen.bind(str(d.get("id", "default"))))
 		character_vbox.add_child(b)
+	CHAR_TUTORIAL_TIP_SCRIPT.call("try_add_to_scene_root", self)
 
 
 func _on_back_button_pressed() -> void:
@@ -28,6 +31,7 @@ func _on_back_button_pressed() -> void:
 
 
 func _on_character_chosen(character_id: String) -> void:
+	CHAR_TUTORIAL_TIP_SCRIPT.call("remove_from", self)
 	var risk: float = 1.25 if risk_check.button_pressed else 1.0
 	RunState.begin_new_run(character_id, risk)
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")

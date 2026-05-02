@@ -169,7 +169,7 @@ func _build_ui() -> void:
 	_add_spin(form, "羁绊伤害倍率", "stat_synergy_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
 	_add_spin(form, "生命回复/秒", "stat_hp_regen_per_sec", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.1, false)
 	_add_spin(form, "幸运", "stat_luck", 0, DEBUG_SPIN_MAX_INT, 1, true)
-	_add_spin(form, "材料转伤系数", "material_to_damage_kv", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.0001, false)
+	_add_spin(form, "野猪币转伤系数", "material_to_damage_kv", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.0001, false)
 	_add_spin(form, "收获加成", "stat_harvest", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
 	_add_spin(form, "商店价格倍率", "shop_price_mult", 0.1, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
 	_add_spin(form, "火焰伤害倍率", "stat_fire_damage_mult", 0.05, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
@@ -182,9 +182,9 @@ func _build_ui() -> void:
 	_add_spin(form, "毒素时长 %", "stat_poison_duration_pct", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.05, false)
 	_add_spin(form, "感电易伤加成", "stat_shock_vuln_apply_flat", 0.0, DEBUG_SPIN_MAX_FLOAT, 0.01, false)
 	_add_section_label(form, "局内状态 (RunState)")
-	_add_spin_rs(form, "当前材料", "material_current", 0, 999999, 1, true)
-	_add_spin_rs(form, "储蓄材料", "material_savings", 0, 999999, 1, true)
-	_add_spin_rs(form, "元进度金币", "gold", 0, 9999999, 1, true)
+	_add_spin_rs(form, "当前野猪币", "material_current", 0, 999999, 1, true)
+	_add_spin_rs(form, "储蓄野猪币", "material_savings", 0, 999999, 1, true)
+	_add_spin_rs(form, "野猪币（野猪钱包）", "gold", 0, 9999999, 1, true)
 	_add_spin_rs(form, "风险倍率", "run_risk_mult", 1.0, 1.5, 0.01, false)
 	var sep3 := HSeparator.new()
 	outer.add_child(sep3)
@@ -430,7 +430,7 @@ func _refresh_stats_text() -> void:
 		var sav: int = int(rs.get("material_savings")) if "material_savings" in rs else 0
 		var lv: int = int(rs.get("player_level")) if "player_level" in rs else 1
 		var xp: int = int(rs.get("player_xp")) if "player_xp" in rs else 0
-		lines.append("[b]Run[/b]  波次 %d  等级 %d  XP %d  材料 %d 储蓄 %d" % [wv, lv, xp, mat, sav])
+		lines.append("[b]Run[/b]  波次 %d  等级 %d  XP %d  野猪币 %d 储蓄 %d" % [wv, lv, xp, mat, sav])
 	if wm != null:
 		var active: bool = bool(wm.get("is_wave_active")) if "is_wave_active" in wm else false
 		var cw: int = int(wm.get("current_wave")) if "current_wave" in wm else 0

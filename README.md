@@ -57,7 +57,8 @@ python3 -m http.server 8000
 
 ### 发行与统计
 
-- 1.0.0 发布说明：见 `release-notes/v1.0.0.md`
+- **自动发版（推荐）**：合并 `main` 后打 **语义化 tag**（如 `v1.0.2`），推送 tag 即触发 GitHub Actions，上传 **Release** 附件并可同步 **Netlify** 试玩。详见 **[docs/RELEASE.md](docs/RELEASE.md)**。
+- 历史说明：1.0.0 发布笔记见 `release-notes/v1.0.0.md`
 - Stars 曲线图：  
   [![Star History Chart](https://api.star-history.com/svg?repos=ZhiH2333/Wild-Pig-Gun&type=Date)](https://www.star-history.com/#ZhiH2333/Wild-Pig-Gun&Date)
 
@@ -120,7 +121,8 @@ Game data is loaded from `res://data/*.json`; after editing JSON, re-export or s
 
 ### Release & stats
 
-- 1.0.0 release notes: `release-notes/v1.0.0.md`
+- **Automated releases**: tag `main` with **semver** (e.g. `v1.0.2`), push the tag to trigger GitHub Actions Release artifacts and optional Netlify deploy. See **[docs/RELEASE.md](docs/RELEASE.md)**.
+- 1.0.0 notes: `release-notes/v1.0.0.md`
 - Star history chart:  
   [![Star History Chart](https://api.star-history.com/svg?repos=ZhiH2333/Wild-Pig-Gun&type=Date)](https://www.star-history.com/#ZhiH2333/Wild-Pig-Gun&Date)
 

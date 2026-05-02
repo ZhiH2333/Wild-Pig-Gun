@@ -9,6 +9,7 @@ const REFRESH_SHOP_COST: int = 3
 const REFRESH_UPGRADE_COST: int = 8
 const ITEM_CARD_SCENE: PackedScene = preload("res://scenes/ui/item_card.tscn")
 const TOUCH_SCROLL_SCRIPT: Script = preload("res://scripts/ui/touch_scroll_container.gd")
+const TUTORIAL_POPUP_SCENE: PackedScene = preload("res://scenes/ui/tutorial_popup.tscn")
 
 @onready var title_label: Label = $CenterContainer/Panel/MarginContainer/VBox/TitleLabel
 @onready var upgrade_row: HBoxContainer = $CenterContainer/Panel/MarginContainer/VBox/UpgradeRow
@@ -175,6 +176,19 @@ func show_for_finished_wave(finished_wave_index: int) -> void:
 	refresh_upgrade_btn.disabled = false
 	RunState.enter_interstitial_pause()
 	visible = true
+	if (
+		TutorialSession.active
+		and TutorialSession.current_step == TutorialSession.TutorialStep.SHOP_INTRO
+		and finished_wave_index == 1
+	):
+		TutorialSession.set_step(TutorialSession.TutorialStep.SHOP_INTRO)
+		continue_btn.disabled = true
+		var shop_popup: CanvasLayer = TUTORIAL_POPUP_SCENE.instantiate() as CanvasLayer
+		add_child(shop_popup)
+		if shop_popup.has_method("configure_shop_intro"):
+			shop_popup.configure_shop_intro()
+		if shop_popup.has_signal("shop_intro_acknowledged"):
+			shop_popup.shop_intro_acknowledged.connect(_on_tutorial_shop_intro_ack)
 
 
 func _effective_price(def: Dictionary) -> int:
@@ -300,7 +314,13 @@ func _on_upgrade_button_pressed(def: Dictionary) -> void:
 	var utitle: String = str(def.get("title", id))
 	RunState.append_run_choice("wave_upgrade", _finished_wave_for_log, id, utitle)
 	_upgrade_picked = true
-	continue_btn.disabled = false
+	var block_continue_for_tutorial_shop: bool = (
+		TutorialSession.active
+		and not SaveManager.get_tutorial_completed()
+		and _finished_wave_for_log == 1
+		and not TutorialSession.shop_intro_acknowledged
+	)
+	continue_btn.disabled = block_continue_for_tutorial_shop
 	continue_btn.custom_minimum_size = Vector2(380, 58)
 	continue_btn.add_theme_font_size_override("font_size", 24)
 	continue_btn.text = "继续 — 开始下一波"
@@ -314,9 +334,37 @@ func _on_upgrade_button_pressed(def: Dictionary) -> void:
 func _on_continue_pressed() -> void:
 	if not _upgrade_picked:
 		return
+	if (
+		TutorialSession.active
+		and not SaveManager.get_tutorial_completed()
+		and RunState.wave_index == 1
+		and TutorialSession.shop_intro_acknowledged
+		and _finished_wave_for_log == 1
+	):
+		get_tree().paused = true
+		var end_popup: CanvasLayer = TUTORIAL_POPUP_SCENE.instantiate() as CanvasLayer
+		add_child(end_popup)
+		if end_popup.has_method("configure_completion"):
+			end_popup.configure_completion(self)
+		TutorialSession.advance_to_completion()
+		return
+	_finish_continue_pressed()
+
+
+func finish_continue_after_tutorial() -> void:
+	_finish_continue_pressed()
+
+
+func _finish_continue_pressed() -> void:
 	visible = false
 	RunState.leave_interstitial_pause()
 	continue_pressed.emit()
+
+
+func _on_tutorial_shop_intro_ack() -> void:
+	TutorialSession.mark_shop_intro_acknowledged()
+	if _upgrade_picked:
+		continue_btn.disabled = false
 
 
 ## 刷新左侧状态面板内容
@@ -364,7 +412,7 @@ func _add_stats_section() -> void:
 		_add_stat_row("（无玩家数据）")
 		return
 	_add_stat_row("❤ 生命：%d / %d" % [_player.current_hp, _player.max_hp])
-	_add_stat_row("💰 材料：%d" % RunState.material_current)
+	_add_stat_row("💰 野猪币：%d" % RunState.material_current)
 	_add_stat_row("⭐ 等级：Lv.%d" % RunState.player_level)
 	_add_stat_row("⚔ 伤害乘数：×%.2f" % _player.stat_damage_mult)
 	_add_stat_row("🔫 攻速乘数：×%.2f" % _player.stat_fire_rate_mult)
@@ -459,7 +507,7 @@ func _on_sell_weapon_pressed(weapon_node: Node, wname: String, sell_price: int) 
 	if not is_instance_valid(weapon_node):
 		return
 	_pending_sell_node = weapon_node
-	_sell_confirm.dialog_text = "变卖「%s」？\n\n返还 %d 材料（购买价的 50%%）\n\n⚠ 变卖后无法撤销" % [wname, sell_price]
+	_sell_confirm.dialog_text = "变卖「%s」？\n\n返还 %d 野猪币（购买价的 50%%）\n\n⚠ 变卖后无法撤销" % [wname, sell_price]
 	_sell_confirm.popup_centered()
 
 

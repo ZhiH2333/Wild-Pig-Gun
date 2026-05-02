@@ -17,7 +17,7 @@ func _ready() -> void:
 
 func _build_header_line() -> String:
 	var elapsed: float = RunState.get_run_elapsed_seconds()
-	return "完成波次：%d  ·  当前材料：%d  ·  用时：%.0f 秒" % [
+	return "完成波次：%d  ·  当前野猪币：%d  ·  用时：%.0f 秒" % [
 		RunState.wave_index,
 		RunState.material_current,
 		elapsed,

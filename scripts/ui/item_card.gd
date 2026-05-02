@@ -46,7 +46,7 @@ func setup_card(def: Dictionary, mode: String, price: int = -1, can_afford: bool
 	_apply_icon(str(def.get("icon", "")))
 	if mode == "shop":
 		_price.visible = true
-		_price.text = "%d 材料" % maxi(0, price)
+		_price.text = "%d 野猪币" % maxi(0, price)
 		disabled = false
 		modulate = Color(0.65, 0.65, 0.72, 1) if not can_afford else Color.WHITE
 	else:

@@ -3,9 +3,48 @@
 [ext_resource type="Script" uid="uid://o0fto51q77ev" path="res://scripts/ui/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
-[ext_resource type="FontFile" uid="uid://cfxigihcadfuq" path="res://assets/fonts/ZhanKuKuaiLeTi2016XiuDingBan-1.ttf" id="4_zhan_ku_kuai_le"]
+[ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="4_font"]
+[ext_resource type="Theme" path="res://themes/black_button_theme.tres" id="5_menu_btn_theme"]
 
-[node name="MainMenu" type="Control" unique_id=1151415159]
+[sub_resource type="StyleBoxFlat" id="StyleBox_normal"]
+bg_color = Color(0, 0, 0, 0.65)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_pressed"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_hover"]
+bg_color = Color(1, 1, 1, 0.75)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_disabled"]
+bg_color = Color(0, 0, 0, 0.38)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.6)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="MainMenu" type="Control" unique_id=590717937]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,7 +54,7 @@ grow_vertical = 2
 theme = ExtResource("2_ui")
 script = ExtResource("1_main_menu")
 
-[node name="Background" type="TextureRect" parent="." unique_id=322324325]
+[node name="Background" type="TextureRect" parent="." unique_id=2022484865]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,7 +66,7 @@ texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="DimOverlay" type="ColorRect" parent="." unique_id=1794882965]
+[node name="Overlay" type="ColorRect" parent="." unique_id=1147162231]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,147 +74,93 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.06, 0.05, 0.08, 0.52)
+color = Color(0, 0, 0, 0.45)
 
-[node name="TitleBlock" type="VBoxContainer" parent="." unique_id=778202529]
+[node name="MenuButtonsWrap" type="Control" parent="." unique_id=47442798]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -340.0
-offset_top = -88.0
-offset_right = 340.0
-offset_bottom = 88.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TitleZh" type="Label" parent="TitleBlock" unique_id=1055004951]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
-theme_override_font_sizes/font_size = 62
-text = "野猪乱打手枪"
-horizontal_alignment = 1
-
-[node name="TitleEn" type="Label" parent="TitleBlock" unique_id=1426475162]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.65, 0.62, 0.58, 1)
-theme_override_font_sizes/font_size = 28
-text = "WildPigGun"
-horizontal_alignment = 1
-
-[node name="LeftButtons" type="VBoxContainer" parent="." unique_id=800017249]
+[node name="LeftMenuColumn" type="VBoxContainer" parent="MenuButtonsWrap" unique_id=47442799]
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
+anchors_preset = 13
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
 anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = -248.0
-offset_right = 268.0
-offset_bottom = -28.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_constants/separation = 14
+offset_left = 40.0
+offset_top = 0.0
+offset_right = 323.0
+offset_bottom = 0.0
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 0
 
-[node name="ContinueButton" type="Button" parent="LeftButtons" unique_id=1364847846]
-visible = false
-custom_minimum_size = Vector2(240, 52)
+[node name="ButtonContainer" type="VBoxContainer" parent="MenuButtonsWrap/LeftMenuColumn" unique_id=570520200]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
-text = "继续游戏"
-
-[node name="StartButton" type="Button" parent="LeftButtons" unique_id=1607436261]
-custom_minimum_size = Vector2(240, 52)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
-text = "开始"
-
-[node name="ProgressButton" type="Button" parent="LeftButtons" unique_id=1089814915]
-custom_minimum_size = Vector2(240, 52)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
-text = "进度"
-
-[node name="CharacterButton" type="Button" parent="LeftButtons" unique_id=1945310843]
-custom_minimum_size = Vector2(240, 52)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
-text = "角色"
-
-[node name="RightButtons" type="VBoxContainer" parent="." unique_id=1618633622]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -268.0
-offset_top = -192.0
-offset_right = -28.0
-offset_bottom = -28.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_constants/separation = 14
-
-[node name="SettingsButton" type="Button" parent="RightButtons" unique_id=1022545876]
-custom_minimum_size = Vector2(240, 52)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.68, 0.88, 0.96, 1)
-text = "设置"
-
-[node name="CreditsButton" type="Button" parent="RightButtons" unique_id=1307126427]
-custom_minimum_size = Vector2(240, 52)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.68, 0.88, 0.96, 1)
-text = "关于"
-
-[node name="QuitButton" type="Button" parent="RightButtons" unique_id=1682175575]
-custom_minimum_size = Vector2(240, 52)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.68, 0.88, 0.96, 1)
-text = "退出"
-
-[node name="CharPanel" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -220.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = 210.0
-grow_horizontal = 0
 theme_override_constants/separation = 8
+
+[node name="ContinueButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=204891531]
+custom_minimum_size = Vector2(280, 70)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme = ExtResource("5_menu_btn_theme")
+text = "继续游戏-第0波"
 alignment = 1
 
-[node name="CharNameLabel" type="Label" parent="CharPanel"]
-custom_minimum_size = Vector2(200, 46)
+[node name="StartButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=472004151]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
-theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
-theme_override_font_sizes/font_size = 22
-text = "当前角色：标准野猪"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_fonts/font = ExtResource("4_font")
+theme = ExtResource("5_menu_btn_theme")
+text = "开始"
+alignment = 1
 
-[node name="CharSprite" type="TextureRect" parent="CharPanel"]
-custom_minimum_size = Vector2(120, 120)
+[node name="CustomizeButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1558636735]
+custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
-size_flags_horizontal = 4
-expand_mode = 1
-stretch_mode = 5
+theme_override_fonts/font = ExtResource("4_font")
+theme = ExtResource("5_menu_btn_theme")
+text = "个性化"
+alignment = 1
 
-[node name="InfoDialog" type="AcceptDialog" parent="." unique_id=1339375067]
-theme_override_fonts/font = ExtResource("4_zhan_ku_kuai_le")
+[node name="SettingsButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1954588758]
+custom_minimum_size = Vector2(280, 70)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme = ExtResource("5_menu_btn_theme")
+text = "选项"
+alignment = 1
+
+[node name="AboutButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1792550266]
+custom_minimum_size = Vector2(280, 70)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme = ExtResource("5_menu_btn_theme")
+text = "关于我们"
+alignment = 1
+
+[node name="QuitButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1248563847]
+custom_minimum_size = Vector2(280, 70)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme = ExtResource("5_menu_btn_theme")
+text = "退出"
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="." unique_id=122269349]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 40.0
+offset_top = 38.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 48
+text = "Wild Pig Gun"
+
+[node name="InfoDialog" type="AcceptDialog" parent="." unique_id=1521258567]
 ok_button_text = "确定"
 dialog_text = "占位"

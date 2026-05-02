@@ -246,7 +246,7 @@ func _spawn_splits_if_needed() -> void:
 
 ## 生成掉落物，添加到 Arena 的 MaterialContainer（需求 10.1）
 func _spawn_drops() -> void:
-	# 必掉金币
+	# 必掉野猪币（材料）
 	_spawn_material("gold", gold_reward)
 	# 概率掉落回血果子
 	if randf() < drop_heal_chance:

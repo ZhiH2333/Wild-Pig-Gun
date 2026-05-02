@@ -1,15 +1,22 @@
-[gd_scene load_steps=5 format=3 uid="uid://settings_wpg"]
+[gd_scene format=3 uid="uid://bucpxah8mo1f1"]
 
-[ext_resource type="Script" path="res://scripts/ui/settings_screen.gd" id="1_settings"]
-[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="Script" uid="uid://y1jbvknju7f8" path="res://scripts/ui/settings_screen.gd" id="1_settings"]
+[ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
-[ext_resource type="ShaderMaterial" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
-[ext_resource type="Script" path="res://scripts/ui/touch_scroll_container.gd" id="5_touch_scroll"]
+[ext_resource type="Material" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
+[ext_resource type="Texture2D" uid="uid://cd3upfbw3oy1" path="res://assets/ui/icon_back.svg" id="6_back_icon"]
+[ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="7_black_btn"]
+[ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="8_menu_font"]
+[ext_resource type="Theme" uid="uid://d7h2k9tabtheme1" path="res://themes/settings_tab_theme.tres" id="9_tab_theme"]
+[ext_resource type="Theme" uid="uid://c8k3settingspanel1" path="res://themes/settings_panel_theme.tres" id="10_settings_panel"]
 
 [sub_resource type="SystemFont" id="SystemFont_dialog"]
 font_names = PackedStringArray("PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", "Source Han Sans SC", "Arial")
 
-[node name="Settings" type="Control"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_maincard_transparent"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="Settings" type="Control" unique_id=1304227534]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,7 +26,8 @@ grow_vertical = 2
 theme = ExtResource("2_ui")
 script = ExtResource("1_settings")
 
-[node name="BlurredBackground" type="TextureRect" parent="."]
+[node name="BlurredBackground" type="TextureRect" parent="." unique_id=296552148]
+material = ExtResource("4_blur")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,9 +38,8 @@ mouse_filter = 2
 texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
-material = ExtResource("4_blur")
 
-[node name="DimOverlay" type="ColorRect" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="." unique_id=690133574]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -42,7 +49,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.06, 0.05, 0.08, 0.58)
 
-[node name="Vignette" type="ColorRect" parent="."]
+[node name="Vignette" type="ColorRect" parent="." unique_id=905735586]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -52,381 +59,569 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.18)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="MarginContainer" parent="." unique_id=590799834]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.5
 anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 14.0
+offset_right = -16.0
+offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MainColumn" type="VBoxContainer" parent="Center"]
-custom_minimum_size = Vector2(700, 0)
+[node name="MainColumn" type="VBoxContainer" parent="Center" unique_id=1742748953]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 0
 theme_override_constants/separation = 20
 
-[node name="MainCard" type="PanelContainer" parent="Center/MainColumn"]
+[node name="HeaderMargins" type="MarginContainer" parent="Center/MainColumn" unique_id=1888123000]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_horizontal = 0
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 0
 
-[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard"]
+[node name="HeaderRow" type="HBoxContainer" parent="Center/MainColumn/HeaderMargins" unique_id=1888123456]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BackButton" type="Button" parent="Center/MainColumn/HeaderMargins/HeaderRow" unique_id=266020726]
+custom_minimum_size = Vector2(168, 52)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_constants/icon_max_width = 30
+theme_override_font_sizes/font_size = 24
+text = "返回"
+icon = ExtResource("6_back_icon")
+alignment = 0
+
+[node name="Title" type="Label" parent="Center/MainColumn/HeaderMargins/HeaderRow" unique_id=52411686]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 42
+text = "设置"
+vertical_alignment = 1
+
+[node name="MainCard" type="PanelContainer" parent="Center/MainColumn" unique_id=1402232158]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_maincard_transparent")
+
+[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard" unique_id=1034729908]
 layout_mode = 2
 theme_override_constants/margin_left = 22
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 22
 theme_override_constants/margin_bottom = 22
 
-[node name="CardColumn" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins"]
+[node name="CardColumn" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins" unique_id=498724568]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="Title" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn"]
-theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
-theme_override_font_sizes/font_size = 42
-text = "设置"
-horizontal_alignment = 1
-
-[node name="TabButtonRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn"]
+[node name="TabButtonRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=1786734651]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 0
 
-[node name="TabBtn0" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+[node name="TabBtn0" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=673557788]
+custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 58)
+theme = ExtResource("9_tab_theme")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "音频"
+alignment = 1
 
-[node name="TabBtn1" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+[node name="TabSep01" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1786734652]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
+[node name="TabBtn1" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=158424710]
+custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 58)
+theme = ExtResource("9_tab_theme")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "显示"
+alignment = 1
 
-[node name="TabBtn2" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+[node name="TabSep12" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1786734653]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
+[node name="TabBtn2" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1031118729]
+custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 58)
+theme = ExtResource("9_tab_theme")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "控制"
+alignment = 1
 
-[node name="TabBtn3" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+[node name="TabSep23" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1786734654]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
+[node name="TabBtn3" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=2139016715]
+custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 58)
+theme = ExtResource("9_tab_theme")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "游戏"
+alignment = 1
 
-[node name="TabBtn4" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+[node name="TabSep34" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1786734655]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
+[node name="TabBtn4" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=469321538]
+custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 58)
+theme = ExtResource("9_tab_theme")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "数据"
+alignment = 1
 
-[node name="SettingsTabContainer" type="TabContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn"]
+[node name="SettingsTabContainer" type="TabContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=1580203748]
 custom_minimum_size = Vector2(0, 440)
+layout_mode = 2
 size_flags_vertical = 3
+theme = ExtResource("10_settings_panel")
 theme_override_constants/side_margin = 0
-tabs_visible = false
 current_tab = 0
+tabs_visible = false
 
-[node name="AudioScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" script=ExtResource("5_touch_scroll")]
+[node name="AudioScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=858353558]
 layout_mode = 2
 horizontal_scroll_mode = 0
+metadata/_tab_index = 0
 
-[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll"]
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll" unique_id=232895264]
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 22
 
-[node name="AudioHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents"]
+[node name="AudioHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=1201063647]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
 theme_override_font_sizes/font_size = 20
 text = "音量与混音总线"
 
-[node name="MasterRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents"]
+[node name="MasterRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=628981312]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="MasterLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow"]
+[node name="MasterLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow" unique_id=1185952341]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "总音量"
 
-[node name="MasterSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow"]
+[node name="MasterSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow" unique_id=1934436864]
 custom_minimum_size = Vector2(360, 44)
+layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="MusicRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents"]
+[node name="MusicRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=1826155048]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="MusicLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow"]
+[node name="MusicLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow" unique_id=1216415214]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "音乐"
 
-[node name="MusicSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow"]
+[node name="MusicSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow" unique_id=1263247106]
 custom_minimum_size = Vector2(360, 44)
+layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="SfxRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents"]
+[node name="SfxRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=1348450322]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="SfxLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow"]
+[node name="SfxLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow" unique_id=926099055]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "音效（含开火）"
 
-[node name="SfxSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow"]
+[node name="SfxSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow" unique_id=1595060817]
 custom_minimum_size = Vector2(360, 44)
+layout_mode = 2
 size_flags_horizontal = 3
 max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="DisplayScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" script=ExtResource("5_touch_scroll")]
+[node name="MusicSourceRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=1007238674]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="MusicSourceLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicSourceRow" unique_id=1553485564]
+custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "音乐来源"
+
+[node name="MusicSourceOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicSourceRow" unique_id=302307099]
+custom_minimum_size = Vector2(360, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DisplayScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=1236234350]
+visible = false
 layout_mode = 2
 horizontal_scroll_mode = 0
+metadata/_tab_index = 1
 
-[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll"]
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll" unique_id=231312141]
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 22
 
-[node name="DisplayHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="DisplayHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1978842202]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
 theme_override_font_sizes/font_size = 20
 text = "分辨率与窗口在「窗口化」下生效；网页版不支持下列项。"
 
-[node name="ResolutionRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="ResolutionRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1652985651]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="ResolutionLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow"]
+[node name="ResolutionLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow" unique_id=478457797]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "分辨率"
 
-[node name="ResolutionOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow"]
+[node name="ResolutionOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow" unique_id=524036059]
 custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="WindowModeRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="WindowModeRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=644222560]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="WindowModeLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow"]
+[node name="WindowModeLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow" unique_id=1623053442]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "窗口模式"
 
-[node name="WindowModeOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow"]
+[node name="WindowModeOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow" unique_id=294566140]
 custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="FpsLimitRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="FpsLimitRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1726704198]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="FpsLimitLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/FpsLimitRow"]
+[node name="FpsLimitLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/FpsLimitRow" unique_id=972023894]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "帧率上限"
 
-[node name="FpsLimitOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/FpsLimitRow"]
+[node name="FpsLimitOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/FpsLimitRow" unique_id=1985388130]
 custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="QualityRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="QualityRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=810689380]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="QualityLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/QualityRow"]
+[node name="QualityLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/QualityRow" unique_id=1855018302]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "画质预设"
 
-[node name="QualityOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/QualityRow"]
+[node name="QualityOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/QualityRow" unique_id=1099015397]
 custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="UiScaleRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="UiScaleRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1834872947]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="UiScaleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow"]
+[node name="UiScaleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow" unique_id=1333827509]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "界面缩放"
 
-[node name="UiScaleSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow"]
+[node name="UiScaleSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow" unique_id=394585375]
 custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
 size_flags_horizontal = 3
 min_value = 0.75
 max_value = 1.45
 step = 0.05
 value = 1.0
 
-[node name="UiScaleValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow"]
+[node name="UiScaleValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/UiScaleRow" unique_id=1198329248]
 custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="ViewScaleRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="ViewScaleRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=2115043317]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="ViewScaleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow"]
+[node name="ViewScaleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow" unique_id=1730813357]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "视野范围"
 
-[node name="ViewScaleSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow"]
+[node name="ViewScaleSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow" unique_id=913247305]
 custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
 size_flags_horizontal = 3
 min_value = 0.75
 max_value = 1.45
 step = 0.05
 value = 1.0
 
-[node name="ViewScaleValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow"]
+[node name="ViewScaleValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ViewScaleRow" unique_id=812828436]
 custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="VsyncCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="VsyncCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1779543075]
 custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "垂直同步"
 
-[node name="VsyncFpsRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents"]
+[node name="VsyncFpsRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1776243225]
 visible = false
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="VsyncFpsLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow"]
+[node name="VsyncFpsLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=677173949]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "垂直同步帧率"
 
-[node name="VsyncFpsSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow"]
+[node name="VsyncFpsSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=545223070]
 custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
 size_flags_horizontal = 3
 min_value = 30.0
 max_value = 240.0
 step = 10.0
 value = 60.0
 
-[node name="VsyncFpsValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow"]
+[node name="VsyncFpsValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=185365800]
 custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "60 FPS"
 horizontal_alignment = 2
 
-[node name="ControlScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" script=ExtResource("5_touch_scroll")]
+[node name="ControlScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=1098876766]
+visible = false
 layout_mode = 2
 horizontal_scroll_mode = 0
+metadata/_tab_index = 2
 
-[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll"]
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll" unique_id=1980356899]
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 22
 
-[node name="ControlHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+[node name="ControlHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=920412491]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
 theme_override_font_sizes/font_size = 20
 text = "触控与屏幕操作"
 
-[node name="MobileControlsCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+[node name="MobileControlsCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=197801778]
 custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "启用虚拟摇杆与虚拟暂停按钮"
 
-[node name="JoystickSizeRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+[node name="JoystickSizeRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=1108998969]
+layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="JoystickSizeLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow"]
+[node name="JoystickSizeLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow" unique_id=1554625976]
 custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "摇杆大小"
 
-[node name="JoystickSizeSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow"]
+[node name="JoystickSizeSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow" unique_id=923465314]
 custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
 size_flags_horizontal = 3
 min_value = 0.5
 max_value = 2.0
 step = 0.1
 value = 1.0
 
-[node name="JoystickSizeValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow"]
+[node name="JoystickSizeValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow" unique_id=758628050]
 custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="CustomLayoutBtn" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents"]
+[node name="CustomLayoutBtn" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=766938122]
 visible = false
 custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 22
 text = "自定义控件位置..."
+alignment = 1
 
-[node name="GameScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" script=ExtResource("5_touch_scroll")]
+[node name="GameScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=2118254326]
+visible = false
 layout_mode = 2
 horizontal_scroll_mode = 0
+metadata/_tab_index = 3
 
-[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll"]
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll" unique_id=1597071785]
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 22
 
-[node name="GameHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents"]
+[node name="GameHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=2070940330]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
 theme_override_font_sizes/font_size = 20
 text = "游戏内辅助显示"
 
-[node name="ShowFpsCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents"]
+[node name="ShowFpsCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=191480620]
 custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "显示帧率（右下角）"
 
-[node name="DataScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" script=ExtResource("5_touch_scroll")]
+[node name="DataScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=762224303]
+visible = false
 layout_mode = 2
 horizontal_scroll_mode = 0
+metadata/_tab_index = 4
 
-[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll"]
+[node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll" unique_id=1288990215]
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 22
 
-[node name="DataDangerHeading" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents"]
+[node name="DataDangerHeading" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=150322415]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.42, 0.42, 1)
 theme_override_font_sizes/font_size = 26
 text = "数据管理"
 
-[node name="DataSummaryLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents"]
+[node name="DataSummaryLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=970136880]
 custom_minimum_size = Vector2(0, 144)
+layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "当前数据：加载中..."
 autowrap_mode = 3
 
-[node name="ClearHintLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents"]
+[node name="ClearHintLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=1426524944]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.76, 0.76, 1)
 theme_override_font_sizes/font_size = 18
 text = "先点击确认，再长按 3 秒清除全部数据"
 
-[node name="ClearAllDataButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents"]
-layout_mode = 2
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 64)
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-text = "清除所有数据"
+[node name="ClearAllDataButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=457925668]
 self_modulate = Color(1, 0.34, 0.34, 1)
-
-[node name="BackButton" type="Button" parent="Center/MainColumn"]
+clip_contents = true
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 58)
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 24
-text = "返回"
+text = ""
+alignment = 1
 
-[node name="DeleteConfirmOverlay" type="Control" parent="."]
+[node name="ClearHoldProgress" type="ProgressBar" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton" unique_id=457925669]
+show_behind_parent = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+show_percentage = false
+max_value = 100.0
+
+[node name="ClearHoldLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton" unique_id=457925670]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 24
+text = "清除所有数据"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DeleteConfirmOverlay" type="Control" parent="." unique_id=332576334]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -434,20 +629,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="RedBlurBackdrop" type="ColorRect" parent="DeleteConfirmOverlay"]
+[node name="RedBlurBackdrop" type="ColorRect" parent="DeleteConfirmOverlay" unique_id=450302276]
+material = ExtResource("4_blur")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-material = ExtResource("4_blur")
 mouse_filter = 2
 color = Color(0.42, 0.08, 0.08, 0.7)
 
-[node name="BackdropDim" type="ColorRect" parent="DeleteConfirmOverlay"]
+[node name="BackdropDim" type="ColorRect" parent="DeleteConfirmOverlay" unique_id=1172403252]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -457,7 +651,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.12, 0.02, 0.03, 0.72)
 
-[node name="CenterContainer" type="CenterContainer" parent="DeleteConfirmOverlay"]
+[node name="CenterContainer" type="CenterContainer" parent="DeleteConfirmOverlay" unique_id=1249524681]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -466,30 +660,30 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="DialogCard" type="PanelContainer" parent="DeleteConfirmOverlay/CenterContainer"]
+[node name="DialogCard" type="PanelContainer" parent="DeleteConfirmOverlay/CenterContainer" unique_id=1653710338]
 custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard"]
+[node name="Margin" type="MarginContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard" unique_id=1960486664]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 18
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="Content" type="VBoxContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin"]
+[node name="Content" type="VBoxContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin" unique_id=777867749]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="TitleLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
+[node name="TitleLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=62154061]
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_colors/font_color = Color(1, 0.84, 0.84, 1)
+theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 34
 text = "确认清除"
 horizontal_alignment = 1
 
-[node name="MessageLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
+[node name="MessageLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=1655696733]
 layout_mode = 2
 theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 22
@@ -497,37 +691,41 @@ text = "是否清除所有数据？此操作无法恢复。"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="HoldHintLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
+[node name="HoldHintLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=42944609]
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_colors/font_color = Color(1, 0.72, 0.72, 1)
+theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 18
 text = "确认后回到设置页，长按红色按钮 3 秒才会执行清除。"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="ButtonRow" type="HBoxContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
+[node name="ButtonRow" type="HBoxContainer" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=147139537]
 layout_mode = 2
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="CancelButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow"]
+[node name="CancelButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow" unique_id=522546554]
 custom_minimum_size = Vector2(200, 56)
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 22
 text = "取消"
+alignment = 1
 
-[node name="ConfirmButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow"]
+[node name="ConfirmButton" type="Button" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow" unique_id=911116913]
+self_modulate = Color(0.78, 0.2, 0.2, 1)
 custom_minimum_size = Vector2(200, 56)
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
-theme_override_font_sizes/font_size = 22
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_colors/font_color = Color(1, 0.88, 0.88, 1)
-self_modulate = Color(0.78, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 22
 text = "确认删除"
+alignment = 1
 
-[node name="ClearResultOverlay" type="Control" parent="."]
+[node name="ClearResultOverlay" type="Control" parent="." unique_id=1017547560]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -535,9 +733,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="DimBackdrop" type="ColorRect" parent="ClearResultOverlay"]
+[node name="DimBackdrop" type="ColorRect" parent="ClearResultOverlay" unique_id=290897906]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -547,7 +744,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.62)
 
-[node name="CenterContainer" type="CenterContainer" parent="ClearResultOverlay"]
+[node name="CenterContainer" type="CenterContainer" parent="ClearResultOverlay" unique_id=758702224]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -556,22 +753,22 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="DialogCard" type="PanelContainer" parent="ClearResultOverlay/CenterContainer"]
+[node name="DialogCard" type="PanelContainer" parent="ClearResultOverlay/CenterContainer" unique_id=1276071703]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="ClearResultOverlay/CenterContainer/DialogCard"]
+[node name="Margin" type="MarginContainer" parent="ClearResultOverlay/CenterContainer/DialogCard" unique_id=358897859]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="Content" type="VBoxContainer" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin"]
+[node name="Content" type="VBoxContainer" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin" unique_id=1056107583]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="MessageLabel" type="Label" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin/Content"]
+[node name="MessageLabel" type="Label" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=321934100]
 layout_mode = 2
 theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 22
@@ -579,13 +776,15 @@ text = "清除完成"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="BackToMenuButton" type="Button" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin/Content"]
+[node name="BackToMenuButton" type="Button" parent="ClearResultOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=784683516]
 custom_minimum_size = Vector2(280, 56)
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_dialog")
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 22
 text = "返回主菜单"
+alignment = 1
 
-[node name="ClearHoldTimer" type="Timer" parent="."]
+[node name="ClearHoldTimer" type="Timer" parent="." unique_id=1466582610]
 wait_time = 3.0
 one_shot = true

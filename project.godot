@@ -11,20 +11,22 @@ config_version=5
 [application]
 
 config/name="WildPigGun"
+config/version="1.0.0"
 run/main_scene="uid://dctlwroemrtu0"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/version="1.0.0+4"
-config/version_code=4
 config/icon="res://assets/sprites/icon.png"
+config/version_code=10000
 
 [autoload]
 
 SaveManager="*res://scripts/save/save_manager.gd"
+TutorialSession="*res://scripts/tutorial_session.gd"
 RunState="*res://scripts/upgrades/run_state.gd"
 GameSettings="*res://scripts/settings/game_settings.gd"
 GameFlow="*res://scripts/game_flow.gd"
 GameAudio="*res://scripts/audio/game_audio.gd"
 GameMusic="*res://scripts/audio/game_music.gd"
+ExternalMusicPlayer="*res://scripts/audio/external_music_player.gd"
 MusicNowPlaying="*res://scripts/ui/music_now_playing.gd"
 UiSoundFeedback="*res://scripts/ui/ui_sound_feedback.gd"
 DamagePopupSpawner="*res://scripts/ui/damage_popup_spawner.gd"
@@ -36,10 +38,6 @@ theme/custom="res://themes/game_ui_theme.tres"
 [physics]
 
 3d/physics_engine="Jolt Physics"
-
-[input_devices]
-
-pointing/emulate_mouse_from_touch=true
 
 [rendering]
 

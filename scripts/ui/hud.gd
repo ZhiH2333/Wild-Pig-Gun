@@ -242,7 +242,7 @@ func on_wave_ended() -> void:
 
 func _on_material_changed(current: int, savings: int) -> void:
 	if material_label != null:
-		material_label.text = "材料 %d" % current
+		material_label.text = "野猪币 %d" % current
 	if savings_label != null:
 		if savings > 0:
 			savings_label.text = "储蓄 %d (下波×2)" % savings
@@ -261,7 +261,7 @@ func _on_xp_changed(level: int, xp: int, need: int) -> void:
 func show_harvest_toast(bonus: int) -> void:
 	if bonus <= 0:
 		return
-	show_toast("收获 +%d 材料" % bonus, 2.8)
+	show_toast("收获 +%d 野猪币" % bonus, 2.8)
 
 
 func _on_show_fps_changed(enabled: bool) -> void:

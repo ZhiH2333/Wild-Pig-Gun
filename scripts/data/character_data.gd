@@ -25,12 +25,83 @@ static func list_characters() -> Array:
 	return arr
 
 
+## 确保设置里的出战角色 ID 仍在当前配置 roster 中且已解锁；否则回退到可用角色。
+static func sanitize_selected_character_setting() -> void:
+	var roster: Array = list_characters()
+	if roster.is_empty():
+		GameSettings.set_selected_character_id("default")
+		return
+	var sel_id: String = str(GameSettings.selected_character_id)
+	var current: Dictionary = {}
+	for item in roster:
+		if not item is Dictionary:
+			continue
+		var d: Dictionary = item as Dictionary
+		if str(d.get("id", "")) == sel_id:
+			current = d
+			break
+	if current.is_empty():
+		var first_item: Variant = roster[0]
+		var fallback_id: String = "default"
+		if first_item is Dictionary:
+			fallback_id = str((first_item as Dictionary).get("id", "default"))
+		if fallback_id.is_empty():
+			fallback_id = "default"
+		GameSettings.set_selected_character_id(fallback_id)
+		return
+	if is_character_unlocked(current):
+		return
+	for item in roster:
+		if not item is Dictionary:
+			continue
+		var d: Dictionary = item as Dictionary
+		if is_character_unlocked(d):
+			GameSettings.set_selected_character_id(str(d.get("id", "default")))
+			return
+	var first_item2: Variant = roster[0]
+	var last_resort: String = "default"
+	if first_item2 is Dictionary:
+		last_resort = str((first_item2 as Dictionary).get("id", "default"))
+	if last_resort.is_empty():
+		last_resort = "default"
+	GameSettings.set_selected_character_id(last_resort)
+
+
+## 商店分页：需野猪币购买、尚未购入且尚未凭波次免费解锁的角色条目（来自 characters.json）。
+static func list_shop_character_offers() -> Array:
+	var out: Array = []
+	for item in list_characters():
+		if not item is Dictionary:
+			continue
+		var d: Dictionary = item as Dictionary
+		if not bool(d.get("requires_purchase", false)):
+			continue
+		var cid: String = str(d.get("id", ""))
+		if cid.is_empty():
+			continue
+		if SaveManager.has_purchased_character(cid):
+			continue
+		var req_wave: int = int(d.get("unlock_wave", 0))
+		if req_wave > 0:
+			var meta: Dictionary = SaveManager.load_meta_progress()
+			if int(meta.get("best_wave", 0)) >= req_wave:
+				continue
+		out.append(d)
+	return out
+
+
 static func is_character_unlocked(d: Dictionary) -> bool:
-	var req: int = int(d.get("unlock_wave", 0))
-	if req <= 0:
+	var cid: String = str(d.get("id", ""))
+	if not cid.is_empty() and SaveManager.has_purchased_character(cid):
 		return true
+	var req: int = int(d.get("unlock_wave", 0))
 	var meta: Dictionary = SaveManager.load_meta_progress()
-	return int(meta.get("best_wave", 0)) >= req
+	var best: int = int(meta.get("best_wave", 0))
+	if req > 0:
+		return best >= req
+	if bool(d.get("requires_purchase", false)):
+		return false
+	return true
 
 
 static func find_character(character_id: String) -> Dictionary:

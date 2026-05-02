@@ -1,12 +1,19 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://da05e28laxwvn"]
 
-[ext_resource type="Script" path="res://scripts/ui/char_gallery.gd" id="1_gallery"]
+[ext_resource type="Script" uid="uid://cbg4yb1yqujrq" path="res://scripts/ui/char_gallery.gd" id="1_gallery"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
-[ext_resource type="ShaderMaterial" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
-[ext_resource type="FontFile" uid="uid://cfxigihcadfuq" path="res://assets/fonts/ZhanKuKuaiLeTi2016XiuDingBan-1.ttf" id="5_font"]
+[ext_resource type="Material" path="res://resources/menu_blurred_bg_material.tres" id="4_blur"]
+[ext_resource type="Texture2D" uid="uid://cd3upfbw3oy1" path="res://assets/ui/icon_back.svg" id="5_back_icon"]
+[ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="6_black_btn"]
+[ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="7_menu_font"]
+[ext_resource type="Theme" uid="uid://df7cqnok1rt7o" path="res://themes/settings_tab_theme.tres" id="8_tab_theme"]
+[ext_resource type="Theme" uid="uid://dy36f4rj86vue" path="res://themes/settings_panel_theme.tres" id="9_panel_theme"]
 
-[node name="CharGallery" type="Control"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_maincard_transparent"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="CharGallery" type="Control" unique_id=1820228036]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,7 +23,8 @@ grow_vertical = 2
 theme = ExtResource("2_ui")
 script = ExtResource("1_gallery")
 
-[node name="BlurredBackground" type="TextureRect" parent="."]
+[node name="BlurredBackground" type="TextureRect" parent="." unique_id=511081599]
+material = ExtResource("4_blur")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,9 +35,8 @@ mouse_filter = 2
 texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
-material = ExtResource("4_blur")
 
-[node name="DimOverlay" type="ColorRect" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="." unique_id=1096170670]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -39,80 +46,197 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.06, 0.05, 0.08, 0.58)
 
-[node name="TitleLabel" type="Label" parent="."]
+[node name="Vignette" type="ColorRect" parent="." unique_id=1692692415]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -220.0
-offset_top = 30.0
-offset_right = 220.0
-offset_bottom = 90.0
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 44
-text = "角色图鉴"
-horizontal_alignment = 1
-
-[node name="CenterCard" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -270.0
-offset_top = -170.0
-offset_right = 270.0
-offset_bottom = 150.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.18)
+
+[node name="Center" type="MarginContainer" parent="." unique_id=161186971]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 14.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainColumn" type="VBoxContainer" parent="Center" unique_id=1674010247]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="HeaderMargins" type="MarginContainer" parent="Center/MainColumn" unique_id=677767916]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 0
+
+[node name="HeaderRow" type="HBoxContainer" parent="Center/MainColumn/HeaderMargins" unique_id=851160971]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BackButton" type="Button" parent="Center/MainColumn/HeaderMargins/HeaderRow" unique_id=1704410037]
+custom_minimum_size = Vector2(168, 52)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme = ExtResource("6_black_btn")
+theme_override_constants/icon_max_width = 30
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 24
+text = "返回"
+icon = ExtResource("5_back_icon")
+alignment = 0
+
+[node name="Title" type="Label" parent="Center/MainColumn/HeaderMargins/HeaderRow" unique_id=1674688841]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 42
+text = "个性化"
+vertical_alignment = 1
+
+[node name="MainCard" type="PanelContainer" parent="Center/MainColumn" unique_id=619115329]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_maincard_transparent")
+
+[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard" unique_id=409303251]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 22
+
+[node name="CardColumn" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins" unique_id=970969399]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TabButtonRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=72830744]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TabBtn0" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1390040862]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_tab_theme")
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 26
+text = "商店"
+
+[node name="TabSep01" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=513452552]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
+[node name="TabBtn1" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1754973804]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_tab_theme")
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 26
+text = "角色"
+
+[node name="TabSep12" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=1279194336]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
+[node name="TabBtn2" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow" unique_id=61807873]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_tab_theme")
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 26
+text = "个人"
+
+[node name="GalleryTabContainer" type="TabContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=738039890]
+custom_minimum_size = Vector2(0, 440)
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("9_panel_theme")
+theme_override_constants/side_margin = 0
+current_tab = 0
+tabs_visible = false
+
+[node name="ShopScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer" unique_id=1084490743]
+layout_mode = 2
+horizontal_scroll_mode = 0
+metadata/_tab_index = 0
+
+[node name="ShopVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ShopScroll" unique_id=414615655]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="CharacterScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer" unique_id=827418864]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+metadata/_tab_index = 1
+
+[node name="CharacterContents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll" unique_id=1763083638]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 14
 alignment = 1
 
-[node name="CharSprite" type="TextureRect" parent="CenterCard"]
+[node name="CharSprite" type="TextureRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents" unique_id=650110893]
 custom_minimum_size = Vector2(180, 180)
 layout_mode = 2
 size_flags_horizontal = 4
-stretch_mode = 5
 expand_mode = 1
+stretch_mode = 5
 
-[node name="NameLabel" type="Label" parent="CenterCard"]
+[node name="NameLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents" unique_id=1223631652]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("5_font")
+theme_override_fonts/font = ExtResource("7_menu_font")
 theme_override_font_sizes/font_size = 34
-horizontal_alignment = 1
 text = "角色名称"
+horizontal_alignment = 1
 
-[node name="DescLabel" type="Label" parent="CenterCard"]
+[node name="DescLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents" unique_id=952142790]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
+text = "角色描述"
 horizontal_alignment = 1
 autowrap_mode = 3
-text = "角色描述"
 
-[node name="NavRow" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = 188.0
-offset_right = 200.0
-offset_bottom = 244.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="NavRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents" unique_id=171422810]
+layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="PrevButton" type="Button" parent="NavRow"]
+[node name="PrevButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/NavRow" unique_id=181440301]
 custom_minimum_size = Vector2(64, 52)
 layout_mode = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 22
 text = "‹"
 
-[node name="PageLabel" type="Label" parent="NavRow"]
+[node name="PageLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/NavRow" unique_id=1197482551]
 custom_minimum_size = Vector2(180, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
@@ -120,44 +244,135 @@ text = "1 / 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NextButton" type="Button" parent="NavRow"]
+[node name="NextButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/NavRow" unique_id=257228233]
 custom_minimum_size = Vector2(64, 52)
 layout_mode = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 22
 text = "›"
 
-[node name="SelectButton" type="Button" parent="."]
-custom_minimum_size = Vector2(280, 56)
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -308.0
-offset_top = -84.0
-offset_right = -28.0
-offset_bottom = -28.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("5_font")
+[node name="SelectButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents" unique_id=939715246]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 24
 text = "选择该角色"
 
-[node name="BackButton" type="Button" parent="."]
-custom_minimum_size = Vector2(280, 56)
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = -84.0
-offset_right = 308.0
-offset_bottom = -28.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("5_font")
-text = "返回主菜单"
+[node name="ProfileScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer" unique_id=1316502711]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+metadata/_tab_index = 2
 
-[connection signal="pressed" from="NavRow/PrevButton" to="." method="_on_prev_button_pressed"]
-[connection signal="pressed" from="NavRow/NextButton" to="." method="_on_next_button_pressed"]
-[connection signal="pressed" from="SelectButton" to="." method="_on_select_button_pressed"]
-[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
+[node name="ProfileContents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll" unique_id=411823202]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="PurchaseOverlay" type="Control" parent="." unique_id=487290079]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DimBackdrop" type="ColorRect" parent="PurchaseOverlay" unique_id=727710319]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.62)
+
+[node name="CenterContainer" type="CenterContainer" parent="PurchaseOverlay" unique_id=724454886]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DialogCard" type="PanelContainer" parent="PurchaseOverlay/CenterContainer" unique_id=1347490738]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="PurchaseOverlay/CenterContainer/DialogCard" unique_id=1443729556]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 22
+
+[node name="Content" type="VBoxContainer" parent="PurchaseOverlay/CenterContainer/DialogCard/Margin" unique_id=106276733]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PurchaseTitle" type="Label" parent="PurchaseOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=1108327368]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.92, 0.88, 1)
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "确认购买"
+horizontal_alignment = 1
+
+[node name="PurchaseMessage" type="Label" parent="PurchaseOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=1735638540]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "是否购买该物品？"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HoldHint" type="Label" parent="PurchaseOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=116701842]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.92, 1)
+theme_override_font_sizes/font_size = 17
+text = "长按「是」1 秒完成购买，松开则取消。"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="PurchaseOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=882011252]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="PurchaseNoButton" type="Button" parent="PurchaseOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow" unique_id=1689694126]
+custom_minimum_size = Vector2(200, 56)
+layout_mode = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 22
+text = "否"
+
+[node name="YesHoldButton" type="Button" parent="PurchaseOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow" unique_id=679937641]
+clip_contents = true
+custom_minimum_size = Vector2(220, 56)
+layout_mode = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("7_menu_font")
+theme_override_font_sizes/font_size = 22
+text = "是"
+
+[node name="YesProgress" type="ProgressBar" parent="PurchaseOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/YesHoldButton" unique_id=618644301]
+show_behind_parent = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+show_percentage = false
+
+[node name="PurchaseHoldTimer" type="Timer" parent="." unique_id=1497820257]
+wait_time = 1.0
+one_shot = true
+
+[node name="ShopResultDialog" type="AcceptDialog" parent="." unique_id=477981380]
+title = "提示"
+size = Vector2i(420, 200)

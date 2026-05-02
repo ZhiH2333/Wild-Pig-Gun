@@ -24,9 +24,14 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var tab_btn_2: Button = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabBtn2
 @onready var tab_btn_3: Button = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabBtn3
 @onready var tab_btn_4: Button = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabBtn4
+@onready var tab_sep_01: ColorRect = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabSep01
+@onready var tab_sep_12: ColorRect = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabSep12
+@onready var tab_sep_23: ColorRect = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabSep23
+@onready var tab_sep_34: ColorRect = $Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow/TabSep34
 @onready var master_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow/MasterSlider
 @onready var music_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow/MusicSlider
 @onready var sfx_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow/SfxSlider
+@onready var music_source_option: OptionButton = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicSourceRow/MusicSourceOption
 @onready var resolution_row: HBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow
 @onready var resolution_option: OptionButton = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow/ResolutionOption
 @onready var window_mode_row: HBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow
@@ -52,7 +57,10 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var data_summary_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/DataSummaryLabel
 @onready var clear_hint_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearHintLabel
 @onready var clear_all_data_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton
-@onready var back_button: Button = $Center/MainColumn/BackButton
+@onready var clear_hold_progress: ProgressBar = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton/ClearHoldProgress
+@onready var clear_hold_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton/ClearHoldLabel
+@onready var title_label: Label = $Center/MainColumn/HeaderMargins/HeaderRow/Title
+@onready var back_button: Button = $Center/MainColumn/HeaderMargins/HeaderRow/BackButton
 @onready var delete_confirm_overlay: Control = $DeleteConfirmOverlay
 @onready var delete_confirm_button: Button = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/ConfirmButton
 @onready var delete_cancel_button: Button = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/CancelButton
@@ -64,7 +72,9 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 var is_clear_confirmed: bool = false
 var is_holding_clear_button: bool = false
 var _is_syncing_ui: bool = false
+var _is_tutorial_mode: bool = false
 var _tab_buttons: Array[Button] = []
+var _tab_separators: Array[ColorRect] = []
 var _style_active_normal: StyleBoxFlat
 var _style_active_hover: StyleBoxFlat
 var _style_inactive_normal: StyleBoxFlat
@@ -74,14 +84,17 @@ var _style_inactive_hover: StyleBoxFlat
 func _ready() -> void:
 	GameMusic.duck_for_subpage()
 	_tab_buttons = [tab_btn_0, tab_btn_1, tab_btn_2, tab_btn_3, tab_btn_4]
+	_tab_separators = [tab_sep_01, tab_sep_12, tab_sep_23, tab_sep_34]
 	_build_tab_button_styles()
 	for i: int in range(_tab_buttons.size()):
 		_tab_buttons[i].pressed.connect(_switch_tab.bind(i))
 	_switch_tab(0)
 	_build_static_option_buttons()
+	_build_music_source_option()
 	master_slider.value_changed.connect(_on_master_changed)
 	music_slider.value_changed.connect(_on_music_changed)
 	sfx_slider.value_changed.connect(_on_sfx_changed)
+	music_source_option.item_selected.connect(_on_music_source_item_selected)
 	resolution_option.item_selected.connect(_on_resolution_item_selected)
 	window_mode_option.item_selected.connect(_on_window_mode_item_selected)
 	fps_limit_option.item_selected.connect(_on_fps_limit_item_selected)
@@ -111,43 +124,58 @@ func _ready() -> void:
 	_refresh_joystick_size_label()
 	_refresh_joystick_size_visibility()
 	_refresh_data_summary()
+	clear_hold_timer.wait_time = CLEAR_HOLD_SECONDS
+	_style_clear_hold_progress_bar()
+	_sync_clear_hold_label_theme()
 	_refresh_clear_button_idle_text()
 	_apply_web_visibility()
+	_apply_tutorial_mode()
+	_refresh_tab_separator_visibility()
+
+
+func _apply_tutorial_mode() -> void:
+	if not TutorialSession.is_in_tutorial_settings:
+		return
+	_is_tutorial_mode = true
+	title_label.text = "在此之前..."
+	back_button.text = "下一步"
+	tab_btn_2.visible = false
+	tab_btn_4.visible = false
+
+
+func _refresh_tab_separator_visibility() -> void:
+	for i: int in range(_tab_separators.size()):
+		var sep: ColorRect = _tab_separators[i]
+		var left_tab: CanvasItem = _tab_buttons[i]
+		var right_tab: CanvasItem = _tab_buttons[i + 1]
+		sep.visible = left_tab.visible and right_tab.visible
 
 
 func _build_tab_button_styles() -> void:
+	const RADIUS := 2
+	const MG_L := 16.0
+	const MG_T := 8.0
+	const MG_R := 16.0
+	const MG_B := 8.0
+	# Matches themes/settings_tab_theme.tres pressed (active tab), no border.
 	_style_active_normal = StyleBoxFlat.new()
-	_style_active_normal.bg_color = Color(0.96, 0.93, 0.86, 1)
-	_style_active_normal.border_width_left = 1
-	_style_active_normal.border_width_top = 1
-	_style_active_normal.border_width_right = 1
-	_style_active_normal.border_width_bottom = 1
-	_style_active_normal.border_color = Color(0.72, 0.64, 0.42, 1)
-	_style_active_normal.set_corner_radius_all(16)
-	_style_active_normal.content_margin_left = 24.0
-	_style_active_normal.content_margin_top = 14.0
-	_style_active_normal.content_margin_right = 24.0
-	_style_active_normal.content_margin_bottom = 14.0
-	_style_active_normal.shadow_color = Color(0, 0, 0, 0.22)
-	_style_active_normal.shadow_size = 4
-	_style_active_normal.shadow_offset = Vector2(0, 2)
+	_style_active_normal.bg_color = Color(1, 1, 1, 1)
+	_style_active_normal.set_corner_radius_all(RADIUS)
+	_style_active_normal.content_margin_left = MG_L
+	_style_active_normal.content_margin_top = MG_T
+	_style_active_normal.content_margin_right = MG_R
+	_style_active_normal.content_margin_bottom = MG_B
 	_style_active_hover = _style_active_normal.duplicate() as StyleBoxFlat
-	_style_active_hover.bg_color = Color(1.0, 0.97, 0.9, 1)
+	# Matches settings_tab_theme normal + hover for inactive tabs, no border.
 	_style_inactive_normal = StyleBoxFlat.new()
-	_style_inactive_normal.bg_color = Color(0.14, 0.16, 0.22, 0.92)
-	_style_inactive_normal.border_width_left = 1
-	_style_inactive_normal.border_width_top = 1
-	_style_inactive_normal.border_width_right = 1
-	_style_inactive_normal.border_width_bottom = 1
-	_style_inactive_normal.border_color = Color(0.35, 0.38, 0.48, 0.85)
-	_style_inactive_normal.set_corner_radius_all(16)
-	_style_inactive_normal.content_margin_left = 22.0
-	_style_inactive_normal.content_margin_top = 14.0
-	_style_inactive_normal.content_margin_right = 22.0
-	_style_inactive_normal.content_margin_bottom = 14.0
+	_style_inactive_normal.bg_color = Color(0, 0, 0, 0.55)
+	_style_inactive_normal.set_corner_radius_all(RADIUS)
+	_style_inactive_normal.content_margin_left = MG_L
+	_style_inactive_normal.content_margin_top = MG_T
+	_style_inactive_normal.content_margin_right = MG_R
+	_style_inactive_normal.content_margin_bottom = MG_B
 	_style_inactive_hover = _style_inactive_normal.duplicate() as StyleBoxFlat
-	_style_inactive_hover.bg_color = Color(0.22, 0.26, 0.34, 1)
-	_style_inactive_hover.border_color = Color(0.5, 0.55, 0.68, 1)
+	_style_inactive_hover.bg_color = Color(1, 1, 1, 0.75)
 
 
 func _switch_tab(index: int) -> void:
@@ -159,8 +187,10 @@ func _switch_tab(index: int) -> void:
 			btn.add_theme_stylebox_override("hover", _style_active_hover)
 			btn.add_theme_stylebox_override("pressed", _style_active_normal)
 			btn.add_theme_stylebox_override("focus", _style_active_normal)
-			btn.add_theme_color_override("font_color", Color(0.14, 0.12, 0.1, 1))
-			btn.add_theme_color_override("font_hover_color", Color(0.14, 0.12, 0.1, 1))
+			btn.add_theme_color_override("font_color", Color.BLACK)
+			btn.add_theme_color_override("font_hover_color", Color.BLACK)
+			btn.add_theme_color_override("font_pressed_color", Color.BLACK)
+			btn.add_theme_color_override("font_focus_color", Color.BLACK)
 		else:
 			btn.add_theme_stylebox_override("normal", _style_inactive_normal)
 			btn.add_theme_stylebox_override("hover", _style_inactive_hover)
@@ -168,6 +198,8 @@ func _switch_tab(index: int) -> void:
 			btn.add_theme_stylebox_override("focus", _style_inactive_normal)
 			btn.remove_theme_color_override("font_color")
 			btn.remove_theme_color_override("font_hover_color")
+			btn.remove_theme_color_override("font_pressed_color")
+			btn.remove_theme_color_override("font_focus_color")
 
 
 func _build_static_option_buttons() -> void:
@@ -243,7 +275,33 @@ func _sync_all_controls_from_settings() -> void:
 	_select_window_mode_option(GameSettings.window_mode)
 	_select_fps_limit_option(GameSettings.fps_limit)
 	_select_quality_option(GameSettings.quality_preset)
+	_select_music_source_option(GameSettings.music_source)
 	_is_syncing_ui = false
+
+
+func _build_music_source_option() -> void:
+	music_source_option.clear()
+	music_source_option.add_item("游戏内部")
+	music_source_option.set_item_metadata(0, GameSettings.MUSIC_SOURCE_INTERNAL)
+	music_source_option.add_item("墨韵")
+	music_source_option.set_item_metadata(1, GameSettings.MUSIC_SOURCE_EXTERNAL)
+
+
+func _select_music_source_option(source: String) -> void:
+	for i: int in range(music_source_option.item_count):
+		var meta: Variant = music_source_option.get_item_metadata(i)
+		if meta is String and str(meta) == source:
+			music_source_option.select(i)
+			return
+	music_source_option.select(0)
+
+
+func _on_music_source_item_selected(index: int) -> void:
+	if _is_syncing_ui:
+		return
+	var meta: Variant = music_source_option.get_item_metadata(index)
+	if meta is String:
+		GameSettings.set_music_source(str(meta))
 
 
 func _select_resolution_option(width: int, height: int) -> void:
@@ -431,7 +489,8 @@ func _refresh_data_summary() -> void:
 	lines.append("当前数据：")
 	lines.append("1) 存档文件（wild_pig_gun_save.json）：%s" % ("存在" if save_file_exists else "无"))
 	lines.append("2) 设置文件（game_settings.json）：%s" % ("存在" if settings_file_exists else "无"))
-	lines.append("3) 元进度：最高波次 %d / 累计局数 %d / 通关次数 %d" % [best_wave, run_count, victory_count])
+	var wallet_coin: int = SaveManager.get_wallet_gold()
+	lines.append("3) 野猪钱包：%d 野猪币 · 最高波次 %d / 累计局数 %d / 通关次数 %d" % [wallet_coin, best_wave, run_count, victory_count])
 	if has_pending_run:
 		lines.append("4) 续玩存档：有（角色 %s，第 %d 波）" % [pending_character_id, pending_wave])
 	else:
@@ -439,12 +498,35 @@ func _refresh_data_summary() -> void:
 	data_summary_label.text = "\n".join(lines)
 
 
+func _style_clear_hold_progress_bar() -> void:
+	var track: StyleBoxFlat = StyleBoxFlat.new()
+	track.bg_color = Color(0, 0, 0, 0)
+	track.set_corner_radius_all(4)
+	clear_hold_progress.add_theme_stylebox_override("background", track)
+	var fill: StyleBoxFlat = StyleBoxFlat.new()
+	fill.bg_color = Color(0.82, 0.14, 0.16, 1.0)
+	fill.set_corner_radius_all(4)
+	clear_hold_progress.add_theme_stylebox_override("fill", fill)
+
+
+func _sync_clear_hold_label_theme() -> void:
+	var fs: int = clear_all_data_button.get_theme_font_size("font_size")
+	if fs <= 0:
+		fs = 24
+	var fnt: Font = clear_all_data_button.get_theme_font("font")
+	if fnt:
+		clear_hold_label.add_theme_font_override("font", fnt)
+	clear_hold_label.add_theme_font_size_override("font_size", fs)
+	clear_hold_label.add_theme_color_override(
+		"font_color", clear_all_data_button.get_theme_color("font_color"))
+
+
 func _refresh_clear_button_idle_text() -> void:
 	if is_clear_confirmed:
-		clear_all_data_button.text = "长按 3 秒清除所有数据"
-		clear_hint_label.text = "已确认，请按住红色按钮直到清除完成"
+		clear_hold_label.text = "长按 3 秒清除所有数据"
+		clear_hint_label.text = "已确认，请长按直至红色进度条走满（约 3 秒）"
 		return
-	clear_all_data_button.text = "清除所有数据"
+	clear_hold_label.text = "清除所有数据"
 	clear_hint_label.text = "先点击确认，再长按 3 秒清除全部数据"
 
 
@@ -468,6 +550,7 @@ func _on_clear_all_button_down() -> void:
 	if not is_clear_confirmed:
 		return
 	is_holding_clear_button = true
+	clear_hold_progress.value = 0.0
 	clear_hold_timer.start(CLEAR_HOLD_SECONDS)
 
 
@@ -485,24 +568,26 @@ func _process(_delta: float) -> void:
 	var held_seconds: float = CLEAR_HOLD_SECONDS - clear_hold_timer.time_left
 	if held_seconds < 0.0:
 		held_seconds = 0.0
-	clear_all_data_button.text = "正在清除确认：%.1f / %.1f 秒" % [held_seconds, CLEAR_HOLD_SECONDS]
+	clear_hold_progress.value = clampf((held_seconds / CLEAR_HOLD_SECONDS) * 100.0, 0.0, 100.0)
 
 
 func _cancel_clear_hold() -> void:
 	is_holding_clear_button = false
 	if not clear_hold_timer.is_stopped():
 		clear_hold_timer.stop()
+	clear_hold_progress.value = 0.0
 	_refresh_clear_button_idle_text()
 
 
 func _on_clear_hold_timer_timeout() -> void:
 	is_holding_clear_button = false
+	clear_hold_progress.value = 100.0
 	_execute_clear_all_data()
 
 
 func _execute_clear_all_data() -> void:
 	clear_all_data_button.disabled = true
-	clear_all_data_button.text = "正在清除..."
+	clear_hold_label.text = "正在清除..."
 	clear_hint_label.text = "请稍候，正在重置数据并返回主菜单"
 	var is_save_cleared: bool = SaveManager.delete_all_save_data()
 	var is_settings_cleared: bool = GameSettings.clear_all_settings_data()
@@ -529,6 +614,13 @@ func _on_back_pressed() -> void:
 		var arena: Node = get_tree().get_first_node_in_group("arena")
 		if arena != null and arena.has_method("close_in_game_settings"):
 			arena.close_in_game_settings()
+		return
+	if _is_tutorial_mode:
+		TutorialSession.is_in_tutorial_settings = false
+		TutorialSession.set_step(TutorialSession.TutorialStep.INPUT_SELECT)
+		GameMusic.ensure_playing_main_volume()
+		RunState.settings_return_scene_path = MAIN_MENU_SCENE_PATH
+		get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
 		return
 	var target_scene: String = RunState.settings_return_scene_path
 	if target_scene.is_empty():

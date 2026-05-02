@@ -1,9 +1,9 @@
 extends CanvasLayer
 
-@onready var resume_button: Button = $CenterContainer/Panel/Margin/PauseVBox/ResumeButton
-@onready var settings_button: Button = $CenterContainer/Panel/Margin/PauseVBox/SettingsButton
-@onready var save_menu_button: Button = $CenterContainer/Panel/Margin/PauseVBox/SaveMenuButton
-@onready var quit_no_save_button: Button = $CenterContainer/Panel/Margin/PauseVBox/QuitNoSaveButton
+@onready var resume_button: Button = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/ResumeButton
+@onready var settings_button: Button = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/SettingsButton
+@onready var save_menu_button: Button = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/SaveMenuButton
+@onready var quit_no_save_button: Button = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/QuitNoSaveButton
 
 
 func _ready() -> void:

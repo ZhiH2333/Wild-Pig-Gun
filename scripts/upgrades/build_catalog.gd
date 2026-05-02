@@ -293,9 +293,9 @@ static func shop_purchase_preview_text(
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("「%s」" % title)
 	lines.append("")
-	lines.append("价格：%d 材料 ｜ 当前持有：%d" % [price, material_current])
+	lines.append("价格：%d 野猪币 ｜ 当前持有：%d" % [price, material_current])
 	if material_current < price:
-		lines.append("材料不足时无法完成购买。")
+		lines.append("野猪币不足时无法完成购买。")
 	lines.append("")
 	lines.append("购买后效果：")
 	match kind:

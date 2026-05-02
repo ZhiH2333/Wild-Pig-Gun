@@ -25,6 +25,7 @@ const ENEMY_SCENE_MAP: Dictionary = {
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
 const RUN_SNAPSHOT_VERSION: int = 1
 const SETTINGS_SCENE_PATH: String = "res://scenes/settings.tscn"
+const TUTORIAL_HINT_SCENE: PackedScene = preload("res://scenes/ui/tutorial_hint_panel.tscn")
 
 @onready var enemy_container: Node2D = $EnemyContainer
 @onready var projectile_container: Node2D = $ProjectileContainer
@@ -79,6 +80,14 @@ func _ready() -> void:
 		_restore_run_from_snapshot(snap)
 	else:
 		wave_manager.start_run()
+	if (
+		TutorialSession.active
+		and TutorialSession.current_step == TutorialSession.TutorialStep.WAVE_ONE
+	):
+		var hint: CanvasLayer = TUTORIAL_HINT_SCENE.instantiate() as CanvasLayer
+		add_child(hint)
+		if hint.has_method("setup"):
+			hint.setup(wave_manager)
 	var collect_timer := Timer.new()
 	collect_timer.wait_time = 2.0
 	collect_timer.autostart = true
@@ -210,6 +219,8 @@ func _on_wave_ended(wave_index: int) -> void:
 		hud.on_wave_ended()
 	if wave_index >= wave_manager.MAX_WAVES:
 		return
+	if TutorialSession.active and wave_index == 1:
+		TutorialSession.advance_after_wave_one_hint()
 	if interstitial_hub != null and interstitial_hub.has_method("show_for_finished_wave"):
 		interstitial_hub.show_for_finished_wave(wave_index)
 

@@ -11,61 +11,28 @@
       "starting_weapons": ["rifle"]
     },
     {
-      "id": "bruiser",
-      "display_name": "重装野猪",
-      "description": "更高生命，移速略慢，双重重型羁绊起手。",
-      "sprite_path": "res://assets/sprites/wildpig.png",
-      "max_hp": 130,
-      "speed_mult": 0.92,
-      "damage_mult": 1.0,
-      "starting_weapons": ["rifle", "hammer"]
-    },
-    {
-      "id": "scout",
-      "display_name": "迅捷野猪",
-      "description": "移速更快，SMG 开局。（最高波次 ≥5 解锁）",
-      "sprite_path": "res://assets/sprites/wildpig.png",
-      "max_hp": 85,
-      "speed_mult": 1.12,
-      "damage_mult": 1.0,
-      "unlock_wave": 5,
-      "starting_weapons": ["smg"]
-    },
-    {
-      "id": "miser",
-      "display_name": "节俭者·猪",
-      "description": "商店更贵；材料越多伤害越高；自带收获。通关波次 ≥8 解锁。",
-      "sprite_path": "res://assets/sprites/wildpig.png",
-      "max_hp": 95,
-      "speed_mult": 1.0,
-      "damage_mult": 1.0,
-      "unlock_wave": 8,
-      "shop_price_mult": 1.25,
-      "material_to_damage_kv": 0.0018,
-      "starting_weapons": ["rifle"],
-      "traits": [
-        {"kind": "stat_harvest", "value": 1.1}
-      ]
-    },
-    {
       "id": "chicken",
       "display_name": "野鸡",
-      "description": "占位角色：轻盈灵活，后续将补充专属特性。",
+      "description": "占位角色：轻盈灵活，后续将补充专属特性。（野猪币解锁）",
       "sprite_path": "res://assets/sprites/wildpig.png",
       "max_hp": 90,
       "speed_mult": 1.08,
       "damage_mult": 0.96,
-      "starting_weapons": ["smg"]
+      "starting_weapons": ["smg"],
+      "requires_purchase": true,
+      "purchase_price": 400
     },
     {
       "id": "pigchicken",
       "display_name": "野猪鸡",
-      "description": "占位角色：均衡偏生存，后续将补充专属特性。",
+      "description": "占位角色：均衡偏生存，后续将补充专属特性。（野猪币解锁）",
       "sprite_path": "res://assets/sprites/wildpig.png",
       "max_hp": 108,
       "speed_mult": 1.0,
       "damage_mult": 1.02,
-      "starting_weapons": ["rifle"]
+      "starting_weapons": ["rifle"],
+      "requires_purchase": true,
+      "purchase_price": 600
     }
   ]
 }

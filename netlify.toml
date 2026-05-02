@@ -1,6 +1,7 @@
 [build]
-  command = "bash scripts/netlify_build_web.sh"
+  command = "bash scripts/ci/netlify_build_web.sh"
   publish = "dist"
 
 [build.environment]
   GODOT_VERSION = "4.6"
+  GIT_FETCH_DEPTH = "0"
