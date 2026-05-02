@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://rena"]
+[gd_scene load_steps=28 format=3 uid="uid://rena"]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/arena/arena_backdrop.gd" id="14_backdrop"]
@@ -20,6 +20,7 @@
 [ext_resource type="Theme" path="res://themes/black_button_theme.tres" id="19_black_btn"]
 [ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="20_font_bold"]
 [ext_resource type="Theme" uid="uid://dy36f4rj86vue" path="res://themes/settings_panel_theme.tres" id="21_settings_panel"]
+[ext_resource type="Material" path="res://resources/pause_overlay_bg_material.tres" id="22_pause_bg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_interstitial_root_panel"]
 bg_color = Color(0.06, 0.06, 0.09, 0.94)
@@ -153,14 +154,18 @@ layer = 60
 visible = false
 script = ExtResource("13_pause_menu")
 
+[node name="BackBufferCopy" type="BackBufferCopy" parent="PauseOverlay"]
+copy_mode = 2
+
 [node name="Dim" type="ColorRect" parent="PauseOverlay"]
+material = ExtResource("22_pause_bg")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0, 0, 0, 0.62)
+color = Color(1, 1, 1, 1)
 
 [node name="MenuButtonsWrap" type="Control" parent="PauseOverlay"]
 layout_mode = 1
