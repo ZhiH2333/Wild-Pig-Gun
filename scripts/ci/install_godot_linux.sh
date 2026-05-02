@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
+# Godot 4.x Linux 编辑器与导出模板安装（与 netlify_build_web 职责分离）。
+# Installs Godot editor + export templates on Linux（Netlify / GitHub Actions）。
+# Source 本脚本后可用：GODOT_BIN、REPO_ROOT
 set -euo pipefail
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
 
 GODOT_VERSION="${GODOT_VERSION:-4.6}"
@@ -9,9 +12,9 @@ if [ -n "${NETLIFY_CACHE_DIR:-}" ]; then
 elif [ -d "/opt/build/cache" ]; then
 	CACHE="/opt/build/cache/godot-${GODOT_VERSION}"
 else
-	CACHE="${REPO_ROOT}/.netlify-cache"
+	CACHE="${CI_GODOT_CACHE:-${REPO_ROOT}/.ci-godot-cache}"
 fi
-mkdir -p "${CACHE}" dist
+mkdir -p "${CACHE}"
 
 GODOT_URL="${GODOT_URL:-https://downloads.godotengine.org/?version=${GODOT_VERSION}&flavor=stable&slug=linux.x86_64.zip&platform=linux.64}"
 GODOT_BIN="${CACHE}/Godot_v${GODOT_VERSION}-stable_linux.x86_64"
@@ -25,12 +28,6 @@ if [ ! -x "${GODOT_BIN}" ]; then
 fi
 
 TP_EXTRACT="${CACHE}/export-templates-unpack"
-if [ ! -x "${GODOT_BIN}" ]; then
-	echo "Godot binary missing after download: ${GODOT_BIN}" >&2
-	exit 1
-fi
-
-mkdir -p "${HOME}/.local/share/godot/export_templates"
 TP_VERSION_FILE="${TP_EXTRACT}/templates/version.txt"
 if [ ! -f "${TP_VERSION_FILE}" ]; then
 	echo "Downloading export templates..."
@@ -47,22 +44,9 @@ if [ ! -f "${TP_TARGET}/web_release.zip" ]; then
 	cp -a "${TP_EXTRACT}/templates/." "${TP_TARGET}/"
 fi
 
-if [ ! -f "${REPO_ROOT}/export_presets.cfg" ]; then
-	echo "Missing export_presets.cfg at repo root. Add it from the editor (Project > Export) or merge the export preset PR." >&2
+if [ ! -x "${GODOT_BIN}" ]; then
+	echo "Godot binary missing: ${GODOT_BIN}" >&2
 	exit 1
 fi
 
-echo "Importing assets (.godot/imported)..."
-"${GODOT_BIN}" --headless --path "${REPO_ROOT}" --import --quit
-
-echo "Exporting Web preset..."
-"${GODOT_BIN}" --headless --path "${REPO_ROOT}" --export-release "Web" "${REPO_ROOT}/dist/wildpiggun.html"
-
-cp -f "${REPO_ROOT}/dist/wildpiggun.html" "${REPO_ROOT}/dist/index.html"
-cat > "${REPO_ROOT}/dist/_headers" << 'EOF'
-/*
-  Cross-Origin-Opener-Policy: same-origin
-  Cross-Origin-Embedder-Policy: require-corp
-EOF
-
-echo "Web export ready under dist/"
+export GODOT_BIN REPO_ROOT
