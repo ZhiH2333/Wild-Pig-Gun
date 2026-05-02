@@ -232,13 +232,21 @@ metadata/_tab_index = 0
 [node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll" unique_id=232895264]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 22
+theme_override_constants/separation = 20
 
-[node name="AudioHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=1201063647]
+[node name="AudioSectionTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=501001001]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
-theme_override_font_sizes/font_size = 20
-text = "音量与混音总线"
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "混音与音量"
+
+[node name="AudioSectionSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=501001002]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
 
 [node name="MasterRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=628981312]
 layout_mode = 2
@@ -303,7 +311,21 @@ metadata/_tab_index = 1
 [node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll" unique_id=231312141]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 22
+theme_override_constants/separation = 20
+
+[node name="DisplaySectionWindowTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=501002001]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "窗口与分辨率"
+
+[node name="DisplaySectionWindowSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=501002002]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
 
 [node name="DisplayHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1978842202]
 layout_mode = 2
@@ -341,6 +363,20 @@ custom_minimum_size = Vector2(360, 48)
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="DisplaySectionPerfTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=501002011]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "性能与画质"
+
+[node name="DisplaySectionPerfSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=501002012]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
+
 [node name="FpsLimitRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1726704198]
 layout_mode = 2
 theme_override_constants/separation = 18
@@ -370,6 +406,54 @@ text = "画质预设"
 custom_minimum_size = Vector2(360, 48)
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="VsyncCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1779543075]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme = ExtResource("7_black_btn")
+theme_override_font_sizes/font_size = 24
+text = "垂直同步"
+
+[node name="VsyncFpsRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1776243225]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="VsyncFpsLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=677173949]
+custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "垂直同步帧率"
+
+[node name="VsyncFpsSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=545223070]
+custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 30.0
+max_value = 240.0
+step = 10.0
+value = 60.0
+
+[node name="VsyncFpsValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=185365800]
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "60 FPS"
+horizontal_alignment = 2
+
+[node name="DisplaySectionScaleTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=501002021]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "界面与视野"
+
+[node name="DisplaySectionScaleSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=501002022]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
 
 [node name="UiScaleRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1834872947]
 layout_mode = 2
@@ -423,39 +507,6 @@ theme_override_font_sizes/font_size = 22
 text = "100%"
 horizontal_alignment = 2
 
-[node name="VsyncCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1779543075]
-custom_minimum_size = Vector2(0, 52)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "垂直同步"
-
-[node name="VsyncFpsRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents" unique_id=1776243225]
-visible = false
-layout_mode = 2
-theme_override_constants/separation = 18
-
-[node name="VsyncFpsLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=677173949]
-custom_minimum_size = Vector2(152, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "垂直同步帧率"
-
-[node name="VsyncFpsSlider" type="HSlider" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=545223070]
-custom_minimum_size = Vector2(240, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 30.0
-max_value = 240.0
-step = 10.0
-value = 60.0
-
-[node name="VsyncFpsValue" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow" unique_id=185365800]
-custom_minimum_size = Vector2(72, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "60 FPS"
-horizontal_alignment = 2
-
 [node name="ControlScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=1098876766]
 visible = false
 layout_mode = 2
@@ -465,17 +516,32 @@ metadata/_tab_index = 2
 [node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll" unique_id=1980356899]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 22
+theme_override_constants/separation = 20
+
+[node name="ControlSectionTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=501003001]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "触控与虚拟按键"
+
+[node name="ControlSectionSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=501003002]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
 
 [node name="ControlHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=920412491]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
 theme_override_font_sizes/font_size = 20
-text = "触控与屏幕操作"
+text = "在手机或触控屏上生效；键鼠玩家可关闭虚拟控件。"
 
 [node name="MobileControlsCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=197801778]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+theme = ExtResource("7_black_btn")
 theme_override_font_sizes/font_size = 24
 text = "启用虚拟摇杆与虚拟暂停按钮"
 
@@ -524,25 +590,42 @@ metadata/_tab_index = 3
 [node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll" unique_id=1597071785]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 22
+theme_override_constants/separation = 20
 
-[node name="GameHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=2070940330]
+[node name="GameSectionHudTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=501004001]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
-theme_override_font_sizes/font_size = 20
-text = "游戏内辅助显示"
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "游戏内显示"
+
+[node name="GameSectionHudSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=501004002]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
 
 [node name="ShowFpsCheck" type="CheckBox" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=191480620]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+theme = ExtResource("7_black_btn")
 theme_override_font_sizes/font_size = 24
 text = "显示帧率（右下角）"
 
-[node name="UpdateChannelHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=884930001]
+[node name="GameSectionUpdateTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=501004011]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
-theme_override_font_sizes/font_size = 20
-text = "检查更新"
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "更新与渠道"
+
+[node name="GameSectionUpdateSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=501004012]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
 
 [node name="UpdateChannelRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=884930002]
 layout_mode = 2
@@ -569,13 +652,21 @@ metadata/_tab_index = 4
 [node name="Contents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll" unique_id=1288990215]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 22
+theme_override_constants/separation = 20
 
-[node name="DataDangerHeading" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=150322415]
+[node name="DataSectionSummaryTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005001]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.88, 0.42, 0.42, 1)
-theme_override_font_sizes/font_size = 26
-text = "数据管理"
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "存档概况"
+
+[node name="DataSectionSummarySep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005002]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
 
 [node name="DataSummaryLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=970136880]
 custom_minimum_size = Vector2(0, 144)
@@ -583,6 +674,20 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "当前数据：加载中..."
 autowrap_mode = 3
+
+[node name="DataSectionDangerTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005011]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.45, 0.45, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "危险操作"
+
+[node name="DataSectionDangerSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005012]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
 
 [node name="ClearHintLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=1426524944]
 layout_mode = 2

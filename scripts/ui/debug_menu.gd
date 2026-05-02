@@ -8,6 +8,7 @@ const DEBUG_SPIN_MAX_FLOAT: float = 9999.0
 const DEBUG_SPIN_MAX_INT: int = 9999
 const DEBUG_SPIN_MAX_HP: int = 99999
 const TOUCH_SCROLL_SCRIPT: Script = preload("res://scripts/ui/touch_scroll_container.gd")
+const BLACK_BUTTON_THEME: Theme = preload("res://themes/black_button_theme.tres")
 
 var _font_names: PackedStringArray = PackedStringArray([
 	"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI",
@@ -128,6 +129,7 @@ func _build_ui() -> void:
 	title_row.add_child(close_btn)
 	outer.add_child(title_row)
 	_god_check = CheckBox.new()
+	_god_check.theme = BLACK_BUTTON_THEME
 	_god_check.text = "无敌模式（免疫伤害）"
 	_god_check.toggled.connect(_on_god_toggled)
 	outer.add_child(_god_check)

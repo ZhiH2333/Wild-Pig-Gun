@@ -10,6 +10,8 @@ const GITHUB_API_NEWEST_RELEASE: String = (
 )
 const GITHUB_TAG_PAGE_BASE: String = "https://github.com/ZhiH2333/Wild-Pig-Gun/releases/tag/"
 
+const BLACK_BUTTON_THEME: Theme = preload("res://themes/black_button_theme.tres")
+
 const BACKGROUND_SWAY_SPEED: float = 0.52
 const BACKGROUND_SWAY_AMP_RAD: float = deg_to_rad(5.2)
 const BACKGROUND_SWAY_SPRING: float = 13.5
@@ -100,6 +102,7 @@ func _show_control_mode_dialog() -> void:
 	keyboard_btn.add_theme_font_size_override("font_size", 20)
 	btn_row.add_child(keyboard_btn)
 	var no_remind_check: CheckBox = CheckBox.new()
+	no_remind_check.theme = BLACK_BUTTON_THEME
 	no_remind_check.text = "不再提示"
 	no_remind_check.add_theme_font_size_override("font_size", 18)
 	vbox.add_child(no_remind_check)
