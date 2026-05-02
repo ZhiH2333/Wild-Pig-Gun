@@ -24,7 +24,7 @@
     },
     {
       "id": "pigchicken",
-      "display_name": "野鸡猪",
+      "display_name": "野猪鸡",
       "description": "占位角色：均衡偏生存，后续将补充专属特性。（野猪币解锁）",
       "sprite_path": "res://assets/sprites/wpc.PNG",
       "max_hp": 108,
