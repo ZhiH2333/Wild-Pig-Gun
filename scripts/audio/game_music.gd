@@ -109,20 +109,25 @@ func stop() -> void:
 
 ## 场内暂停打开选项：停止出声，保留战斗曲目与播放进度（回到暂停菜单仍静音）
 func mute_for_in_game_settings() -> void:
-	if _ctx != Context.BATTLE or _player.stream == null:
+	if _ctx != Context.BATTLE:
 		stop()
 		return
-	if _player.stream_paused:
-		_suspended_battle_resume_sec = _paused_position_sec
-		_suspended_battle_was_stream_paused = true
-	elif _player.playing:
-		_suspended_battle_resume_sec = _player.get_playback_position()
-		_suspended_battle_was_stream_paused = false
-	else:
-		_suspended_battle_resume_sec = 0.0
-		_suspended_battle_was_stream_paused = false
+	var resume_sec: float = 0.0
+	var was_stream_paused: bool = false
+	if _player.stream != null:
+		was_stream_paused = _player.stream_paused
+		if was_stream_paused:
+			resume_sec = _paused_position_sec
+		elif _player.playing:
+			resume_sec = _player.get_playback_position()
+		else:
+			# 整棵树暂停时 playing 常为 false，进度仍可读
+			resume_sec = _player.get_playback_position()
+	_suspended_battle_resume_sec = resume_sec
+	_suspended_battle_was_stream_paused = was_stream_paused
 	_suspended_in_game_settings = true
-	_player.stop()
+	if _player.stream != null:
+		_player.stop()
 	_paused_position_sec = 0.0
 	_player.stream_paused = false
 	track_changed.emit("")
@@ -135,17 +140,27 @@ func resume_battle_after_user_unpause_from_settings_overlay() -> void:
 	_suspended_in_game_settings = false
 	_ctx = Context.BATTLE
 	_vol_offset_db = VOLUME_DB_MAIN
-	if _player.stream == null:
-		_play_current_track()
+	var path: String = BATTLE_PATHS[_battle_idx]
+	if not ResourceLoader.exists(path):
+		push_error("[GameMusic] 缺少音频: %s" % path)
+		_ctx = Context.OFF
+		track_changed.emit("")
 		return
+	var st: AudioStream = load(path) as AudioStream
+	if st == null:
+		_ctx = Context.OFF
+		track_changed.emit("")
+		return
+	if st is AudioStreamMP3:
+		(st as AudioStreamMP3).loop = false
+	_player.stream = st
+	_player.stream_paused = false
+	_player.play(maxf(0.0, _suspended_battle_resume_sec))
 	if _suspended_battle_was_stream_paused:
-		_player.play(maxf(0.0, _suspended_battle_resume_sec))
 		_player.stream_paused = true
 		_paused_position_sec = _suspended_battle_resume_sec
 	else:
-		_player.stream_paused = false
 		_paused_position_sec = 0.0
-		_player.play(maxf(0.0, _suspended_battle_resume_sec))
 	_apply_player_volume()
 	track_changed.emit(get_current_title())
 
