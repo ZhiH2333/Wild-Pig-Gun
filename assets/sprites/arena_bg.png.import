@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ccpd8vj22qo0g"
-path="res://.godot/imported/metal.jpg-762b0c28a6307ea474109aaa962849c8.ctex"
+uid="uid://ejji2pfy5lx8"
+path="res://.godot/imported/arena_bg.png-935bbdd47467cb636b581d4e7b9ff26e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/metal.jpg"
-dest_files=["res://.godot/imported/metal.jpg-762b0c28a6307ea474109aaa962849c8.ctex"]
+source_file="res://assets/sprites/arena_bg.png"
+dest_files=["res://.godot/imported/arena_bg.png-935bbdd47467cb636b581d4e7b9ff26e.ctex"]
 
 [params]
 
