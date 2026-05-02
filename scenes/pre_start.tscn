@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://prestart_wpg"]
+[gd_scene load_steps=9 format=3 uid="uid://prestart_wpg"]
 
 [ext_resource type="Script" path="res://scripts/ui/pre_start.gd" id="1_pre_start"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cd3upfbw3oy1" path="res://assets/ui/icon_back.svg" id="4_back_icon"]
 [ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="5_black_btn"]
 [ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="6_menu_font"]
+[ext_resource type="Material" path="res://resources/subpage_blur_mat.tres" id="7_subpage_blur"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_maincard_transparent"]
 bg_color = Color(0, 0, 0, 0)
@@ -43,6 +44,20 @@ mouse_filter = 2
 texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
+[node name="BlurBackdrop" type="ColorRect" parent="."]
+material = ExtResource("7_subpage_blur")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
 
 [node name="DimOverlay" type="ColorRect" parent="."]
 layout_mode = 1

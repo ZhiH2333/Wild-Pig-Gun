@@ -8,6 +8,7 @@
 [ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="8_menu_font"]
 [ext_resource type="Theme" uid="uid://d7h2k9tabtheme1" path="res://themes/settings_tab_theme.tres" id="9_tab_theme"]
 [ext_resource type="Theme" uid="uid://c8k3settingspanel1" path="res://themes/settings_panel_theme.tres" id="10_settings_panel"]
+[ext_resource type="Material" path="res://resources/subpage_blur_mat.tres" id="11_subpage_blur"]
 
 [sub_resource type="SystemFont" id="SystemFont_dialog"]
 font_names = PackedStringArray("PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", "Source Han Sans SC", "Arial")
@@ -36,6 +37,20 @@ mouse_filter = 2
 texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
+[node name="BlurBackdrop" type="ColorRect" parent="." unique_id=296552147]
+material = ExtResource("11_subpage_blur")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
 
 [node name="DimOverlay" type="ColorRect" parent="." unique_id=690133574]
 layout_mode = 1
