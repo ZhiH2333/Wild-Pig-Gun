@@ -55,6 +55,10 @@ const QUALITY_LOW: String = "low"
 const QUALITY_MEDIUM: String = "medium"
 const QUALITY_HIGH: String = "high"
 const QUALITY_DEFAULT: String = QUALITY_MEDIUM
+## 检查更新：仅对比正式 Release，或包含预发布（与 GitHub Releases 列表一致）
+const UPDATE_CHANNEL_STABLE: String = "stable"
+const UPDATE_CHANNEL_PRERELEASE: String = "prerelease"
+const UPDATE_CHANNEL_DEFAULT: String = UPDATE_CHANNEL_STABLE
 
 var master_linear: float = MASTER_LINEAR_DEFAULT
 var music_linear: float = MUSIC_LINEAR_DEFAULT
@@ -75,6 +79,7 @@ var resolution_width: int = RESOLUTION_WIDTH_DEFAULT
 var resolution_height: int = RESOLUTION_HEIGHT_DEFAULT
 var fps_limit: int = FPS_LIMIT_DEFAULT
 var quality_preset: String = QUALITY_DEFAULT
+var update_channel: String = UPDATE_CHANNEL_DEFAULT
 
 
 func _ready() -> void:
@@ -130,6 +135,7 @@ func load_from_disk() -> void:
 		int(dict.get("resolution_height", RESOLUTION_HEIGHT_DEFAULT)), RESOLUTION_MIN, RESOLUTION_MAX)
 	fps_limit = clampi(int(dict.get("fps_limit", FPS_LIMIT_DEFAULT)), 0, VSYNC_FPS_MAX)
 	quality_preset = _normalize_quality_preset(str(dict.get("quality_preset", QUALITY_DEFAULT)))
+	update_channel = _normalize_update_channel(str(dict.get("update_channel", UPDATE_CHANNEL_DEFAULT)))
 
 
 func save_to_disk() -> void:
@@ -153,6 +159,7 @@ func save_to_disk() -> void:
 		"resolution_height": resolution_height,
 		"fps_limit": fps_limit,
 		"quality_preset": quality_preset,
+		"update_channel": update_channel,
 	}
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
 	if f == null:
@@ -274,6 +281,11 @@ func set_quality_preset(preset_id: String) -> void:
 	quality_preset_changed.emit(quality_preset)
 
 
+func set_update_channel(channel_id: String) -> void:
+	update_channel = _normalize_update_channel(channel_id)
+	save_to_disk()
+
+
 func has_settings_file() -> bool:
 	return FileAccess.file_exists(SETTINGS_PATH)
 
@@ -298,6 +310,7 @@ func clear_all_settings_data() -> bool:
 	resolution_height = RESOLUTION_HEIGHT_DEFAULT
 	fps_limit = FPS_LIMIT_DEFAULT
 	quality_preset = QUALITY_DEFAULT
+	update_channel = UPDATE_CHANNEL_DEFAULT
 	_apply_all()
 	if not FileAccess.file_exists(SETTINGS_PATH):
 		return true
@@ -319,6 +332,12 @@ func _normalize_quality_preset(preset_id: String) -> String:
 	if preset_id == QUALITY_LOW or preset_id == QUALITY_HIGH:
 		return preset_id
 	return QUALITY_MEDIUM
+
+
+func _normalize_update_channel(channel_id: String) -> String:
+	if channel_id == UPDATE_CHANNEL_PRERELEASE:
+		return UPDATE_CHANNEL_PRERELEASE
+	return UPDATE_CHANNEL_STABLE
 
 
 func _apply_all() -> void:

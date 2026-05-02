@@ -536,6 +536,28 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "显示帧率（右下角）"
 
+[node name="UpdateChannelHint" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=884930001]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 20
+text = "检查更新"
+
+[node name="UpdateChannelRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents" unique_id=884930002]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="UpdateChannelLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents/UpdateChannelRow" unique_id=884930003]
+custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "更新渠道"
+
+[node name="UpdateChannelOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents/UpdateChannelRow" unique_id=884930004]
+custom_minimum_size = Vector2(320, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+
 [node name="DataScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=762224303]
 visible = false
 layout_mode = 2

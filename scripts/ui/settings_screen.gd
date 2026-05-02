@@ -48,6 +48,7 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var vsync_fps_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow/VsyncFpsSlider
 @onready var vsync_fps_value: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/VsyncFpsRow/VsyncFpsValue
 @onready var show_fps_check: CheckBox = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents/ShowFpsCheck
+@onready var update_channel_option: OptionButton = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/GameScroll/Contents/UpdateChannelRow/UpdateChannelOption
 @onready var mobile_controls_check: CheckBox = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/MobileControlsCheck
 @onready var joystick_size_row: HBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow
 @onready var joystick_size_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow/JoystickSizeSlider
@@ -101,6 +102,7 @@ func _ready() -> void:
 	vsync_check.toggled.connect(_on_vsync_toggled)
 	vsync_fps_slider.value_changed.connect(_on_vsync_fps_changed)
 	show_fps_check.toggled.connect(_on_show_fps_toggled)
+	update_channel_option.item_selected.connect(_on_update_channel_item_selected)
 	mobile_controls_check.toggled.connect(_on_mobile_controls_toggled)
 	joystick_size_slider.value_changed.connect(_on_joystick_size_changed)
 	custom_layout_btn.pressed.connect(_on_custom_layout_pressed)
@@ -222,7 +224,16 @@ func _build_static_option_buttons() -> void:
 	quality_option.set_item_metadata(1, GameSettings.QUALITY_MEDIUM)
 	quality_option.add_item("高（4× MSAA）")
 	quality_option.set_item_metadata(2, GameSettings.QUALITY_HIGH)
+	_build_update_channel_options()
 	_rebuild_resolution_options()
+
+
+func _build_update_channel_options() -> void:
+	update_channel_option.clear()
+	update_channel_option.add_item("正式版（仅 Release）")
+	update_channel_option.set_item_metadata(0, GameSettings.UPDATE_CHANNEL_STABLE)
+	update_channel_option.add_item("测试版（含预发布）")
+	update_channel_option.set_item_metadata(1, GameSettings.UPDATE_CHANNEL_PRERELEASE)
 
 
 func _rebuild_resolution_options() -> void:
@@ -272,6 +283,7 @@ func _sync_all_controls_from_settings() -> void:
 	_select_window_mode_option(GameSettings.window_mode)
 	_select_fps_limit_option(GameSettings.fps_limit)
 	_select_quality_option(GameSettings.quality_preset)
+	_select_update_channel_option(GameSettings.update_channel)
 	_is_syncing_ui = false
 
 
@@ -312,6 +324,15 @@ func _select_quality_option(preset_id: String) -> void:
 			quality_option.select(i)
 			return
 	quality_option.select(1)
+
+
+func _select_update_channel_option(channel_id: String) -> void:
+	for i: int in range(update_channel_option.item_count):
+		var meta: Variant = update_channel_option.get_item_metadata(i)
+		if meta is String and str(meta) == channel_id:
+			update_channel_option.select(i)
+			return
+	update_channel_option.select(0)
 
 
 func _apply_web_visibility() -> void:
@@ -393,6 +414,14 @@ func _on_vsync_fps_changed(v: float) -> void:
 
 func _on_show_fps_toggled(pressed: bool) -> void:
 	GameSettings.set_show_fps(pressed)
+
+
+func _on_update_channel_item_selected(index: int) -> void:
+	if _is_syncing_ui:
+		return
+	var meta: Variant = update_channel_option.get_item_metadata(index)
+	if meta is String:
+		GameSettings.set_update_channel(str(meta))
 
 
 func _on_mobile_controls_toggled(pressed: bool) -> void:
