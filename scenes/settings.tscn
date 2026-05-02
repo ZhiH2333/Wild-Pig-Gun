@@ -294,21 +294,6 @@ max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="MusicSourceRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents" unique_id=1007238674]
-layout_mode = 2
-theme_override_constants/separation = 18
-
-[node name="MusicSourceLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicSourceRow" unique_id=1553485564]
-custom_minimum_size = Vector2(152, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "音乐来源"
-
-[node name="MusicSourceOption" type="OptionButton" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicSourceRow" unique_id=302307099]
-custom_minimum_size = Vector2(360, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-
 [node name="DisplayScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer" unique_id=1236234350]
 visible = false
 layout_mode = 2

@@ -31,7 +31,6 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var master_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow/MasterSlider
 @onready var music_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow/MusicSlider
 @onready var sfx_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow/SfxSlider
-@onready var music_source_option: OptionButton = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicSourceRow/MusicSourceOption
 @onready var resolution_row: HBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow
 @onready var resolution_option: OptionButton = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow/ResolutionOption
 @onready var window_mode_row: HBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow
@@ -90,11 +89,9 @@ func _ready() -> void:
 		_tab_buttons[i].pressed.connect(_switch_tab.bind(i))
 	_switch_tab(0)
 	_build_static_option_buttons()
-	_build_music_source_option()
 	master_slider.value_changed.connect(_on_master_changed)
 	music_slider.value_changed.connect(_on_music_changed)
 	sfx_slider.value_changed.connect(_on_sfx_changed)
-	music_source_option.item_selected.connect(_on_music_source_item_selected)
 	resolution_option.item_selected.connect(_on_resolution_item_selected)
 	window_mode_option.item_selected.connect(_on_window_mode_item_selected)
 	fps_limit_option.item_selected.connect(_on_fps_limit_item_selected)
@@ -275,33 +272,7 @@ func _sync_all_controls_from_settings() -> void:
 	_select_window_mode_option(GameSettings.window_mode)
 	_select_fps_limit_option(GameSettings.fps_limit)
 	_select_quality_option(GameSettings.quality_preset)
-	_select_music_source_option(GameSettings.music_source)
 	_is_syncing_ui = false
-
-
-func _build_music_source_option() -> void:
-	music_source_option.clear()
-	music_source_option.add_item("游戏内部")
-	music_source_option.set_item_metadata(0, GameSettings.MUSIC_SOURCE_INTERNAL)
-	music_source_option.add_item("墨韵")
-	music_source_option.set_item_metadata(1, GameSettings.MUSIC_SOURCE_EXTERNAL)
-
-
-func _select_music_source_option(source: String) -> void:
-	for i: int in range(music_source_option.item_count):
-		var meta: Variant = music_source_option.get_item_metadata(i)
-		if meta is String and str(meta) == source:
-			music_source_option.select(i)
-			return
-	music_source_option.select(0)
-
-
-func _on_music_source_item_selected(index: int) -> void:
-	if _is_syncing_ui:
-		return
-	var meta: Variant = music_source_option.get_item_metadata(index)
-	if meta is String:
-		GameSettings.set_music_source(str(meta))
 
 
 func _select_resolution_option(width: int, height: int) -> void:

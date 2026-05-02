@@ -5,10 +5,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "${REPO_ROOT}"
 
-# shellcheck source=webview_extension_ci.sh
-source "${SCRIPT_DIR}/webview_extension_ci.sh"
-ci_webview_extension_disable
-
 TAG="${GITHUB_REF_NAME:?请在环境中设置 GITHUB_REF_NAME（通常为 git tag 名称）}"
 export RELEASE_VERSION="${TAG#v}"
 python3 "${REPO_ROOT}/scripts/ci/sync_version.py"

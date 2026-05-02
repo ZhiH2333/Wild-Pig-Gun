@@ -4,11 +4,6 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
 
-SCRIPT_CI="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=webview_extension_ci.sh
-source "${SCRIPT_CI}/webview_extension_ci.sh"
-ci_webview_extension_disable
-
 # shellcheck source=install_godot_linux.sh
 source "${REPO_ROOT}/scripts/ci/install_godot_linux.sh"
 

@@ -6,7 +6,6 @@ enum InputMode {
 }
 
 signal music_linear_changed(new_value: float)
-signal music_source_changed(source: String)
 signal mobile_controls_changed(enabled: bool)
 signal ui_scale_changed(new_value: float)
 signal view_scale_changed(new_value: float)
@@ -57,10 +56,6 @@ const QUALITY_MEDIUM: String = "medium"
 const QUALITY_HIGH: String = "high"
 const QUALITY_DEFAULT: String = QUALITY_MEDIUM
 
-## 音乐来源：内置 BGM 或第三方墨韵（网页 / WebView）
-const MUSIC_SOURCE_INTERNAL: String = "internal"
-const MUSIC_SOURCE_EXTERNAL: String = "external"
-
 var master_linear: float = MASTER_LINEAR_DEFAULT
 var music_linear: float = MUSIC_LINEAR_DEFAULT
 var sfx_linear: float = SFX_LINEAR_DEFAULT
@@ -80,7 +75,6 @@ var resolution_width: int = RESOLUTION_WIDTH_DEFAULT
 var resolution_height: int = RESOLUTION_HEIGHT_DEFAULT
 var fps_limit: int = FPS_LIMIT_DEFAULT
 var quality_preset: String = QUALITY_DEFAULT
-var music_source: String = MUSIC_SOURCE_INTERNAL
 
 
 func _ready() -> void:
@@ -136,7 +130,6 @@ func load_from_disk() -> void:
 		int(dict.get("resolution_height", RESOLUTION_HEIGHT_DEFAULT)), RESOLUTION_MIN, RESOLUTION_MAX)
 	fps_limit = clampi(int(dict.get("fps_limit", FPS_LIMIT_DEFAULT)), 0, VSYNC_FPS_MAX)
 	quality_preset = _normalize_quality_preset(str(dict.get("quality_preset", QUALITY_DEFAULT)))
-	music_source = _normalize_music_source(str(dict.get("music_source", MUSIC_SOURCE_INTERNAL)))
 
 
 func save_to_disk() -> void:
@@ -160,7 +153,6 @@ func save_to_disk() -> void:
 		"resolution_height": resolution_height,
 		"fps_limit": fps_limit,
 		"quality_preset": quality_preset,
-		"music_source": music_source,
 	}
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
 	if f == null:
@@ -179,15 +171,6 @@ func set_music_linear(value: float) -> void:
 	_apply_audio_buses()
 	save_to_disk()
 	music_linear_changed.emit(music_linear)
-
-
-func set_music_source(source: String) -> void:
-	var next: String = _normalize_music_source(source)
-	if music_source == next:
-		return
-	music_source = next
-	save_to_disk()
-	music_source_changed.emit(music_source)
 
 
 func set_sfx_linear(value: float) -> void:
@@ -315,9 +298,7 @@ func clear_all_settings_data() -> bool:
 	resolution_height = RESOLUTION_HEIGHT_DEFAULT
 	fps_limit = FPS_LIMIT_DEFAULT
 	quality_preset = QUALITY_DEFAULT
-	music_source = MUSIC_SOURCE_INTERNAL
 	_apply_all()
-	music_source_changed.emit(music_source)
 	if not FileAccess.file_exists(SETTINGS_PATH):
 		return true
 	var abs_path: String = ProjectSettings.globalize_path(SETTINGS_PATH)
@@ -338,12 +319,6 @@ func _normalize_quality_preset(preset_id: String) -> String:
 	if preset_id == QUALITY_LOW or preset_id == QUALITY_HIGH:
 		return preset_id
 	return QUALITY_MEDIUM
-
-
-func _normalize_music_source(source: String) -> String:
-	if source == MUSIC_SOURCE_EXTERNAL:
-		return MUSIC_SOURCE_EXTERNAL
-	return MUSIC_SOURCE_INTERNAL
 
 
 func _apply_all() -> void:
