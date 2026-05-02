@@ -41,7 +41,7 @@ func configure_shop_intro() -> void:
 	_completion_box.visible = false
 	_title.text = "💡 购物小提示"
 	_body.text = (
-		"波次结束后，你可以在此处花费材料进行升级！\n"
+		"波次结束后，你可以在此处花费野猪币进行升级！\n"
 		+ "· 左侧：三选一随机升级（波次奖励） · 右侧：商店道具，随时购买\n"
 		+ "合理搭配升级，打造你的专属构筑！"
 	)

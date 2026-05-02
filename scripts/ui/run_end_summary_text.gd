@@ -83,7 +83,7 @@ static func format_stats_block() -> String:
 	)
 	lines.append("【经济与运气】")
 	lines.append(
-		"  收获 +%.2f  幸运 %d  商店标价×%.2f  材料转伤害 %.3f"
+		"  收获 +%.2f  幸运 %d  商店标价×%.2f  野猪币转伤害 %.3f"
 		% [
 			float(d.get("stat_harvest", 0.0)),
 			int(d.get("stat_luck", 0)),
@@ -187,7 +187,7 @@ static func build_bbcode_section() -> String:
 	b.append(_bb_kv("收获加成", "+%.2f" % float(d.get("stat_harvest", 0.0))))
 	b.append(_bb_kv("幸运值", "%d" % int(d.get("stat_luck", 0))))
 	b.append(_bb_kv("商店标价", "×%.2f" % float(d.get("shop_price_mult", 1.0))))
-	b.append(_bb_kv("材料转伤害", "%.3f" % float(d.get("material_to_damage_kv", 0.0))))
+	b.append(_bb_kv("野猪币转伤害", "%.3f" % float(d.get("material_to_damage_kv", 0.0))))
 	b.append(_bb_kv("暴击率", "%.0f%%" % (float(d.get("stat_crit_chance", 0.05)) * 100.0)))
 	b.append(_bb_kv("暴击伤害", "×%.2f" % float(d.get("stat_crit_mult", 1.5))))
 	b.append("\n")

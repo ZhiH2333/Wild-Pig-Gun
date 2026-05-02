@@ -91,7 +91,7 @@ func add_purchased_character(character_id: String) -> void:
 	save_meta_progress(meta)
 
 
-## 局内金币并入元进度钱包（结算时调用）
+## 局内野猪币并入野猪钱包（结算时调用）
 func bank_run_gold_to_wallet(amount: int) -> void:
 	if amount <= 0:
 		return

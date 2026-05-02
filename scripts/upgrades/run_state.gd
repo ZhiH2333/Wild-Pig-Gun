@@ -20,7 +20,7 @@ signal level_up_queued(new_level: int)
 # 局内状态
 var character_id: String = "default"
 var wave_index: int = 0
-## 元进度货币（通关解锁等，局内购物只用 material_current）
+## 野猪钱包货币（野猪币；局内购物只用 material_current）
 var gold: int = 0
 ## 本局开始时的系统滴答（毫秒），用于结算用时
 var run_start_ticks_msec: int = 0
@@ -38,7 +38,7 @@ var run_seed: int = 0
 var player_max_hp: int = 100
 var player_current_hp: int = 100
 
-# 阶段二：材料（金币）
+# 阶段二：材料（局内掉落野猪币等）
 var material_current: int = 0   # 本波已拾取材料
 var material_savings: int = 0   # 未拾取储蓄材料（下波拾取时翻倍）
 var player_level: int = 1

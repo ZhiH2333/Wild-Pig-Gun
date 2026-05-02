@@ -1,5 +1,6 @@
 extends Control
 
+const MENU_BUTTON_CONTAINER_PATH: String = "MenuButtonsWrap/LeftMenuColumn/ButtonContainer"
 const TUTORIAL_OVERLAY_SCRIPT: Script = preload("res://scripts/ui/tutorial_overlay.gd")
 
 const BACKGROUND_SWAY_SPEED: float = 0.52
@@ -19,14 +20,14 @@ var _control_mode_dialog: Window = null
 
 func _ready() -> void:
 	GameMusic.ensure_playing_main_volume()
-	var continue_btn: Button = $MenuRoot/ButtonContainer/ContinueButton
+	var continue_btn: Button = get_node("%s/ContinueButton" % MENU_BUTTON_CONTAINER_PATH) as Button
 	continue_btn.pressed.connect(_on_continue_pressed)
 	_refresh_continue_button()
-	$MenuRoot/ButtonContainer/StartButton.pressed.connect(_on_start_pressed)
-	$MenuRoot/ButtonContainer/CustomizeButton.pressed.connect(_on_character_pressed)
-	$MenuRoot/ButtonContainer/SettingsButton.pressed.connect(_on_settings_pressed)
-	$MenuRoot/ButtonContainer/AboutButton.pressed.connect(_on_credits_pressed)
-	$MenuRoot/ButtonContainer/QuitButton.pressed.connect(_on_quit_pressed)
+	get_node("%s/StartButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_start_pressed)
+	get_node("%s/CustomizeButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_character_pressed)
+	get_node("%s/SettingsButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_settings_pressed)
+	get_node("%s/AboutButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_credits_pressed)
+	get_node("%s/QuitButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_quit_pressed)
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
 	_update_background_sway_pivot()
@@ -127,7 +128,7 @@ func _process(delta: float) -> void:
 
 
 func _refresh_continue_button() -> void:
-	var continue_btn: Button = $MenuRoot/ButtonContainer/ContinueButton
+	var continue_btn: Button = get_node("%s/ContinueButton" % MENU_BUTTON_CONTAINER_PATH) as Button
 	var has_save: bool = SaveManager.has_pending_run()
 	continue_btn.disabled = not has_save
 	if has_save:

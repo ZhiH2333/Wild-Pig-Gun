@@ -57,6 +57,8 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var data_summary_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/DataSummaryLabel
 @onready var clear_hint_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearHintLabel
 @onready var clear_all_data_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton
+@onready var clear_hold_progress: ProgressBar = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton/ClearHoldProgress
+@onready var clear_hold_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton/ClearHoldLabel
 @onready var title_label: Label = $Center/MainColumn/HeaderMargins/HeaderRow/Title
 @onready var back_button: Button = $Center/MainColumn/HeaderMargins/HeaderRow/BackButton
 @onready var delete_confirm_overlay: Control = $DeleteConfirmOverlay
@@ -122,6 +124,9 @@ func _ready() -> void:
 	_refresh_joystick_size_label()
 	_refresh_joystick_size_visibility()
 	_refresh_data_summary()
+	clear_hold_timer.wait_time = CLEAR_HOLD_SECONDS
+	_style_clear_hold_progress_bar()
+	_sync_clear_hold_label_theme()
 	_refresh_clear_button_idle_text()
 	_apply_web_visibility()
 	_apply_tutorial_mode()
@@ -484,7 +489,8 @@ func _refresh_data_summary() -> void:
 	lines.append("当前数据：")
 	lines.append("1) 存档文件（wild_pig_gun_save.json）：%s" % ("存在" if save_file_exists else "无"))
 	lines.append("2) 设置文件（game_settings.json）：%s" % ("存在" if settings_file_exists else "无"))
-	lines.append("3) 元进度：最高波次 %d / 累计局数 %d / 通关次数 %d" % [best_wave, run_count, victory_count])
+	var wallet_coin: int = SaveManager.get_wallet_gold()
+	lines.append("3) 野猪钱包：%d 野猪币 · 最高波次 %d / 累计局数 %d / 通关次数 %d" % [wallet_coin, best_wave, run_count, victory_count])
 	if has_pending_run:
 		lines.append("4) 续玩存档：有（角色 %s，第 %d 波）" % [pending_character_id, pending_wave])
 	else:
@@ -492,12 +498,35 @@ func _refresh_data_summary() -> void:
 	data_summary_label.text = "\n".join(lines)
 
 
+func _style_clear_hold_progress_bar() -> void:
+	var track: StyleBoxFlat = StyleBoxFlat.new()
+	track.bg_color = Color(0, 0, 0, 0)
+	track.set_corner_radius_all(4)
+	clear_hold_progress.add_theme_stylebox_override("background", track)
+	var fill: StyleBoxFlat = StyleBoxFlat.new()
+	fill.bg_color = Color(0.82, 0.14, 0.16, 1.0)
+	fill.set_corner_radius_all(4)
+	clear_hold_progress.add_theme_stylebox_override("fill", fill)
+
+
+func _sync_clear_hold_label_theme() -> void:
+	var fs: int = clear_all_data_button.get_theme_font_size("font_size")
+	if fs <= 0:
+		fs = 24
+	var fnt: Font = clear_all_data_button.get_theme_font("font")
+	if fnt:
+		clear_hold_label.add_theme_font_override("font", fnt)
+	clear_hold_label.add_theme_font_size_override("font_size", fs)
+	clear_hold_label.add_theme_color_override(
+		"font_color", clear_all_data_button.get_theme_color("font_color"))
+
+
 func _refresh_clear_button_idle_text() -> void:
 	if is_clear_confirmed:
-		clear_all_data_button.text = "长按 3 秒清除所有数据"
-		clear_hint_label.text = "已确认，请按住红色按钮直到清除完成"
+		clear_hold_label.text = "长按 3 秒清除所有数据"
+		clear_hint_label.text = "已确认，请长按直至红色进度条走满（约 3 秒）"
 		return
-	clear_all_data_button.text = "清除所有数据"
+	clear_hold_label.text = "清除所有数据"
 	clear_hint_label.text = "先点击确认，再长按 3 秒清除全部数据"
 
 
@@ -521,6 +550,7 @@ func _on_clear_all_button_down() -> void:
 	if not is_clear_confirmed:
 		return
 	is_holding_clear_button = true
+	clear_hold_progress.value = 0.0
 	clear_hold_timer.start(CLEAR_HOLD_SECONDS)
 
 
@@ -538,24 +568,26 @@ func _process(_delta: float) -> void:
 	var held_seconds: float = CLEAR_HOLD_SECONDS - clear_hold_timer.time_left
 	if held_seconds < 0.0:
 		held_seconds = 0.0
-	clear_all_data_button.text = "正在清除确认：%.1f / %.1f 秒" % [held_seconds, CLEAR_HOLD_SECONDS]
+	clear_hold_progress.value = clampf((held_seconds / CLEAR_HOLD_SECONDS) * 100.0, 0.0, 100.0)
 
 
 func _cancel_clear_hold() -> void:
 	is_holding_clear_button = false
 	if not clear_hold_timer.is_stopped():
 		clear_hold_timer.stop()
+	clear_hold_progress.value = 0.0
 	_refresh_clear_button_idle_text()
 
 
 func _on_clear_hold_timer_timeout() -> void:
 	is_holding_clear_button = false
+	clear_hold_progress.value = 100.0
 	_execute_clear_all_data()
 
 
 func _execute_clear_all_data() -> void:
 	clear_all_data_button.disabled = true
-	clear_all_data_button.text = "正在清除..."
+	clear_hold_label.text = "正在清除..."
 	clear_hint_label.text = "请稍候，正在重置数据并返回主菜单"
 	var is_save_cleared: bool = SaveManager.delete_all_save_data()
 	var is_settings_cleared: bool = GameSettings.clear_all_settings_data()

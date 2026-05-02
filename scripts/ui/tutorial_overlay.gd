@@ -46,7 +46,7 @@ func _ready() -> void:
 		_welcome_body.text = (
 			"[center]欢迎来到《野猪枪》！\n"
 			+ "你将扮演一只武装到牙齿的野猪，在不断涌来的怪物浪潮中生存下去。\n"
-			+ "收集材料、升级构筑、击败 Boss，看看你能坚持到第几波！[/center]"
+			+ "收集野猪币、升级构筑、击败 Boss，看看你能坚持到第几波！[/center]"
 		)
 	if _start_tutorial_btn:
 		_start_tutorial_btn.pressed.connect(_on_start_tutorial)

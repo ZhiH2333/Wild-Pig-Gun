@@ -76,29 +76,34 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.45)
 
-[node name="MenuRoot" type="VBoxContainer" parent="." unique_id=47442798]
+[node name="MenuButtonsWrap" type="Control" parent="." unique_id=47442798]
 layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftMenuColumn" type="VBoxContainer" parent="MenuButtonsWrap" unique_id=47442799]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 1.0
 offset_left = 40.0
-offset_top = 38.0
+offset_top = 0.0
 offset_right = 323.0
-offset_bottom = 575.0
+offset_bottom = 0.0
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 0
 
-[node name="TitleLabel" type="Label" parent="MenuRoot" unique_id=122269349]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 48
-text = "Wild Pig Gun"
-
-[node name="TitleSpacer" type="Control" parent="MenuRoot" unique_id=735387959]
-custom_minimum_size = Vector2(0, 20)
-layout_mode = 2
-
-[node name="ButtonContainer" type="VBoxContainer" parent="MenuRoot" unique_id=570520200]
+[node name="ButtonContainer" type="VBoxContainer" parent="MenuButtonsWrap/LeftMenuColumn" unique_id=570520200]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ContinueButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=204891531]
+[node name="ContinueButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=204891531]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
@@ -106,7 +111,7 @@ theme = ExtResource("5_menu_btn_theme")
 text = "继续游戏-第0波"
 alignment = 1
 
-[node name="StartButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=472004151]
+[node name="StartButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=472004151]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
@@ -114,7 +119,7 @@ theme = ExtResource("5_menu_btn_theme")
 text = "开始"
 alignment = 1
 
-[node name="CustomizeButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=1558636735]
+[node name="CustomizeButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1558636735]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
@@ -122,7 +127,7 @@ theme = ExtResource("5_menu_btn_theme")
 text = "个性化"
 alignment = 1
 
-[node name="SettingsButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=1954588758]
+[node name="SettingsButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1954588758]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
@@ -130,7 +135,7 @@ theme = ExtResource("5_menu_btn_theme")
 text = "选项"
 alignment = 1
 
-[node name="AboutButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=1792550266]
+[node name="AboutButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1792550266]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
@@ -138,13 +143,23 @@ theme = ExtResource("5_menu_btn_theme")
 text = "关于我们"
 alignment = 1
 
-[node name="QuitButton" type="Button" parent="MenuRoot/ButtonContainer" unique_id=1248563847]
+[node name="QuitButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1248563847]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
 theme = ExtResource("5_menu_btn_theme")
 text = "退出"
 alignment = 1
+
+[node name="TitleLabel" type="Label" parent="." unique_id=122269349]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 40.0
+offset_top = 38.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 48
+text = "Wild Pig Gun"
 
 [node name="InfoDialog" type="AcceptDialog" parent="." unique_id=1521258567]
 ok_button_text = "确定"

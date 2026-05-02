@@ -1,6 +1,6 @@
 extends Control
 
-const HOLD_PURCHASE_SECONDS: float = 3.0
+const HOLD_PURCHASE_SECONDS: float = 1.0
 const PROFILE_TAB_HOLD_SECONDS: float = 1.2
 const SETTINGS_PATH_DISPLAY: String = "user://game_settings.json"
 
@@ -70,7 +70,9 @@ func _ready() -> void:
 	yes_hold_button.button_up.connect(_on_yes_hold_up)
 	purchase_hold_timer.timeout.connect(_on_purchase_hold_completed)
 	shop_result_dialog.confirmed.connect(_on_shop_result_closed)
+	purchase_hold_timer.wait_time = HOLD_PURCHASE_SECONDS
 	_style_yes_progress_bar()
+	_setup_yes_hold_button_progress_layers()
 	yes_progress.value = 0.0
 
 
@@ -194,7 +196,6 @@ func _process(_delta: float) -> void:
 	if elapsed < 0.0:
 		elapsed = 0.0
 	yes_progress.value = clampf((elapsed / HOLD_PURCHASE_SECONDS) * 100.0, 0.0, 100.0)
-	yes_hold_button.text = "正在确认：%.1f / %.1f 秒" % [elapsed, HOLD_PURCHASE_SECONDS]
 
 
 func _build_tab_button_styles() -> void:
@@ -251,14 +252,41 @@ func _switch_tab(index: int) -> void:
 		sep.visible = left_tab.visible and right_tab.visible
 
 
+## 进度条叠在黑按钮之上；单独 Label 保证「是」字不被灰色条盖住（与主题「否」同款按钮外观）。
+func _setup_yes_hold_button_progress_layers() -> void:
+	yes_progress.show_behind_parent = false
+	yes_hold_button.text = ""
+	var lbl: Label = yes_hold_button.get_node_or_null("YesHoldText") as Label
+	if lbl == null:
+		lbl = Label.new()
+		lbl.name = "YesHoldText"
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lbl.layout_mode = 1
+		lbl.set_anchors_preset(Control.PRESET_FULL_RECT)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.text = "是"
+		yes_hold_button.add_child(lbl)
+	var fs: int = yes_hold_button.get_theme_font_size("font_size")
+	if fs <= 0:
+		fs = 22
+	var fnt: Font = yes_hold_button.get_theme_font("font")
+	if fnt:
+		lbl.add_theme_font_override("font", fnt)
+	lbl.add_theme_font_size_override("font_size", fs)
+	lbl.add_theme_color_override("font_color", yes_hold_button.get_theme_color("font_color"))
+	yes_hold_button.move_child(yes_progress, 0)
+	yes_hold_button.move_child(lbl, yes_hold_button.get_child_count() - 1)
+
+
 func _style_yes_progress_bar() -> void:
 	var track: StyleBoxFlat = StyleBoxFlat.new()
-	track.bg_color = Color(0, 0, 0, 0.45)
-	track.set_corner_radius_all(2)
+	track.bg_color = Color(0, 0, 0, 0)
+	track.set_corner_radius_all(4)
 	yes_progress.add_theme_stylebox_override("background", track)
 	var fill: StyleBoxFlat = StyleBoxFlat.new()
-	fill.bg_color = Color(0.35, 0.65, 1.0, 0.85)
-	fill.set_corner_radius_all(2)
+	fill.bg_color = Color(0.58, 0.59, 0.62, 0.88)
+	fill.set_corner_radius_all(4)
 	yes_progress.add_theme_stylebox_override("fill", fill)
 
 
@@ -276,6 +304,7 @@ func _shop_card_style() -> StyleBoxFlat:
 
 
 func _build_shop_cards() -> void:
+	const SHOP_ICON_PX: int = 96
 	for c in shop_vbox.get_children():
 		c.queue_free()
 	var font_bold: Font = load("res://assets/fonts/SourceHanSansSC-Bold.otf") as Font
@@ -283,14 +312,17 @@ func _build_shop_cards() -> void:
 	var wallet: int = SaveManager.get_wallet_gold()
 	if offers.is_empty():
 		var empty_lbl: Label = Label.new()
-		empty_lbl.text = "暂无可购角色（已解锁全部）。\n元进度钱包：%d 金币（局内拾取的金币在结算时并入）。" % wallet
+		empty_lbl.text = "暂无可购角色（已解锁全部）。\n野猪钱包：%d 野猪币（局内拾取的野猪币在结算时并入野猪钱包）。" % wallet
 		empty_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		empty_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		empty_lbl.add_theme_font_size_override("font_size", 20)
 		empty_lbl.add_theme_color_override("font_color", Color(0.88, 0.9, 0.95, 0.9))
 		shop_vbox.add_child(empty_lbl)
 		return
 	var hint: Label = Label.new()
-	hint.text = "元进度钱包：%d 金币 · 长按「是」%d 秒确认购买" % [wallet, int(HOLD_PURCHASE_SECONDS)]
+	hint.text = "野猪钱包：%d 野猪币 · 长按「是」%d 秒确认购买" % [wallet, int(HOLD_PURCHASE_SECONDS)]
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hint.add_theme_font_size_override("font_size", 18)
 	hint.add_theme_color_override("font_color", Color(0.78, 0.82, 0.95, 0.95))
 	shop_vbox.add_child(hint)
@@ -307,41 +339,55 @@ func _build_shop_cards() -> void:
 		}
 		var card: PanelContainer = PanelContainer.new()
 		card.add_theme_stylebox_override("panel", _shop_card_style())
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		shop_vbox.add_child(card)
 		var row: HBoxContainer = HBoxContainer.new()
-		row.add_theme_constant_override("separation", 16)
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 12)
 		card.add_child(row)
+		var icon_box: Control = Control.new()
+		var icon_side: float = float(SHOP_ICON_PX)
+		icon_box.custom_minimum_size = Vector2(icon_side, icon_side)
+		icon_box.clip_contents = true
+		icon_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		var tex_rect: TextureRect = TextureRect.new()
-		tex_rect.custom_minimum_size = Vector2(96, 96)
-		tex_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		tex_rect.layout_mode = 1
+		tex_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		var p: String = str(item.get("sprite_path", ""))
 		if ResourceLoader.exists(p):
 			tex_rect.texture = load(p) as Texture2D
-		row.add_child(tex_rect)
+		icon_box.add_child(tex_rect)
+		row.add_child(icon_box)
 		var text_col: VBoxContainer = VBoxContainer.new()
 		text_col.add_theme_constant_override("separation", 6)
 		text_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		text_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		row.add_child(text_col)
 		var title_lbl: Label = Label.new()
 		title_lbl.text = str(item.get("title", "商品"))
+		title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		title_lbl.add_theme_font_override("font", font_bold)
 		title_lbl.add_theme_font_size_override("font_size", 24)
 		text_col.add_child(title_lbl)
 		var desc_lbl: Label = Label.new()
 		desc_lbl.text = str(item.get("desc", ""))
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		desc_lbl.add_theme_font_size_override("font_size", 18)
 		desc_lbl.add_theme_color_override("font_color", Color(0.9, 0.92, 0.96, 0.92))
 		text_col.add_child(desc_lbl)
 		var price_lbl: Label = Label.new()
-		price_lbl.text = "%d 金币" % int(item.get("price", 0))
+		price_lbl.text = "%d 野猪币" % int(item.get("price", 0))
+		price_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		price_lbl.add_theme_font_size_override("font_size", 17)
 		price_lbl.add_theme_color_override("font_color", Color(0.85, 0.9, 1.0, 0.85))
 		text_col.add_child(price_lbl)
 		var buy: Button = Button.new()
 		buy.text = "购买"
 		buy.custom_minimum_size = Vector2(120, 48)
+		buy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		buy.add_theme_font_override("font", font_bold)
 		buy.add_theme_font_size_override("font_size", 20)
 		buy.theme = load("res://themes/black_button_theme.tres") as Theme
@@ -352,7 +398,7 @@ func _build_shop_cards() -> void:
 func _on_shop_buy_pressed(item: Dictionary) -> void:
 	_pending_shop = item
 	var wallet: int = SaveManager.get_wallet_gold()
-	purchase_message.text = "是否购买「%s」？\n价格：%d 金币 · 当前钱包：%d 金币" % [
+	purchase_message.text = "是否购买「%s」？\n价格：%d 野猪币 · 当前野猪钱包：%d 野猪币" % [
 		str(item.get("title", "")),
 		int(item.get("price", 0)),
 		wallet,
@@ -409,7 +455,7 @@ func _on_purchase_hold_completed() -> void:
 		_build_profile_sections()
 	else:
 		_close_purchase_overlay()
-		shop_result_dialog.dialog_text = "元进度金币不足（需要 %d）。\n完成一局后，局内拾取的金币会并入钱包。" % price
+		shop_result_dialog.dialog_text = "野猪币不足（需要 %d）。\n完成一局后，局内拾取的野猪币会并入野猪钱包。" % price
 		shop_result_dialog.popup_centered()
 
 
@@ -475,8 +521,8 @@ func _build_profile_sections() -> void:
 	else:
 		profile_contents.add_child(_stat_line("续玩进度", "无进行中存档"))
 	var wallet: int = SaveManager.get_wallet_gold()
-	profile_contents.add_child(_section_title("元进度与角色"))
-	profile_contents.add_child(_stat_line("元进度钱包", "%d 金币" % wallet))
+	profile_contents.add_child(_section_title("野猪钱包与角色"))
+	profile_contents.add_child(_stat_line("野猪钱包", "%d 野猪币" % wallet))
 	var owned_parts: PackedStringArray = PackedStringArray()
 	for c in CharacterData.list_characters():
 		if not c is Dictionary:

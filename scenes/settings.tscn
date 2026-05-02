@@ -585,14 +585,41 @@ text = "先点击确认，再长按 3 秒清除全部数据"
 
 [node name="ClearAllDataButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=457925668]
 self_modulate = Color(1, 0.34, 0.34, 1)
+clip_contents = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("7_black_btn")
 theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 24
-text = "清除所有数据"
+text = ""
 alignment = 1
+
+[node name="ClearHoldProgress" type="ProgressBar" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton" unique_id=457925669]
+show_behind_parent = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+show_percentage = false
+max_value = 100.0
+
+[node name="ClearHoldLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton" unique_id=457925670]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 24
+text = "清除所有数据"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="DeleteConfirmOverlay" type="Control" parent="." unique_id=332576334]
 visible = false

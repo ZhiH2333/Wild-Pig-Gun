@@ -412,7 +412,7 @@ func _add_stats_section() -> void:
 		_add_stat_row("（无玩家数据）")
 		return
 	_add_stat_row("❤ 生命：%d / %d" % [_player.current_hp, _player.max_hp])
-	_add_stat_row("💰 材料：%d" % RunState.material_current)
+	_add_stat_row("💰 野猪币：%d" % RunState.material_current)
 	_add_stat_row("⭐ 等级：Lv.%d" % RunState.player_level)
 	_add_stat_row("⚔ 伤害乘数：×%.2f" % _player.stat_damage_mult)
 	_add_stat_row("🔫 攻速乘数：×%.2f" % _player.stat_fire_rate_mult)
@@ -507,7 +507,7 @@ func _on_sell_weapon_pressed(weapon_node: Node, wname: String, sell_price: int) 
 	if not is_instance_valid(weapon_node):
 		return
 	_pending_sell_node = weapon_node
-	_sell_confirm.dialog_text = "变卖「%s」？\n\n返还 %d 材料（购买价的 50%%）\n\n⚠ 变卖后无法撤销" % [wname, sell_price]
+	_sell_confirm.dialog_text = "变卖「%s」？\n\n返还 %d 野猪币（购买价的 50%%）\n\n⚠ 变卖后无法撤销" % [wname, sell_price]
 	_sell_confirm.popup_centered()
 
 
