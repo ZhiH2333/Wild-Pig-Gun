@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="4_vjoy"]
 
 [sub_resource type="Shader" id="Shader_blur_darken"]
-code = "shader_type canvas_item;\n\nuniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;\nuniform float blur_lod = 3.5;\nuniform float dim_strength = 0.5;\n\nvoid fragment() {\n\tvec4 col = textureLod(screen_tex, SCREEN_UV, blur_lod);\n\tcol.rgb *= (1.0 - dim_strength);\n\tCOLOR = col;\n}\n"
+code = "shader_type canvas_item;\n\nuniform sampler2D screen_tex : hint_screen_texture, filter_linear;\nuniform float blur_radius = 4.5;\nuniform float dim_strength = 0.5;\n\nvoid fragment() {\n\tvec2 px = blur_radius * SCREEN_PIXEL_SIZE;\n\tvec4 acc = texture(screen_tex, SCREEN_UV) * 4.0;\n\tacc += texture(screen_tex, SCREEN_UV + vec2(px.x, 0.0));\n\tacc += texture(screen_tex, SCREEN_UV - vec2(px.x, 0.0));\n\tacc += texture(screen_tex, SCREEN_UV + vec2(0.0, px.y));\n\tacc += texture(screen_tex, SCREEN_UV - vec2(0.0, px.y));\n\tacc += texture(screen_tex, SCREEN_UV + vec2(px.x, px.y));\n\tacc += texture(screen_tex, SCREEN_UV - vec2(px.x, px.y));\n\tacc += texture(screen_tex, SCREEN_UV + vec2(px.x, -px.y));\n\tacc += texture(screen_tex, SCREEN_UV - vec2(px.x, -px.y));\n\tvec3 rgb = (acc.rgb / 12.0) * (1.0 - dim_strength);\n\tCOLOR = vec4(rgb, 1.0);\n}\n"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blur_darken"]
 shader = SubResource("Shader_blur_darken")

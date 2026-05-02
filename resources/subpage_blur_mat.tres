@@ -1,8 +1,7 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3]
 
-[ext_resource type="Shader" path="res://shaders/pause_overlay_background.gdshader" id="1_shader"]
+[ext_resource type="Shader" path="res://shaders/menu_background_blur.gdshader" id="1_shader"]
 
 [resource]
 shader = ExtResource("1_shader")
-shader_parameter/blur_lod = 0.8
-shader_parameter/darken = 0.0
+shader_parameter/blur_strength = 1.75
