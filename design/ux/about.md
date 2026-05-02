@@ -16,7 +16,7 @@
 
 | 区域 | 说明 |
 |------|------|
-| 全屏 | `BlurredBackground` + `DimOverlay` + `Vignette`，与设置/画廊一致 |
+| 全屏 | `BlurredBackground`（清晰底图、无模糊材质）+ `DimOverlay` `Color(0,0,0,0.62)` + `Vignette`，与设置/画廊 / 暂停遮罩同款；详见 `design/ux/menu-screen-backdrop.md` |
 | `Center` | `MarginContainer`，左侧半屏内容区（`anchor_right = 0.5`），边距与设置一致 |
 | 顶栏 | `HBoxContainer`：**返回**（`black_button_theme` + 返回图标）+ 标题 **「关于」** |
 | 主内容 | `MainCard` 透明底板 + 内边距 22/20，内嵌 **单栏** `ScrollContainer`（无 Tab、无 `TabButtonRow`） |

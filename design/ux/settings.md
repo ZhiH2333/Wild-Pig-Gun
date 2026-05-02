@@ -59,8 +59,15 @@
 
 ---
 
+## 全屏背景与遮罩
+
+与场内暂停同款：**清晰** `mainmenu.png` + **`DimOverlay` `Color(0, 0, 0, 0.62)`**；不对底图做模糊。详见 `design/ux/menu-screen-backdrop.md`。数据清除确认叠层 `RedBlurBackdrop` 为纯色半透明，无模糊材质。
+
+---
+
 ## 交叉引用
 
 - 主题源文件：`themes/black_button_theme.tres`、`themes/settings_tab_theme.tres`、`themes/settings_panel_theme.tres`  
 - 场景：`scenes/settings.tscn`  
-- 逻辑：`scripts/ui/settings_screen.gd`（页签样式与 `settings_tab_theme` 对齐注释）
+- 逻辑：`scripts/ui/settings_screen.gd`（页签样式与 `settings_tab_theme` 对齐注释）  
+- 背景规范：`design/ux/menu-screen-backdrop.md`
