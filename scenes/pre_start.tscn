@@ -1,9 +1,26 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3 uid="uid://prestart_wpg"]
 
 [ext_resource type="Script" path="res://scripts/ui/pre_start.gd" id="1_pre_start"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
-[ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="5_font"]
+[ext_resource type="Texture2D" uid="uid://cd3upfbw3oy1" path="res://assets/ui/icon_back.svg" id="4_back_icon"]
+[ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="5_black_btn"]
+[ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="6_menu_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_maincard_transparent"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inner_panel"]
+bg_color = Color(0.10, 0.09, 0.14, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.30, 0.45, 0.70)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="PreStart" type="Control"]
 layout_mode = 3
@@ -37,186 +54,244 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.62)
 
-[node name="TitleLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -220.0
-offset_top = 24.0
-offset_right = 220.0
-offset_bottom = 82.0
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 44
-text = "开始前..."
-horizontal_alignment = 1
-
-[node name="MainRow" type="HBoxContainer" parent="."]
+[node name="Vignette" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 40.0
-offset_top = 102.0
-offset_right = -40.0
-offset_bottom = -106.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
+mouse_filter = 2
+color = Color(0, 0, 0, 0.18)
 
-[node name="LeftPanel" type="PanelContainer" parent="MainRow"]
-custom_minimum_size = Vector2(560, 0)
+[node name="Center" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 14.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainColumn" type="VBoxContainer" parent="Center"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
 
-[node name="LeftVBox" type="VBoxContainer" parent="MainRow/LeftPanel"]
+[node name="HeaderMargins" type="MarginContainer" parent="Center/MainColumn"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 0
+
+[node name="HeaderRow" type="HBoxContainer" parent="Center/MainColumn/HeaderMargins"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BackButton" type="Button" parent="Center/MainColumn/HeaderMargins/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(168, 52)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme = ExtResource("5_black_btn")
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_constants/icon_max_width = 30
+theme_override_font_sizes/font_size = 24
+text = "返回"
+icon = ExtResource("4_back_icon")
+alignment = 0
+
+[node name="Title" type="Label" parent="Center/MainColumn/HeaderMargins/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 42
+text = "开始前..."
+vertical_alignment = 1
+
+[node name="MainCard" type="PanelContainer" parent="Center/MainColumn"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_maincard_transparent")
+
+[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 22
+
+[node name="MainRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="LeftPanel" type="PanelContainer" parent="Center/MainColumn/MainCard/Margins/MainRow"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_inner_panel")
+
+[node name="LeftVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftPanel"]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="CharSprite" type="TextureRect" parent="MainRow/LeftPanel/LeftVBox"]
+[node name="CharSprite" type="TextureRect" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftPanel/LeftVBox"]
 custom_minimum_size = Vector2(220, 220)
 layout_mode = 2
 size_flags_horizontal = 4
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CharNameLabel" type="Label" parent="MainRow/LeftPanel/LeftVBox"]
+[node name="CharNameLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftPanel/LeftVBox"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 32
 text = "角色名称"
 horizontal_alignment = 1
 
-[node name="CharDescLabel" type="Label" parent="MainRow/LeftPanel/LeftVBox"]
+[node name="CharDescLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftPanel/LeftVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.90, 0.88, 0.84, 1)
+theme_override_font_sizes/font_size = 20
 text = "角色描述"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="ChangeCharButton" type="Button" parent="MainRow/LeftPanel/LeftVBox"]
-custom_minimum_size = Vector2(260, 56)
+[node name="ChangeCharButton" type="Button" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftPanel/LeftVBox"]
+custom_minimum_size = Vector2(280, 56)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = ExtResource("5_font")
+theme = ExtResource("5_black_btn")
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 22
 text = "更换角色"
+alignment = 1
 
-[node name="RightPanel" type="PanelContainer" parent="MainRow"]
-custom_minimum_size = Vector2(560, 0)
+[node name="RightPanel" type="PanelContainer" parent="Center/MainColumn/MainCard/Margins/MainRow"]
+custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_inner_panel")
 
-[node name="RightVBox" type="VBoxContainer" parent="MainRow/RightPanel"]
+[node name="RightVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel"]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="WeaponTitle" type="Label" parent="MainRow/RightPanel/RightVBox"]
+[node name="WeaponTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 28
 text = "选择初始武器"
 horizontal_alignment = 1
 
-[node name="WeaponList" type="VBoxContainer" parent="MainRow/RightPanel/RightVBox"]
+[node name="WeaponList" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="WeaponStatsBox" type="VBoxContainer" parent="MainRow/RightPanel/RightVBox"]
+[node name="WeaponStatsBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="WeaponNameLabel" type="Label" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox"]
+[node name="WeaponNameLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 26
 text = "武器"
 
-[node name="MetaRow" type="HBoxContainer" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox"]
+[node name="MetaRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox"]
 layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="WeaponKindLabel" type="Label" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox/MetaRow"]
+[node name="WeaponKindLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/MetaRow"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.90, 0.88, 0.84, 1)
 theme_override_font_sizes/font_size = 18
 text = "类型：projectile"
 
-[node name="WeaponElementLabel" type="Label" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox/MetaRow"]
+[node name="WeaponElementLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/MetaRow"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.90, 0.88, 0.84, 1)
 theme_override_font_sizes/font_size = 18
 text = "属性：无"
 
-[node name="DamageRow" type="HBoxContainer" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox"]
+[node name="DamageRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="DamageTitleLabel" type="Label" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow"]
+[node name="DamageTitleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow"]
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.90, 0.88, 0.84, 1)
 text = "伤害"
 
-[node name="DamageBar" type="ProgressBar" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow"]
-custom_minimum_size = Vector2(280, 22)
+[node name="DamageBar" type="ProgressBar" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow"]
+custom_minimum_size = Vector2(200, 22)
 layout_mode = 2
 size_flags_horizontal = 3
 show_percentage = false
 
-[node name="DamageValueLabel" type="Label" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow"]
+[node name="DamageValueLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow"]
 custom_minimum_size = Vector2(56, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.90, 0.88, 0.84, 1)
 horizontal_alignment = 2
 text = "0"
 
-[node name="FireRateRow" type="HBoxContainer" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox"]
+[node name="FireRateRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="FireRateTitleLabel" type="Label" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow"]
+[node name="FireRateTitleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow"]
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.90, 0.88, 0.84, 1)
 text = "射速"
 
-[node name="FireRateBar" type="ProgressBar" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow"]
-custom_minimum_size = Vector2(280, 22)
+[node name="FireRateBar" type="ProgressBar" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow"]
+custom_minimum_size = Vector2(200, 22)
 layout_mode = 2
 size_flags_horizontal = 3
 show_percentage = false
 
-[node name="FireRateValueLabel" type="Label" parent="MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow"]
+[node name="FireRateValueLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow"]
 custom_minimum_size = Vector2(56, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.90, 0.88, 0.84, 1)
 horizontal_alignment = 2
 text = "0"
 
-[node name="BottomBar" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -86.0
-offset_right = -24.0
-offset_bottom = -24.0
-grow_horizontal = 2
-grow_vertical = 0
+[node name="FooterRow" type="HBoxContainer" parent="Center/MainColumn"]
+layout_mode = 2
+theme_override_constants/separation = 16
 alignment = 1
-theme_override_constants/separation = 24
 
-[node name="BackButton" type="Button" parent="BottomBar"]
-custom_minimum_size = Vector2(240, 54)
+[node name="StartButton" type="Button" parent="Center/MainColumn/FooterRow"]
+custom_minimum_size = Vector2(320, 70)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("5_font")
-text = "返回"
-
-[node name="StartButton" type="Button" parent="BottomBar"]
-custom_minimum_size = Vector2(260, 54)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("5_font")
+theme = ExtResource("5_black_btn")
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 28
 theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
 text = "开始游戏"
+alignment = 1
 
-[connection signal="pressed" from="MainRow/LeftPanel/LeftVBox/ChangeCharButton" to="." method="_on_change_char_button_pressed"]
-[connection signal="pressed" from="BottomBar/BackButton" to="." method="_on_back_button_pressed"]
-[connection signal="pressed" from="BottomBar/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="Center/MainColumn/HeaderMargins/HeaderRow/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="Center/MainColumn/MainCard/Margins/MainRow/LeftPanel/LeftVBox/ChangeCharButton" to="." method="_on_change_char_button_pressed"]
+[connection signal="pressed" from="Center/MainColumn/FooterRow/StartButton" to="." method="_on_start_button_pressed"]

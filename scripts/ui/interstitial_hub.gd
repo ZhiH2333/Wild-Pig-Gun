@@ -11,12 +11,12 @@ const ITEM_CARD_SCENE: PackedScene = preload("res://scenes/ui/item_card.tscn")
 const TOUCH_SCROLL_SCRIPT: Script = preload("res://scripts/ui/touch_scroll_container.gd")
 const TUTORIAL_POPUP_SCENE: PackedScene = preload("res://scenes/ui/tutorial_popup.tscn")
 
-@onready var title_label: Label = $CenterContainer/Panel/MarginContainer/VBox/TitleLabel
-@onready var upgrade_row: HBoxContainer = $CenterContainer/Panel/MarginContainer/VBox/UpgradeRow
-@onready var refresh_upgrade_btn: Button = $CenterContainer/Panel/MarginContainer/VBox/RefreshUpgradesButton
-@onready var shop_vbox: VBoxContainer = $CenterContainer/Panel/MarginContainer/VBox/ShopScroll/ShopVBox
-@onready var refresh_btn: Button = $CenterContainer/Panel/MarginContainer/VBox/BottomRow/RefreshShopButton
-@onready var continue_btn: Button = $CenterContainer/Panel/MarginContainer/VBox/BottomRow/ContinueButton
+@onready var title_label: Label = $MainFill/Panel/MarginContainer/VBox/TitleLabel
+@onready var upgrade_row: HBoxContainer = $MainFill/Panel/MarginContainer/VBox/UpgradeRow
+@onready var refresh_upgrade_btn: Button = $MainFill/Panel/MarginContainer/VBox/RefreshUpgradesButton
+@onready var shop_vbox: VBoxContainer = $MainFill/Panel/MarginContainer/VBox/ShopSection/ShopCard/Margins/ShopColumn/ShopScrollPanel/ShopScroll/ShopVBox
+@onready var refresh_btn: Button = $MainFill/Panel/MarginContainer/VBox/BottomRow/RefreshShopButton
+@onready var continue_btn: Button = $MainFill/Panel/MarginContainer/VBox/BottomRow/ContinueButton
 
 var _player: Node = null
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -68,24 +68,26 @@ func _ready() -> void:
 
 
 func _apply_layout_and_typography() -> void:
-	var center: CenterContainer = $CenterContainer as CenterContainer
-	if center != null:
-		center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		center.offset_left = 404.0
-		center.offset_right = -18.0
-		center.offset_top = 12.0
-		center.offset_bottom = -12.0
-	var panel: PanelContainer = $CenterContainer/Panel as PanelContainer
+	const LEFT_STATUS_RESERVE: float = 404.0
+	const EDGE_INSET: float = 12.0
+	var main_fill: Control = $MainFill as Control
+	if main_fill != null:
+		main_fill.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		main_fill.offset_left = LEFT_STATUS_RESERVE
+		main_fill.offset_right = -EDGE_INSET
+		main_fill.offset_top = EDGE_INSET
+		main_fill.offset_bottom = -EDGE_INSET
+	var panel: PanelContainer = $MainFill/Panel as PanelContainer
 	if panel != null:
-		panel.custom_minimum_size = Vector2(980, 740)
+		panel.custom_minimum_size = Vector2.ZERO
 	title_label.add_theme_font_size_override("font_size", 44)
 	refresh_upgrade_btn.add_theme_font_size_override("font_size", 23)
 	refresh_btn.add_theme_font_size_override("font_size", 23)
 	continue_btn.add_theme_font_size_override("font_size", 24)
-	var upgrade_hint: Label = $CenterContainer/Panel/MarginContainer/VBox/UpgradeHint as Label
+	var upgrade_hint: Label = $MainFill/Panel/MarginContainer/VBox/UpgradeHint as Label
 	if upgrade_hint != null:
 		upgrade_hint.add_theme_font_size_override("font_size", 28)
-	var shop_label: Label = $CenterContainer/Panel/MarginContainer/VBox/ShopLabel as Label
+	var shop_label: Label = $MainFill/Panel/MarginContainer/VBox/ShopSection/ShopCard/Margins/ShopColumn/ShopLabel as Label
 	if shop_label != null:
 		shop_label.add_theme_font_size_override("font_size", 28)
 
@@ -132,7 +134,7 @@ func _build_left_status_panel() -> void:
 
 
 func _build_bottom_hint() -> void:
-	var vbox: VBoxContainer = $CenterContainer/Panel/MarginContainer/VBox as VBoxContainer
+	var vbox: VBoxContainer = $MainFill/Panel/MarginContainer/VBox as VBoxContainer
 	if vbox == null:
 		return
 	var sep: HSeparator = HSeparator.new()

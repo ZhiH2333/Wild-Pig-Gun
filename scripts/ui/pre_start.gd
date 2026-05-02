@@ -1,18 +1,20 @@
 extends Control
 
 const CHAR_TUTORIAL_TIP_SCRIPT: Script = preload("res://scripts/ui/char_tutorial_tip.gd")
+const WEAPON_LIST_BUTTON_THEME: Theme = preload("res://themes/settings_tab_theme.tres")
+const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
 
-@onready var char_sprite: TextureRect = $MainRow/LeftPanel/LeftVBox/CharSprite
-@onready var char_name_label: Label = $MainRow/LeftPanel/LeftVBox/CharNameLabel
-@onready var char_desc_label: Label = $MainRow/LeftPanel/LeftVBox/CharDescLabel
-@onready var weapon_list: VBoxContainer = $MainRow/RightPanel/RightVBox/WeaponList
-@onready var weapon_name_label: Label = $MainRow/RightPanel/RightVBox/WeaponStatsBox/WeaponNameLabel
-@onready var weapon_kind_label: Label = $MainRow/RightPanel/RightVBox/WeaponStatsBox/MetaRow/WeaponKindLabel
-@onready var weapon_element_label: Label = $MainRow/RightPanel/RightVBox/WeaponStatsBox/MetaRow/WeaponElementLabel
-@onready var damage_bar: ProgressBar = $MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow/DamageBar
-@onready var fire_rate_bar: ProgressBar = $MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow/FireRateBar
-@onready var damage_value_label: Label = $MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow/DamageValueLabel
-@onready var fire_rate_value_label: Label = $MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow/FireRateValueLabel
+@onready var char_sprite: TextureRect = $Center/MainColumn/MainCard/Margins/MainRow/LeftPanel/LeftVBox/CharSprite
+@onready var char_name_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/LeftPanel/LeftVBox/CharNameLabel
+@onready var char_desc_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/LeftPanel/LeftVBox/CharDescLabel
+@onready var weapon_list: VBoxContainer = $Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponList
+@onready var weapon_name_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/WeaponNameLabel
+@onready var weapon_kind_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/MetaRow/WeaponKindLabel
+@onready var weapon_element_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/MetaRow/WeaponElementLabel
+@onready var damage_bar: ProgressBar = $Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow/DamageBar
+@onready var fire_rate_bar: ProgressBar = $Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow/FireRateBar
+@onready var damage_value_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/DamageRow/DamageValueLabel
+@onready var fire_rate_value_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/RightPanel/RightVBox/WeaponStatsBox/FireRateRow/FireRateValueLabel
 
 const MAX_DAMAGE: float = 16.0
 const MAX_FIRE_RATE: float = 6.25
@@ -67,8 +69,12 @@ func _rebuild_weapon_buttons() -> void:
 		var display_name: String = str(weapon_def.get("display_name", weapon_id))
 		var short_desc: String = str(weapon_def.get("short_desc", ""))
 		var button: Button = Button.new()
+		button.theme = WEAPON_LIST_BUTTON_THEME
+		button.add_theme_font_override("font", MENU_FONT)
+		button.add_theme_font_size_override("font_size", 22)
 		button.toggle_mode = true
-		button.custom_minimum_size = Vector2(0, 54)
+		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.custom_minimum_size = Vector2(0, 58)
 		button.text = "%s · %s" % [display_name, short_desc]
 		button.set_meta("weapon_id", weapon_id)
 		button.button_pressed = weapon_id == selected_weapon_id

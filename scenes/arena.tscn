@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://rena"]
+[gd_scene load_steps=27 format=3 uid="uid://rena"]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/arena/arena_backdrop.gd" id="14_backdrop"]
@@ -19,6 +19,35 @@
 [ext_resource type="Script" path="res://scripts/ui/virtual_controls_layout_host.gd" id="18_layout_host"]
 [ext_resource type="Theme" path="res://themes/black_button_theme.tres" id="19_black_btn"]
 [ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="20_font_bold"]
+[ext_resource type="Theme" uid="uid://dy36f4rj86vue" path="res://themes/settings_panel_theme.tres" id="21_settings_panel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_interstitial_root_panel"]
+bg_color = Color(0.06, 0.06, 0.09, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.38, 0.34, 0.48, 0.65)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_maincard_transparent"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shop_inner_panel"]
+bg_color = Color(0.10, 0.09, 0.14, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.30, 0.45, 0.70)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(1920, 20)
 
@@ -257,69 +286,133 @@ layer = 50
 visible = false
 script = ExtResource("8_interstitial")
 
-[node name="CenterContainer" type="CenterContainer" parent="InterstitialHub"]
+[node name="MainFill" type="Control" parent="InterstitialHub"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+clip_contents = true
 
-[node name="Panel" type="PanelContainer" parent="InterstitialHub/CenterContainer"]
-custom_minimum_size = Vector2(1080, 720)
+[node name="Panel" type="PanelContainer" parent="InterstitialHub/MainFill"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+clip_contents = true
 theme = ExtResource("11_ui")
+theme_override_styles/panel = SubResource("StyleBoxFlat_interstitial_root_panel")
 
-[node name="MarginContainer" type="MarginContainer" parent="InterstitialHub/CenterContainer/Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="InterstitialHub/MainFill/Panel"]
 theme_override_constants/margin_left = 28
-theme_override_constants/margin_top = 28
+theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 28
-theme_override_constants/margin_bottom = 28
+theme_override_constants/margin_bottom = 24
 
-[node name="VBox" type="VBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer"]
-theme_override_constants/separation = 16
+[node name="VBox" type="VBoxContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer"]
+theme_override_constants/separation = 18
 
-[node name="TitleLabel" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-theme_override_font_sizes/font_size = 34
+[node name="TitleLabel" type="Label" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox"]
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 36
 text = "波次结束"
 horizontal_alignment = 1
 
-[node name="UpgradeHint" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+[node name="UpgradeHint" type="Label" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox"]
+theme_override_colors/font_color = Color(0.88, 0.85, 0.80, 1)
 theme_override_font_sizes/font_size = 22
 text = "选择一项升级（必选）"
 horizontal_alignment = 1
 
-[node name="UpgradeRow" type="HBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+[node name="UpgradeRow" type="HBoxContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox"]
 theme_override_constants/separation = 14
 alignment = 1
 
-[node name="RefreshUpgradesButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
-custom_minimum_size = Vector2(360, 52)
-text = "刷新升级选项 (8)"
-
-[node name="ShopLabel" type="Label" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+[node name="RefreshUpgradesButton" type="Button" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+theme = ExtResource("19_black_btn")
+theme_override_fonts/font = ExtResource("20_font_bold")
 theme_override_font_sizes/font_size = 22
+text = "刷新升级选项 (8)"
+alignment = 1
+
+[node name="ShopSection" type="VBoxContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ShopCard" type="PanelContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/ShopSection"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_maincard_transparent")
+
+[node name="Margins" type="MarginContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/ShopSection/ShopCard"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 0
+
+[node name="ShopColumn" type="VBoxContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/ShopSection/ShopCard/Margins"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="ShopLabel" type="Label" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/ShopSection/ShopCard/Margins/ShopColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 26
 text = "商店（消耗材料）"
 horizontal_alignment = 1
 
-[node name="ShopScroll" type="ScrollContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox" script=ExtResource("17_touch_scroll")]
-custom_minimum_size = Vector2(0, 280)
-horizontal_scroll_mode = 0
+[node name="ShopScrollPanel" type="PanelContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/ShopSection/ShopCard/Margins/ShopColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_shop_inner_panel")
 
-[node name="ShopVBox" type="VBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/ShopScroll"]
+[node name="ShopScroll" type="ScrollContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/ShopSection/ShopCard/Margins/ShopColumn/ShopScrollPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 120)
+theme = ExtResource("21_settings_panel")
+horizontal_scroll_mode = 0
+script = ExtResource("17_touch_scroll")
+
+[node name="ShopVBox" type="VBoxContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/ShopSection/ShopCard/Margins/ShopColumn/ShopScrollPanel/ShopScroll"]
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="BottomRow" type="HBoxContainer" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox"]
+[node name="BottomRow" type="HBoxContainer" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox"]
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="RefreshShopButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/BottomRow"]
-custom_minimum_size = Vector2(260, 52)
+[node name="RefreshShopButton" type="Button" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/BottomRow"]
+custom_minimum_size = Vector2(280, 58)
+layout_mode = 2
+theme = ExtResource("19_black_btn")
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 22
 text = "刷新商店 (3)"
+alignment = 1
 
-[node name="ContinueButton" type="Button" parent="InterstitialHub/CenterContainer/Panel/MarginContainer/VBox/BottomRow"]
-custom_minimum_size = Vector2(300, 52)
+[node name="ContinueButton" type="Button" parent="InterstitialHub/MainFill/Panel/MarginContainer/VBox/BottomRow"]
+custom_minimum_size = Vector2(320, 62)
+layout_mode = 2
+theme = ExtResource("19_black_btn")
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
 disabled = true
 text = "开始下一波"
+alignment = 1
 
 [node name="VirtualJoystickLayer" type="CanvasLayer" parent="."]
 layer = 25
@@ -362,4 +455,5 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 30
 text = "暂停"
 script = ExtResource("16_mobile_pause")
+
 [node name="DebugMenu" parent="." instance=ExtResource("15_debug_menu")]
