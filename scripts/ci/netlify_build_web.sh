@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Netlify：下载 Godot → 按仓库可达的最新语义 tag 同步版本号 → 导入资源 → 导出 Web 到 dist/
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"

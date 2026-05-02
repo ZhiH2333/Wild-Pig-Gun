@@ -1,5 +1,3 @@
-# 打 tag（如 v1.0.1 或 1.0.1）后：同步版本号 → 导出 Web/Win/macOS/Android → 上传 GitHub Release；
-# 若配置 Netlify 密钥，同时将 Web 同步到线上试玩站点。
 name: Release
 
 on:
@@ -19,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java (keytool，生成/使用 Android 签名库)
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -42,7 +40,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${NETLIFY_AUTH_TOKEN:-}" ] || [ -z "${NETLIFY_SITE_ID:-}" ]; then
-            echo "::notice::已跳过 Netlify：请在仓库 Settings → Secrets 中配置 NETLIFY_AUTH_TOKEN 与 NETLIFY_SITE_ID"
+            echo "::notice::Skip Netlify (set NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID)"
             exit 0
           fi
           npx --yes netlify-cli deploy --prod --dir="${GITHUB_WORKSPACE}/export_build/web"
@@ -52,7 +50,6 @@ jobs:
         with:
           files: artifacts/*
           generate_release_notes: true
-          # 含 v1.0.3：本次发版测试标为预发布，正式发 1.0.4+ 时可删去下方等式。
-          prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-rc') || github.ref_name == 'v1.0.3' }}
+          prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

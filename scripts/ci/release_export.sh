@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# GitHub Actions：按 tag 同步版本并无头导出 Web / Windows / macOS / Android，产物写入 artifacts/
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "${REPO_ROOT}"
 
-TAG="${GITHUB_REF_NAME:?请在环境中设置 GITHUB_REF_NAME（通常为 git tag 名称）}"
+TAG="${GITHUB_REF_NAME:?GITHUB_REF_NAME unset}"
 export RELEASE_VERSION="${TAG#v}"
 python3 "${REPO_ROOT}/scripts/ci/sync_version.py"
 
