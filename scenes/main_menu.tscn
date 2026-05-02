@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
 [ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="4_font"]
 [ext_resource type="Theme" path="res://themes/black_button_theme.tres" id="5_menu_btn_theme"]
+[ext_resource type="Texture2D" uid="uid://cnwkdsgj53mma" path="res://assets/sprites/logo.png" id="6_logo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_normal"]
 bg_color = Color(0, 0, 0, 0.65)
@@ -167,15 +168,16 @@ theme = ExtResource("5_menu_btn_theme")
 text = "退出"
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="." unique_id=122269349]
+[node name="TitleLabel" type="TextureRect" parent="." unique_id=122269349]
 layout_mode = 1
 anchors_preset = 0
 offset_left = 40.0
 offset_top = 38.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 48
-text = "Wild Pig Gun"
+mouse_filter = 2
+custom_minimum_size = Vector2(420, 110)
+texture = ExtResource("6_logo")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="VersionCorner" type="MarginContainer" parent="." unique_id=884920001]
 layout_mode = 1

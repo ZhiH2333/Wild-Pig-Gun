@@ -1,6 +1,6 @@
 extends Node
 
-## 全局 BGM：主菜单与战斗各自播放列表（mainmenu/mainmenu2、war/war2），播完一首自动下一首
+## 全局 BGM：主菜单与战斗各自播放列表（main、war/war2），播完一首自动下一首
 
 enum Context {
 	OFF,
@@ -9,12 +9,10 @@ enum Context {
 }
 
 const MENU_PATHS: Array[String] = [
-	"res://assets/audio/mainmenu.mp3",
-	"res://assets/audio/mainmenu2.mp3",
+	"res://assets/audio/main.mp3",
 ]
 const MENU_TITLES: Array[String] = [
-	"主菜单（Mainmenu）",
-	"主菜单 II（Mainmenu II）",
+	"主菜单（Main）",
 ]
 const BATTLE_PATHS: Array[String] = [
 	"res://assets/audio/war.mp3",
