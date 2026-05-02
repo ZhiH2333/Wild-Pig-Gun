@@ -2,11 +2,14 @@
 # 若配置 Netlify 密钥，同时将 Web 同步到线上试玩站点。
 name: Release
 
+# 临时仅允许手动运行，避免迁移 / 补打 tag 时误触发完整构建。
+# 迁移完成后请恢复下方 push.tags 段并删除或注释 workflow_dispatch。
 on:
-  push:
-    tags:
-      - "v[0-9]*.[0-9]*.[0-9]*"
-      - "[0-9]*.[0-9]*.[0-9]*"
+  workflow_dispatch:
+  # push:
+  #   tags:
+  #     - "v[0-9]*.[0-9]*.[0-9]*"
+  #     - "[0-9]*.[0-9]*.[0-9]*"
 
 permissions:
   contents: write
