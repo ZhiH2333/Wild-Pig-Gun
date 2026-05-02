@@ -82,7 +82,10 @@ var _style_inactive_hover: StyleBoxFlat
 
 
 func _ready() -> void:
-	GameMusic.duck_for_subpage()
+	if bool(get_meta("in_game_overlay", false)):
+		GameMusic.mute_for_in_game_settings()
+	else:
+		GameMusic.duck_for_subpage()
 	_tab_buttons = [tab_btn_0, tab_btn_1, tab_btn_2, tab_btn_3, tab_btn_4]
 	_tab_separators = [tab_sep_01, tab_sep_12, tab_sep_23, tab_sep_34]
 	_build_tab_button_styles()

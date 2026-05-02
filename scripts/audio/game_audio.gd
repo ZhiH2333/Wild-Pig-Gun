@@ -1,6 +1,5 @@
 extends Node
 
-const STREAM_SHOOT: AudioStream = preload("res://assets/audio/shoot.mp3")
 const STREAM_DIE: AudioStream = preload("res://assets/audio/die.mp3")
 const STREAM_UI: AudioStream = preload("res://assets/audio/ui_select.mp3")
 
@@ -35,7 +34,7 @@ func play_sfx(stream: AudioStream, volume_db: float = 0.0, pitch_scale: float = 
 
 
 func play_shoot() -> void:
-	play_sfx(STREAM_SHOOT, -10.0)
+	pass
 
 
 func play_die() -> void:
@@ -52,7 +51,7 @@ func play_ui_confirm() -> void:
 
 ## 敌人被任意来源击中（可替换为专用 hit.mp3）
 func play_hit_enemy() -> void:
-	play_sfx(STREAM_SHOOT, -16.0, 1.35)
+	pass
 
 
 ## 玩家受伤（可替换为专用 hurt.mp3）
