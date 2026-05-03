@@ -4,9 +4,9 @@ const CHAR_TUTORIAL_TIP_SCRIPT: Script = preload("res://scripts/ui/char_tutorial
 const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
 const WEAPON_CARD_WIDTH_FLOOR: float = 96.0
 const WEAPON_CARD_MIN_HEIGHT: float = 176.0
-const _P_LEFT: String = "Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"
-const _P_WEAPON_GRID: String = "Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll/WeaponList"
-const _P_WEAPON_STATS: String = "Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"
+const _P_LEFT: String = "Center/MainScroll/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"
+const _P_WEAPON_GRID: String = "Center/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll/WeaponList"
+const _P_WEAPON_STATS: String = "Center/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"
 
 var char_sprite: TextureRect
 var char_name_label: Label
@@ -39,6 +39,9 @@ func _is_embedded_in_game_start() -> bool:
 
 func _ready() -> void:
 	_bind_pre_start_ui_nodes()
+	if not get_viewport().size_changed.is_connected(_apply_safe_area_to_center):
+		get_viewport().size_changed.connect(_apply_safe_area_to_center)
+	call_deferred("_apply_safe_area_to_center")
 	GameMusic.duck_for_subpage()
 	CharacterData.sanitize_selected_character_setting()
 	_refresh_character_panel()
@@ -48,6 +51,28 @@ func _ready() -> void:
 	_init_weapon_card_styles()
 	_setup_weapon_section()
 	CHAR_TUTORIAL_TIP_SCRIPT.call("try_add_to_scene_root", self)
+
+
+func _apply_safe_area_to_center() -> void:
+	var c: MarginContainer = get_node_or_null("Center") as MarginContainer
+	if c == null:
+		return
+	var add_left: float = 0.0
+	var add_top: float = 0.0
+	var add_right: float = 0.0
+	var add_bot: float = 0.0
+	var sa: Rect2i = DisplayServer.get_display_safe_area()
+	var win: Window = get_viewport().get_window()
+	if win != null:
+		var wr: Rect2i = Rect2i(win.position, win.size)
+		add_left = maxf(0.0, float(sa.position.x - wr.position.x))
+		add_top = maxf(0.0, float(sa.position.y - wr.position.y))
+		add_right = maxf(0.0, float(wr.position.x + wr.size.x - sa.position.x - sa.size.x))
+		add_bot = maxf(0.0, float(wr.position.y + wr.size.y - sa.position.y - sa.size.y))
+	c.offset_left = 28.0 + add_left
+	c.offset_top = 36.0 + add_top
+	c.offset_right = -28.0 - add_right
+	c.offset_bottom = -32.0 - add_bot
 
 
 func _bind_pre_start_ui_nodes() -> void:
