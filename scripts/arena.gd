@@ -252,6 +252,7 @@ func _on_wave_ended(wave_index: int) -> void:
 		drop.set_meta("is_savings", true)
 	if hud and hud.has_method("on_wave_ended"):
 		hud.on_wave_ended()
+	_autosave_pending_run_if_possible()
 	if wave_index >= wave_manager.MAX_WAVES:
 		return
 	if TutorialSession.active and wave_index == 1:
@@ -398,6 +399,15 @@ func build_run_snapshot() -> Dictionary:
 		"wave": wave_manager.get_save_snapshot(),
 		"interstitial_open": interstitial_hub != null and interstitial_hub.visible,
 	}
+
+
+func _autosave_pending_run_if_possible() -> void:
+	_ensure_active_slot_for_resume()
+	var data: Dictionary = build_run_snapshot()
+	if not _checkpoint_at_wave_start.is_empty():
+		data["wave_start_checkpoint"] = _checkpoint_at_wave_start.duplicate(true)
+	if not SaveManager.save_pending_run(data):
+		push_warning("Arena: wave-end autosave failed")
 
 
 func save_run_and_return_to_menu() -> void:
