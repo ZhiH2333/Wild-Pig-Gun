@@ -11,6 +11,9 @@ const GRENADE_BURST_SCRIPT: Script = preload("res://scripts/fx/grenade_explosion
 const TEAM_PLAYER: StringName = &"player"
 const TEAM_ENEMY: StringName = &"enemy"
 const DEFAULT_SPEED: float = 400.0
+## 野猪榴弹：着地或命中敌人立刻范围爆炸（伤害 + 震屏）
+const GRENADE_AOE_RADIUS: float = 128.0
+const GRENADE_MAX_FLIGHT_SEC: float = 1.25
 
 var direction: Vector2 = Vector2.RIGHT
 var damage: int = 10
@@ -27,7 +30,6 @@ var _fx: Dictionary = {}
 var _trail_seg_count: int = 0
 var _chain_done: bool = false
 var _grenade_flight: float = 0.0
-var _grenade_bounces: int = 0
 var _grenade_vel: Vector2 = Vector2.ZERO
 var _grenade_exploded: bool = false
 var _arc_phase: float = 0.0
@@ -100,11 +102,11 @@ func _physics_grenade(delta: float) -> void:
 	position += _grenade_vel * delta
 	_grenade_vel += Vector2(0.0, 520.0) * delta
 	_grenade_vel += direction.orthogonal().normalized() * cos(_arc_phase) * 28.0 * delta
-	if global_position.y > 1040.0 and _grenade_bounces < 2:
+	if global_position.y >= 1040.0:
 		global_position.y = 1040.0
-		_grenade_vel.y = -absf(_grenade_vel.y) * 0.55
-		_grenade_bounces += 1
-	if _grenade_flight > 1.15:
+		_grenade_explode_at_position()
+		return
+	if _grenade_flight >= GRENADE_MAX_FLIGHT_SEC:
 		_grenade_explode_at_position()
 
 
@@ -114,6 +116,8 @@ func _push_trail() -> void:
 
 
 func _despawn_if_beyond_player_attack_range() -> void:
+	if source_weapon_id == "boar_grenade":
+		return
 	var pl: Node = get_tree().get_first_node_in_group("player")
 	if pl == null or not pl.has_method("get_attack_range_radius"):
 		return
@@ -310,6 +314,9 @@ func _grenade_explode_at_position() -> void:
 	if _grenade_exploded:
 		return
 	_grenade_exploded = true
+	var pl_n: Node = get_tree().get_first_node_in_group("player")
+	if pl_n != null:
+		WeaponCameraFx.punch_shake_simple(pl_n, 8.2, 0.18)
 	var layer2: Node2D = _arena_layer()
 	if layer2 != null:
 		var burst: Node2D = Node2D.new()
@@ -317,7 +324,7 @@ func _grenade_explode_at_position() -> void:
 		burst.set_script(GRENADE_BURST_SCRIPT)
 		burst.global_position = global_position
 		burst.z_index = 6
-	var r: float = 118.0
+	var r: float = GRENADE_AOE_RADIUS
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if e == null or not is_instance_valid(e) or not e is Node2D:
 			continue
