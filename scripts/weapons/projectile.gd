@@ -60,6 +60,8 @@ var _enemy_flight_time: float = 0.0
 
 func _ready() -> void:
 	if team == TEAM_PLAYER:
+		# 敌人碰撞层为 2；保留 layer1 以便与仍在 layer1 的物体交互。
+		collision_mask = 1 | 2
 		_hits_remaining = 1 + maxi(0, pierce_extra)
 		_fx = WeaponFxProfiles.profile(source_weapon_id)
 		if shop_ghost_mode:

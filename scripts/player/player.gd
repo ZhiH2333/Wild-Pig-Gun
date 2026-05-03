@@ -73,6 +73,9 @@ var _hp_regen_accum: float = 0.0
 
 func _ready() -> void:
 	add_to_group("player")
+	# Layer1 = 玩家与场地边界；Layer2 = 敌人（见 EnemyBase）。
+	collision_layer = 1
+	collision_mask = 1 | 2
 	invincibility_timer.timeout.connect(_on_invincibility_timer_timeout)
 	if not GameSettings.ui_scale_changed.is_connected(_on_ui_scale_setting_changed):
 		GameSettings.ui_scale_changed.connect(_on_ui_scale_setting_changed)
