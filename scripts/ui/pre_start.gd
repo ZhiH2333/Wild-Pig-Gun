@@ -3,7 +3,7 @@ extends Control
 const CHAR_TUTORIAL_TIP_SCRIPT: Script = preload("res://scripts/ui/char_tutorial_tip.gd")
 const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
 const WEAPON_CARD_WIDTH_FLOOR: float = 96.0
-const WEAPON_CARD_MIN_HEIGHT: float = 168.0
+const WEAPON_CARD_MIN_HEIGHT: float = 176.0
 const _P_LEFT: String = "Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"
 const _P_WEAPON_GRID: String = "Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll/WeaponList"
 const _P_WEAPON_STATS: String = "Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"
@@ -290,7 +290,7 @@ func _build_weapon_card(weapon_def: Dictionary, weapon_id: String) -> PanelConta
 	var title_lbl: Label = Label.new()
 	title_lbl.text = str(weapon_def.get("display_name", weapon_id))
 	title_lbl.add_theme_font_override("font", MENU_FONT)
-	title_lbl.add_theme_font_size_override("font_size", 18)
+	title_lbl.add_theme_font_size_override("font_size", 22)
 	title_lbl.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 1.0))
 	title_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -311,7 +311,7 @@ func _build_weapon_card(weapon_def: Dictionary, weapon_id: String) -> PanelConta
 		tag_wrap.add_theme_stylebox_override("panel", tag_sb)
 		var tag_lbl: Label = Label.new()
 		tag_lbl.text = design_cat
-		tag_lbl.add_theme_font_size_override("font_size", 13)
+		tag_lbl.add_theme_font_size_override("font_size", 16)
 		tag_lbl.add_theme_color_override("font_color", Color(0.18, 0.16, 0.22, 1.0))
 		tag_wrap.add_child(tag_lbl)
 		col.add_child(tag_wrap)
@@ -330,7 +330,7 @@ func _build_weapon_card(weapon_def: Dictionary, weapon_id: String) -> PanelConta
 		bb += "[color=#cfc8be]%s[/color]" % card_body
 	if bb.is_empty():
 		bb = "[color=#a8a29e]—[/color]"
-	body_rt.text = "[font_size=13]%s[/font_size]" % bb
+	body_rt.text = "[font_size=15]%s[/font_size]" % bb
 	col.add_child(body_rt)
 	for c in card.get_children():
 		_weapon_card_children_mouse_ignore(c)

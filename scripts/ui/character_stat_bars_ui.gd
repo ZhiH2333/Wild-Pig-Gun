@@ -18,9 +18,9 @@ static func make_stat_row(
 	row.add_theme_constant_override("separation", 8 if compact else 10)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var dim: float = 0.45 if not unlocked else 1.0
-	var fs: int = 14 if compact else 16
-	var bar_h: int = 14 if compact else 18
-	var label_w: float = 38.0 if compact else 44.0
+	var fs: int = 18 if compact else 20
+	var bar_h: int = 20 if compact else 22
+	var label_w: float = 44.0 if compact else 48.0
 	var lab := Label.new()
 	lab.text = label_text
 	lab.custom_minimum_size = Vector2(label_w, 0)
@@ -48,7 +48,7 @@ static func make_stat_row(
 	row.add_child(bar)
 	var num := Label.new()
 	num.text = str(value)
-	num.custom_minimum_size = Vector2(32 if compact else 36, 0)
+	num.custom_minimum_size = Vector2(38 if compact else 42, 0)
 	num.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	num.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	num.add_theme_font_size_override("font_size", fs)
