@@ -48,10 +48,12 @@ func web_try_request_fullscreen() -> void:
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	var jsb: Object = Engine.get_singleton("JavaScriptBridge")
 	if jsb != null and jsb.has_method("eval"):
+		# 优先对 Godot 导出的 canvas 全屏（移动端 Safari 上整页 element 常失败）
 		jsb.eval(
-			"(function(){var e=document.documentElement;" +
-			"var r=e.requestFullscreen||e.webkitRequestFullscreen||e.mozRequestFullScreen||e.msRequestFullscreen;" +
-			"if(r)r.call(e).catch(function(){});})()",
+			"(function(){function req(el){if(!el)return;var r=el.requestFullscreen||" +
+			"el.webkitRequestFullscreen||el.webkitRequestFullScreen||el.mozRequestFullScreen||el.msRequestFullscreen;" +
+			"if(r)return r.call(el).catch(function(){});}var c=document.querySelector('#canvas')||" +
+			"document.querySelector('canvas');if(c)req(c);req(document.documentElement);})()",
 			true
 		)
 
