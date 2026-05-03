@@ -241,6 +241,7 @@ func _on_material_collected(material_id: String, amount: int, drop_node: Node) -
 func _on_wave_ended(wave_index: int) -> void:
 	if enemy_pool != null and enemy_pool.has_method("clear_all"):
 		enemy_pool.clear_all()
+	_clear_enemy_projectiles()
 	var uncollected := material_container.get_child_count()
 	RunState.on_wave_end_convert_savings(uncollected)
 	var hb: int = _compute_harvest_bonus(wave_index)
@@ -399,6 +400,16 @@ func build_run_snapshot() -> Dictionary:
 		"wave": wave_manager.get_save_snapshot(),
 		"interstitial_open": interstitial_hub != null and interstitial_hub.visible,
 	}
+
+
+func _clear_enemy_projectiles() -> void:
+	if projectile_container == null:
+		return
+	for child in projectile_container.get_children():
+		if child is Projectile:
+			var pr: Projectile = child as Projectile
+			if pr.team == Projectile.TEAM_ENEMY:
+				pr.queue_free()
 
 
 func _autosave_pending_run_if_possible() -> void:
