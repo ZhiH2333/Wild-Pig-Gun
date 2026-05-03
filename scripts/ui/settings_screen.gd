@@ -31,6 +31,7 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var master_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MasterRow/MasterSlider
 @onready var music_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/MusicRow/MusicSlider
 @onready var sfx_slider: HSlider = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/SfxRow/SfxSlider
+@onready var audio_float_check: CheckBox = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/AudioScroll/Contents/AudioFloatCheck
 @onready var resolution_row: HBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow
 @onready var resolution_option: OptionButton = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/ResolutionRow/ResolutionOption
 @onready var window_mode_row: HBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DisplayScroll/Contents/WindowModeRow
@@ -96,6 +97,7 @@ func _ready() -> void:
 	master_slider.value_changed.connect(_on_master_changed)
 	music_slider.value_changed.connect(_on_music_changed)
 	sfx_slider.value_changed.connect(_on_sfx_changed)
+	audio_float_check.toggled.connect(_on_audio_float_toggled)
 	resolution_option.item_selected.connect(_on_resolution_item_selected)
 	window_mode_option.item_selected.connect(_on_window_mode_item_selected)
 	fps_limit_option.item_selected.connect(_on_fps_limit_item_selected)
@@ -275,6 +277,7 @@ func _sync_all_controls_from_settings() -> void:
 	master_slider.value = GameSettings.master_linear
 	music_slider.value = GameSettings.music_linear
 	sfx_slider.value = GameSettings.sfx_linear
+	audio_float_check.button_pressed = GameSettings.audio_float_enabled
 	ui_scale_slider.value = GameSettings.ui_scale
 	view_scale_slider.value = GameSettings.view_scale
 	vsync_check.button_pressed = GameSettings.vsync_enabled
@@ -359,6 +362,12 @@ func _on_music_changed(v: float) -> void:
 
 func _on_sfx_changed(v: float) -> void:
 	GameSettings.set_sfx_linear(v)
+
+
+func _on_audio_float_toggled(pressed: bool) -> void:
+	if _is_syncing_ui:
+		return
+	GameSettings.set_audio_float_enabled(pressed)
 
 
 func _on_resolution_item_selected(index: int) -> void:

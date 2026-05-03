@@ -44,6 +44,8 @@ func _ready() -> void:
 		vp.size_changed.connect(_refit_layout)
 	_refit_layout()
 	_hide_card_instant()
+	GameSettings.audio_float_enabled_changed.connect(_on_audio_float_visibility_changed)
+	_apply_audio_float_visibility(GameSettings.audio_float_enabled)
 	if _title_label != null:
 		_title_label.text = GameMusic.get_current_title()
 
@@ -382,6 +384,16 @@ func _commit_seek() -> void:
 	if dur <= 0.001:
 		return
 	_tracked.seek(clampf(_progress.value, 0.0, dur))
+
+
+func _on_audio_float_visibility_changed(enabled: bool) -> void:
+	_apply_audio_float_visibility(enabled)
+
+
+func _apply_audio_float_visibility(enabled: bool) -> void:
+	visible = enabled
+	if not enabled:
+		_hide_card_instant()
 
 
 func _hide_card_instant() -> void:

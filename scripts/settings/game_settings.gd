@@ -13,6 +13,7 @@ signal show_fps_changed(enabled: bool)
 signal joystick_size_changed(new_value: float)
 signal quality_preset_changed(preset_id: String)
 signal mobile_control_layout_changed
+signal audio_float_enabled_changed(enabled: bool)
 
 const SETTINGS_PATH: String = "user://game_settings.json"
 const MASTER_LINEAR_DEFAULT: float = 1.0
@@ -59,6 +60,7 @@ const QUALITY_DEFAULT: String = QUALITY_MEDIUM
 const UPDATE_CHANNEL_STABLE: String = "stable"
 const UPDATE_CHANNEL_PRERELEASE: String = "prerelease"
 const UPDATE_CHANNEL_DEFAULT: String = UPDATE_CHANNEL_STABLE
+const AUDIO_FLOAT_ENABLED_DEFAULT: bool = false
 
 var master_linear: float = MASTER_LINEAR_DEFAULT
 var music_linear: float = MUSIC_LINEAR_DEFAULT
@@ -80,6 +82,8 @@ var resolution_height: int = RESOLUTION_HEIGHT_DEFAULT
 var fps_limit: int = FPS_LIMIT_DEFAULT
 var quality_preset: String = QUALITY_DEFAULT
 var update_channel: String = UPDATE_CHANNEL_DEFAULT
+## 显示右下角音乐控制浮窗（MusicNowPlaying）
+var audio_float_enabled: bool = AUDIO_FLOAT_ENABLED_DEFAULT
 
 
 func _ready() -> void:
@@ -136,6 +140,7 @@ func load_from_disk() -> void:
 	fps_limit = clampi(int(dict.get("fps_limit", FPS_LIMIT_DEFAULT)), 0, VSYNC_FPS_MAX)
 	quality_preset = _normalize_quality_preset(str(dict.get("quality_preset", QUALITY_DEFAULT)))
 	update_channel = _normalize_update_channel(str(dict.get("update_channel", UPDATE_CHANNEL_DEFAULT)))
+	audio_float_enabled = bool(dict.get("audio_float_enabled", AUDIO_FLOAT_ENABLED_DEFAULT))
 
 
 func save_to_disk() -> void:
@@ -160,6 +165,7 @@ func save_to_disk() -> void:
 		"fps_limit": fps_limit,
 		"quality_preset": quality_preset,
 		"update_channel": update_channel,
+		"audio_float_enabled": audio_float_enabled,
 	}
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
 	if f == null:
@@ -230,6 +236,12 @@ func set_show_fps(enabled: bool) -> void:
 	show_fps = enabled
 	save_to_disk()
 	show_fps_changed.emit(show_fps)
+
+
+func set_audio_float_enabled(enabled: bool) -> void:
+	audio_float_enabled = enabled
+	save_to_disk()
+	audio_float_enabled_changed.emit(audio_float_enabled)
 
 
 ## 只更新摇杆 scale，不影响 layout 中保存的位置坐标
@@ -311,6 +323,7 @@ func clear_all_settings_data() -> bool:
 	fps_limit = FPS_LIMIT_DEFAULT
 	quality_preset = QUALITY_DEFAULT
 	update_channel = UPDATE_CHANNEL_DEFAULT
+	audio_float_enabled = AUDIO_FLOAT_ENABLED_DEFAULT
 	_apply_all()
 	if not FileAccess.file_exists(SETTINGS_PATH):
 		return true
@@ -350,6 +363,7 @@ func _apply_all() -> void:
 	ui_scale_changed.emit(ui_scale)
 	view_scale_changed.emit(view_scale)
 	show_fps_changed.emit(show_fps)
+	audio_float_enabled_changed.emit(audio_float_enabled)
 
 
 func _apply_audio_buses() -> void:
