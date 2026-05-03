@@ -99,8 +99,13 @@ func _spawn_bullet(dir: Vector2) -> void:
 		p.team = Projectile.TEAM_ENEMY
 		p.speed = ENEMY_BULLET_SPEED
 	var container: Node = _get_projectile_container()
-	container.add_child(bullet)
-	bullet.global_position = global_position
+	# 玩家子弹的 body_entered 里会同步调用 take_damage → 反制生成子弹；若在查询刷新中
+	# add_child(Area2D) 会触发 area_set_shape_disabled 报错，须推迟入树。
+	if bullet is Node2D and container is Node2D:
+		(bullet as Node2D).position = (container as Node2D).to_local(global_position)
+	elif bullet is Node2D:
+		(bullet as Node2D).global_position = global_position
+	container.call_deferred("add_child", bullet)
 
 
 func _get_projectile_container() -> Node:
