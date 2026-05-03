@@ -372,6 +372,7 @@ func take_damage(amount: int) -> void:
 	GameAudio.play_hurt_player()
 	# 扣血，不低于 0（需求 4.2）
 	current_hp = max(0, current_hp - amt)
+	RealtimePerfLogger.record_player_damage_taken(amt)
 	_play_hurt_feedback()
 	_debug_action = "受伤 -%d → HP:%d" % [amt, current_hp]
 	emit_signal("hp_changed", current_hp, max_hp)

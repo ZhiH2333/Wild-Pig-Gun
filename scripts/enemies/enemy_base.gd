@@ -275,6 +275,7 @@ func take_damage(amount: int, is_crit: bool = false, damage_element: StringName 
 	_play_hit_flash()
 	_spawn_damage_popup(actual, is_crit)
 	current_hp = max(0, current_hp - actual)
+	RealtimePerfLogger.record_damage_to_enemy(actual)
 	if current_hp <= 0:
 		_on_death()
 
