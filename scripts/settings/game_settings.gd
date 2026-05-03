@@ -381,6 +381,10 @@ func _apply_audio_buses() -> void:
 func _apply_window_and_resolution() -> void:
 	if OS.get_name() == "Web":
 		return
+	# Android：导出已开 immersive_mode；此处强制全屏，避免沿用桌面存档的窗口模式导致状态栏/导航条无法按预期隐藏
+	if OS.get_name() == "Android":
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		return
 	match window_mode:
 		WINDOW_MODE_WINDOWED:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
