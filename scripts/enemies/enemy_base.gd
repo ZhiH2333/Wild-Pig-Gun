@@ -49,6 +49,9 @@ var _status_poison_carry: float = 0.0
 ## 感电易伤：受到电属性伤害时 ×(1+vuln)
 var _status_shock_vuln: float = 0.0
 var _shock_vuln_time_left: float = 0.0
+## 冰霜喷射器：叠 3 层后冻结（与策划案一致）
+var _ice_stacks: int = 0
+var _freeze_time_left: float = 0.0
 
 @onready var damage_timer: Timer = $DamageTimer
 
@@ -57,6 +60,10 @@ func _ready() -> void:
 	current_hp = max_hp
 	add_to_group("enemies")
 	damage_timer.timeout.connect(_on_damage_timer_timeout)
+	var vfx: Node2D = Node2D.new()
+	vfx.name = "StatusVfxLayer"
+	vfx.set_script(preload("res://scripts/fx/enemy_status_vfx_layer.gd"))
+	add_child(vfx)
 
 
 ## 子类实现具体移动逻辑（抽象方法）
@@ -68,10 +75,11 @@ func _physics_process(_delta: float) -> void:
 	_popup_count_this_frame = 0
 	_tick_status_slow(_delta)
 	_tick_shock_vuln(_delta)
+	_tick_freeze(_delta)
 	_tick_dot_effects(_delta)
 	if target == null:
 		return
-	velocity = _get_move_velocity() * _totem_speed_mult() * _status_slow_mult
+	velocity = _get_move_velocity() * _totem_speed_mult() * _effective_move_slow_mult()
 	move_and_slide()
 	_check_player_collision()
 	queue_redraw()
@@ -131,6 +139,42 @@ func _tick_shock_vuln(delta: float) -> void:
 		_shock_vuln_time_left = maxf(0.0, _shock_vuln_time_left - delta)
 		if _shock_vuln_time_left <= 0.0001:
 			_status_shock_vuln = 0.0
+
+
+func _tick_freeze(delta: float) -> void:
+	if _freeze_time_left > 0.0:
+		_freeze_time_left = maxf(0.0, _freeze_time_left - delta)
+
+
+func _effective_move_slow_mult() -> float:
+	if _freeze_time_left > 0.0001:
+		return 0.04
+	return _status_slow_mult
+
+
+## 冰霜叠层：满 3 层进入冻结 2s（受伤 ×1.5 在 take_damage 中处理）
+func apply_ice_stack(slow_move_mult: float, slow_duration_sec: float) -> void:
+	apply_status_slow(slow_move_mult, slow_duration_sec)
+	_ice_stacks = mini(3, _ice_stacks + 1)
+	if _ice_stacks >= 3:
+		_ice_stacks = 0
+		_freeze_time_left = 2.0
+
+
+func status_burn_time_left() -> float:
+	return _status_burn_time_left
+
+
+func status_freeze_time_left() -> float:
+	return _freeze_time_left
+
+
+## 磁力炮命中：向爆心滑动一截
+func apply_magnetic_pull(origin: Vector2, pixels: float) -> void:
+	var d: Vector2 = origin - global_position
+	if d.length_squared() < 4.0:
+		return
+	global_position += d.normalized() * minf(pixels, d.length() * 0.24)
 
 
 ## 施加减速：mult 为移速乘子（如 0.65），duration_sec 刷新为较长值
@@ -196,8 +240,10 @@ func take_damage(amount: int, is_crit: bool = false, damage_element: StringName 
 	if current_hp <= 0:
 		return
 	var hit: int = amount
+	if _freeze_time_left > 0.0001:
+		hit = maxi(1, int(round(float(hit) * 1.5)))
 	if damage_element == &"shock" and _status_shock_vuln > 0.0001:
-		hit = maxi(1, int(round(float(amount) * (1.0 + _status_shock_vuln))))
+		hit = maxi(1, int(round(float(hit) * (1.0 + _status_shock_vuln))))
 	var actual := int(float(hit) * (1.0 - armor))
 	actual = max(1, actual)  # 至少造成 1 点伤害
 	GameAudio.play_hit_enemy()

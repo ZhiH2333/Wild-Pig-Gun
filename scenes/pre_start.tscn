@@ -234,6 +234,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_weapon_scroll_inner")
 
 [node name="WeaponScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel" unique_id=184454934]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("8_panel_theme")
 horizontal_scroll_mode = 0
@@ -244,7 +245,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
-columns = 4
+columns = 6
 
 [node name="StatsSectionSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox" unique_id=576149888]
 custom_minimum_size = Vector2(0, 1)

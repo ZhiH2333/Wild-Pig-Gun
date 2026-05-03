@@ -99,3 +99,7 @@ static func tags_for(weapon_id: String) -> Array[String]:
 		for x in raw:
 			out.append(str(x))
 	return out
+
+
+static func weapon_fx_profile(weapon_id: String) -> Dictionary:
+	return WeaponFxProfiles.profile(weapon_id)

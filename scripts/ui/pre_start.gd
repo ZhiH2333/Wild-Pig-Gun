@@ -2,7 +2,8 @@ extends Control
 
 const CHAR_TUTORIAL_TIP_SCRIPT: Script = preload("res://scripts/ui/char_tutorial_tip.gd")
 const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
-const WEAPON_CARD_MIN_SIZE: Vector2 = Vector2(158, 176)
+const WEAPON_CARD_WIDTH_FLOOR: float = 96.0
+const WEAPON_CARD_MIN_HEIGHT: float = 168.0
 ## 与策划武器卡图标一致（卡片左上角）
 const WEAPON_CARD_EMOJI: Dictionary = {
 	"crude_pistol": "🔫",
@@ -44,6 +45,8 @@ var weapon_defs: Array[Dictionary] = []
 var selected_weapon_id: String = WeaponCatalog.DEFAULT_STARTER_WEAPON_ID
 var _weapon_card_style_normal: StyleBoxFlat
 var _weapon_card_style_selected: StyleBoxFlat
+var _weapon_grid_resize_hooked: bool = false
+var _weapon_reflow_retry: int = 0
 
 
 func _is_embedded_in_game_start() -> bool:
@@ -134,8 +137,59 @@ func _setup_weapon_section() -> void:
 	var default_weapon_id: String = _resolve_default_weapon_id()
 	selected_weapon_id = default_weapon_id
 	if weapon_card_grid != null:
+		_hook_weapon_grid_resize()
 		_rebuild_weapon_cards()
 	_refresh_weapon_stats(default_weapon_id)
+
+
+func _hook_weapon_grid_resize() -> void:
+	if weapon_card_grid == null or _weapon_grid_resize_hooked:
+		return
+	weapon_card_grid.resized.connect(_on_weapon_grid_resized)
+	_weapon_grid_resize_hooked = true
+
+
+func _on_weapon_grid_resized() -> void:
+	_reflow_weapon_card_widths()
+
+
+func _weapon_grid_inner_width_pixels() -> float:
+	if weapon_card_grid == null:
+		return 0.0
+	var w: float = weapon_card_grid.size.x
+	if w >= 8.0:
+		return w
+	var par: Control = weapon_card_grid.get_parent() as Control
+	if par != null:
+		var pw: float = par.size.x
+		if pw >= 8.0:
+			return pw
+	return 0.0
+
+
+func _reflow_weapon_card_widths() -> void:
+	if weapon_card_grid == null:
+		return
+	var cols: int = maxi(1, weapon_card_grid.columns)
+	var sep: int = int(weapon_card_grid.get_theme_constant("h_separation", "GridContainer"))
+	if sep <= 0:
+		sep = 8
+	var inner: float = _weapon_grid_inner_width_pixels()
+	if inner < 8.0:
+		_weapon_reflow_retry += 1
+		if _weapon_reflow_retry < 16:
+			call_deferred("_reflow_weapon_card_widths")
+		else:
+			_weapon_reflow_retry = 0
+		return
+	_weapon_reflow_retry = 0
+	var cw: float = (inner - sep * float(cols - 1)) / float(cols)
+	cw = maxf(WEAPON_CARD_WIDTH_FLOOR, cw)
+	for c in weapon_card_grid.get_children():
+		if c is Control:
+			var ctl: Control = c as Control
+			ctl.custom_minimum_size = Vector2(cw, WEAPON_CARD_MIN_HEIGHT)
+			ctl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 
 func _resolve_default_weapon_id() -> String:
@@ -219,11 +273,13 @@ func _rebuild_weapon_cards() -> void:
 			continue
 		var card: PanelContainer = _build_weapon_card(weapon_def, weapon_id)
 		weapon_card_grid.add_child(card)
+	call_deferred("_reflow_weapon_card_widths")
 
 
 func _build_weapon_card(weapon_def: Dictionary, weapon_id: String) -> PanelContainer:
 	var card: PanelContainer = PanelContainer.new()
-	card.custom_minimum_size = WEAPON_CARD_MIN_SIZE
+	card.custom_minimum_size = Vector2(WEAPON_CARD_WIDTH_FLOOR, WEAPON_CARD_MIN_HEIGHT)
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	card.focus_mode = Control.FOCUS_ALL
 	card.set_meta("weapon_id", weapon_id)
@@ -288,14 +344,9 @@ func _build_weapon_card(weapon_def: Dictionary, weapon_id: String) -> PanelConta
 	var card_body: String = str(weapon_def.get("card_desc", "")).strip_edges()
 	if card_body.is_empty():
 		card_body = str(weapon_def.get("short_desc", ""))
-	var eff: String = str(weapon_def.get("effect_note", "")).strip_edges()
 	var bb: String = ""
 	if not card_body.is_empty():
 		bb += "[color=#cfc8be]%s[/color]" % card_body
-	if not eff.is_empty():
-		if not bb.is_empty():
-			bb += "\n"
-		bb += "[color=#d9983a]特效：%s[/color]" % eff
 	if bb.is_empty():
 		bb = "[color=#a8a29e]—[/color]"
 	body_rt.text = "[font_size=13]%s[/font_size]" % bb
@@ -352,7 +403,6 @@ func _refresh_weapon_stats(weapon_id: String) -> void:
 	var raw_el: String = str(weapon_def.get("element", "physical"))
 	var element_name: String = _element_display_zh(raw_el)
 	var design_cat: String = str(weapon_def.get("design_category", "")).strip_edges()
-	var effect_note: String = str(weapon_def.get("effect_note", "")).strip_edges()
 	var damage_value: float = float(weapon_def.get("damage", 0))
 	var fire_interval: float = maxf(0.01, float(weapon_def.get("fire_interval", 1.0)))
 	var fire_rate_value: float = 1.0 / fire_interval
@@ -364,10 +414,7 @@ func _refresh_weapon_stats(weapon_id: String) -> void:
 		else:
 			weapon_kind_label.text = "标签：%s  ·  类型：%s" % [design_cat, kind_zh]
 	if weapon_element_label != null:
-		if effect_note.is_empty():
-			weapon_element_label.text = "属性：%s" % element_name
-		else:
-			weapon_element_label.text = "属性：%s\n特效：%s" % [element_name, effect_note]
+		weapon_element_label.text = "属性：%s" % element_name
 	if damage_bar != null:
 		damage_bar.max_value = 100.0
 		damage_bar.value = clampf(damage_value / MAX_DAMAGE, 0.0, 1.0) * 100.0

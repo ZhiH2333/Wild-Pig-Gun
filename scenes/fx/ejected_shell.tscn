@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ejectshell1"]
+
+[ext_resource type="Script" path="res://scripts/fx/ejected_shell.gd" id="1_shell"]
+
+[node name="EjectedShell" type="Node2D"]
+script = ExtResource("1_shell")

@@ -11,6 +11,8 @@ var _pellet_count: int = 1
 var _spread_deg: float = 0.0
 var _pierce_extra: int = 0
 var _damage_element: StringName = &"physical"
+var _revolver_rounds_left: int = 6
+var _reload_time_left: float = 0.0
 
 @onready var fire_timer: Timer = $FireTimer
 
@@ -18,6 +20,9 @@ var _damage_element: StringName = &"physical"
 func _ready() -> void:
 	if not has_meta("catalog_applied"):
 		setup_from_catalog(weapon_id)
+	else:
+		set_physics_process(weapon_id == "spin_revolver")
+		set_process(weapon_id == "feather_bow")
 	_sync_fire_timer_wait()
 
 
@@ -32,6 +37,11 @@ func setup_from_catalog(wid: String) -> void:
 	var elem: String = str(def.get("element", "physical"))
 	_damage_element = StringName(elem)
 	set_meta("catalog_applied", true)
+	if wid == "spin_revolver":
+		_revolver_rounds_left = 6
+		_reload_time_left = 0.0
+	set_physics_process(wid == "spin_revolver")
+	set_process(wid == "feather_bow")
 	if fire_timer != null:
 		_sync_fire_timer_wait()
 
@@ -78,8 +88,36 @@ func _effective_damage() -> int:
 	return maxi(1, int(round(float(damage) * mult * mat_bonus)))
 
 
+func _process(_delta: float) -> void:
+	if weapon_id == "feather_bow":
+		queue_redraw()
+
+
+func _physics_process(delta: float) -> void:
+	if weapon_id != "spin_revolver":
+		return
+	if _reload_time_left > 0.0:
+		_reload_time_left = maxf(0.0, _reload_time_left - delta)
+		queue_redraw()
+		if _reload_time_left <= 0.0001 and fire_timer != null and fire_timer.is_stopped():
+			_revolver_rounds_left = 6
+			fire_timer.start()
+
+
 func _draw() -> void:
 	draw_rect(Rect2(0, -4, 24, 8), Color(1.0, 0.85, 0.2, 1.0))
+	if weapon_id == "feather_bow" and fire_timer != null:
+		var tw: float = fire_timer.wait_time
+		var left: float = fire_timer.time_left
+		if tw > 0.001 and left <= minf(0.2, tw * 0.28) and left > 0.0:
+			var g: float = 1.0 - left / minf(0.2, tw * 0.28)
+			draw_arc(Vector2(14, 0), 16.0 + g * 10.0, -0.9, 0.9, 16, Color(0.35, 1.0, 0.55, 0.35 + g * 0.45), 2.8, false)
+	if weapon_id == "spin_revolver" and _reload_time_left > 0.0:
+		var sp: float = _reload_time_left * 14.0
+		for i in range(6):
+			var a: float = float(i) / 6.0 * TAU + sp
+			var p: Vector2 = Vector2.from_angle(a) * 20.0
+			draw_line(Vector2(12, 0) + p * 0.2, Vector2(12, 0) + p, Color(1.0, 0.92, 0.45, 0.75), 2.2, true)
 
 
 func _collect_enemies_sorted_by_distance(from_pos: Vector2) -> Array[Node2D]:
@@ -113,10 +151,24 @@ func _projectile_weapon_slot() -> int:
 
 func _on_fire_timer_timeout() -> void:
 	_sync_fire_timer_wait()
+	if weapon_id == "spin_revolver":
+		if _reload_time_left > 0.0:
+			return
+		if _revolver_rounds_left <= 0:
+			_begin_spin_revolver_reload()
+			return
+		_revolver_rounds_left -= 1
 	var sorted_enemies: Array[Node2D] = _collect_enemies_sorted_by_distance(global_position)
 	if sorted_enemies.is_empty():
 		return
 	_fire_distributed(sorted_enemies)
+
+
+func _begin_spin_revolver_reload() -> void:
+	_reload_time_left = 0.8
+	if fire_timer != null:
+		fire_timer.stop()
+	queue_redraw()
 
 
 func _fire_distributed(sorted_enemies: Array[Node2D]) -> void:
@@ -128,6 +180,12 @@ func _fire_distributed(sorted_enemies: Array[Node2D]) -> void:
 	var slot: int = _projectile_weapon_slot()
 	var half_spread: float = deg_to_rad(_spread_deg) * 0.5
 	GameAudio.play_shoot()
+	var player_n: Node = _find_player()
+	var first_dir: Vector2 = (sorted_enemies[0].global_position - global_position).normalized()
+	if weapon_id == "sniper_chicken" and player_n != null:
+		WeaponCameraFx.sniper_hitstop_fire_and_forget(player_n)
+		_spawn_sniper_laser_line(sorted_enemies[0])
+	WeaponMuzzleFx.spawn_for_shot(self, weapon_id, first_dir)
 	if ec == 1:
 		var base_dir: Vector2 = (sorted_enemies[0].global_position - global_position).normalized()
 		for i in range(n):
@@ -154,8 +212,23 @@ func _spawn_projectile(container: Node, dir: Vector2, dmg: int, pierce: int) -> 
 		proj.speed = Projectile.DEFAULT_SPEED
 		proj.pierce_extra = pierce
 		proj.damage_element = _damage_element
+		proj.source_weapon_id = weapon_id
 	container.add_child(projectile)
 	projectile.global_position = global_position
+
+
+func _spawn_sniper_laser_line(target: Node2D) -> void:
+	if target == null:
+		return
+	var arena: Node2D = get_tree().get_first_node_in_group("arena") as Node2D
+	if arena == null:
+		return
+	var ln: Line2D = Line2D.new()
+	ln.set_script(preload("res://scripts/fx/sniper_laser_fx.gd"))
+	ln.z_index = 24
+	ln.global_position = Vector2.ZERO
+	ln.points = PackedVector2Array([global_position, target.global_position])
+	arena.add_child(ln)
 
 
 func _get_projectile_container() -> Node:
