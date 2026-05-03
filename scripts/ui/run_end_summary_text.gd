@@ -134,11 +134,11 @@ static func build_full_detail_section() -> String:
 # ── BBCode 富文本版（界面显示用）─────────────────────────────
 
 static func _bb_sec(title: String, color: String) -> String:
-	return "[color=%s][b]◆  %s[/b][/color]\n" % [color, title]
+	return "[color=%s][font_size=30][b]◆  %s[/b][/font_size][/color]\n" % [color, title]
 
 
 static func _bb_kv(label: String, value: String) -> String:
-	return "[indent][color=#8a9898]%s[/color]  [color=#dce8e0]%s[/color][/indent]\n" % [label, value]
+	return "[indent][color=#b8a878]%s[/color]  [color=#ebe4d4]%s[/color][/indent]\n" % [label, value]
 
 
 static func build_bbcode_section() -> String:

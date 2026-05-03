@@ -1,8 +1,24 @@
-[gd_scene load_steps=4 format=3 uid="uid://game_over"]
+[gd_scene load_steps=10 format=3 uid="uid://game_over"]
 
 [ext_resource type="Script" path="res://scripts/ui/game_over.gd" id="1_game_over"]
-[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Script" path="res://scripts/ui/touch_scroll_container.gd" id="3_touch_scroll"]
+[ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="4_bg"]
+[ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="5_black_btn"]
+[ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="6_menu_font"]
+[ext_resource type="Material" path="res://resources/subpage_blur_mat.tres" id="7_blur"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.12, 0.1, 0.16, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.35, 0.5, 0.65)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="GameOver" type="Control"]
 layout_mode = 3
@@ -14,7 +30,7 @@ grow_vertical = 2
 theme = ExtResource("2_ui")
 script = ExtResource("1_game_over")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="BlurredBackground" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,68 +38,135 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.07, 0.07, 0.09, 1)
+texture = ExtResource("4_bg")
+expand_mode = 1
+stretch_mode = 6
+material = ExtResource("7_blur")
 
-[node name="RootMargin" type="MarginContainer" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 80
-theme_override_constants/margin_top = 36
-theme_override_constants/margin_right = 80
-theme_override_constants/margin_bottom = 36
+mouse_filter = 2
+color = Color(0, 0, 0, 0.62)
 
-[node name="RootVBox" type="VBoxContainer" parent="RootMargin"]
-layout_mode = 2
-theme_override_constants/separation = 14
+[node name="Vignette" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.18)
 
-[node name="WavesLabel" type="Label" parent="RootMargin/RootVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.5, 0.42, 1)
-theme_override_font_sizes/font_size = 42
-text = "存活波次：0 波"
-horizontal_alignment = 1
+[node name="RedWash" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.35, 0.08, 0.06, 0.22)
 
-[node name="HSep1" type="HSeparator" parent="RootMargin/RootVBox"]
-layout_mode = 2
-theme_override_colors/color = Color(0.35, 0.2, 0.2, 0.8)
+[node name="Center" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 20.0
+offset_right = -28.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="ScrollArea" type="ScrollContainer" parent="RootMargin/RootVBox" script=ExtResource("3_touch_scroll")]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="DetailRich" type="RichTextLabel" parent="RootMargin/RootVBox/ScrollArea"]
+[node name="MainColumn" type="VBoxContainer" parent="Center"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/normal_font_size = 16
-theme_override_font_sizes/bold_font_size = 17
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="HeaderMargins" type="MarginContainer" parent="Center/MainColumn"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_right = 22
+
+[node name="TitleBlock" type="VBoxContainer" parent="Center/MainColumn/HeaderMargins"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Center/MainColumn/HeaderMargins/TitleBlock"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 42
+text = "游戏结束"
+horizontal_alignment = 1
+
+[node name="SummaryLabel" type="Label" parent="Center/MainColumn/HeaderMargins/TitleBlock"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.65, 0.58, 1)
+theme_override_font_sizes/font_size = 20
+text = "存活波次：0 波"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="MainCard" type="PanelContainer" parent="Center/MainColumn"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="ScrollArea" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins" script=ExtResource("3_touch_scroll")]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="DetailRich" type="RichTextLabel" parent="Center/MainColumn/MainCard/Margins/ScrollArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/default_color = Color(0.9, 0.88, 0.85, 1)
+theme_override_fonts/normal_font = ExtResource("6_menu_font")
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 20
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
 autowrap_mode = 3
 text = ""
 
-[node name="HSep2" type="HSeparator" parent="RootMargin/RootVBox"]
-layout_mode = 2
-theme_override_colors/color = Color(0.35, 0.2, 0.2, 0.8)
-
-[node name="BottomBar" type="HBoxContainer" parent="RootMargin/RootVBox"]
+[node name="BottomBar" type="HBoxContainer" parent="Center/MainColumn"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="RestartButton" type="Button" parent="RootMargin/RootVBox/BottomBar"]
+[node name="RestartButton" type="Button" parent="Center/MainColumn/BottomBar"]
 custom_minimum_size = Vector2(260, 52)
 layout_mode = 2
+theme = ExtResource("5_black_btn")
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 22
 text = "返回主菜单"
 
-[node name="Spacer" type="Control" parent="RootMargin/RootVBox/BottomBar"]
+[node name="Spacer" type="Control" parent="Center/MainColumn/BottomBar"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CopyButton" type="Button" parent="RootMargin/RootVBox/BottomBar"]
+[node name="CopyButton" type="Button" parent="Center/MainColumn/BottomBar"]
 custom_minimum_size = Vector2(160, 52)
 layout_mode = 2
+theme = ExtResource("5_black_btn")
+theme_override_fonts/font = ExtResource("6_menu_font")
+theme_override_font_sizes/font_size = 22
 text = "复制报告"

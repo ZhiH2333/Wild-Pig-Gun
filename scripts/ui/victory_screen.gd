@@ -1,9 +1,9 @@
 extends Control
 
-@onready var summary_label: Label = $RootMargin/RootVBox/SummaryLabel
-@onready var detail_rich: RichTextLabel = $RootMargin/RootVBox/ScrollArea/DetailRich
-@onready var main_menu_btn: Button = $RootMargin/RootVBox/BottomBar/MainMenuButton
-@onready var copy_button: Button = $RootMargin/RootVBox/BottomBar/CopyButton
+@onready var summary_label: Label = $Center/MainColumn/HeaderMargins/TitleBlock/SummaryLabel
+@onready var detail_rich: RichTextLabel = $Center/MainColumn/MainCard/Margins/ScrollArea/DetailRich
+@onready var main_menu_btn: Button = $Center/MainColumn/BottomBar/MainMenuButton
+@onready var copy_button: Button = $Center/MainColumn/BottomBar/CopyButton
 
 
 func _ready() -> void:
@@ -21,10 +21,10 @@ func _ready() -> void:
 
 func _build_header_line() -> String:
 	var elapsed: float = RunState.get_run_elapsed_seconds()
-	return "完成波次：%d  ·  当前野猪币：%d  ·  用时：%.0f 秒" % [
+	return "完成波次：%d  ·  当前野猪币：%d  ·  本局时长：%s" % [
 		RunState.wave_index,
 		RunState.material_current,
-		elapsed,
+		SaveDisplay.format_hms(int(roundf(elapsed))),
 	]
 
 
