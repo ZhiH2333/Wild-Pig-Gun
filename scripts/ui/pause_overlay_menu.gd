@@ -98,17 +98,20 @@ func _on_settings_pressed() -> void:
 func _on_quit_no_save_pressed() -> void:
 	if _is_quit_confirmed:
 		return
-	quit_confirm_overlay.visible = true
+	if is_instance_valid(quit_confirm_overlay):
+		quit_confirm_overlay.visible = true
 
 
 func _on_quit_dialog_confirmed() -> void:
-	quit_confirm_overlay.visible = false
+	if is_instance_valid(quit_confirm_overlay):
+		quit_confirm_overlay.visible = false
 	_is_quit_confirmed = true
 	_refresh_quit_idle_text()
 
 
 func _on_quit_dialog_cancelled() -> void:
-	quit_confirm_overlay.visible = false
+	if is_instance_valid(quit_confirm_overlay):
+		quit_confirm_overlay.visible = false
 
 
 func _on_quit_button_down() -> void:

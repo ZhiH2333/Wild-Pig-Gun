@@ -1,29 +1,30 @@
-[gd_scene load_steps=4 format=3 uid="uid://hud"]
+[gd_scene format=3 uid="uid://hud"]
 
-[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
-[ext_resource type="Theme" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="Script" uid="uid://cg0wdavxcm72x" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="PackedScene" uid="uid://statstripwp" path="res://scenes/ui/stat_strip.tscn" id="3_stat"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" unique_id=1248882164]
 script = ExtResource("1_hud")
 
-[node name="LeftTopPanel" type="Control" parent="."]
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="LeftTopPanel" type="Control" parent="." unique_id=2027735091]
+layout_mode = 3
+anchors_preset = 0
 offset_left = 20.0
 offset_top = 16.0
+offset_right = 20.0
+offset_bottom = 16.0
 theme = ExtResource("2_ui")
 
-[node name="HPBar" type="ProgressBar" parent="LeftTopPanel"]
+[node name="HPBar" type="ProgressBar" parent="LeftTopPanel" unique_id=617346249]
+layout_mode = 0
 offset_right = 280.0
 offset_bottom = 26.0
-max_value = 100.0
 value = 100.0
 show_percentage = false
 
-[node name="HPLabel" type="Label" parent="LeftTopPanel"]
+[node name="HPLabel" type="Label" parent="LeftTopPanel" unique_id=639768460]
+layout_mode = 0
 offset_top = 30.0
 offset_right = 280.0
 offset_bottom = 56.0
@@ -34,38 +35,43 @@ theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 22
 text = "100 / 100"
 
-[node name="StatStrip" parent="LeftTopPanel" instance=ExtResource("3_stat")]
+[node name="StatStrip" parent="LeftTopPanel" unique_id=1822718962 instance=ExtResource("3_stat")]
+layout_mode = 0
 offset_top = 60.0
 offset_right = 280.0
 offset_bottom = 90.0
 
-[node name="WeaponRow" type="HBoxContainer" parent="LeftTopPanel"]
+[node name="WeaponRow" type="HBoxContainer" parent="LeftTopPanel" unique_id=1550152195]
+layout_mode = 0
 offset_top = 94.0
 offset_right = 680.0
 offset_bottom = 146.0
 theme_override_constants/separation = 8
 
-[node name="TopCenterPanel" type="Control" parent="."]
+[node name="TopCenterPanel" type="Control" parent="." unique_id=1374229568]
+layout_mode = 3
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.0
 anchor_right = 0.5
-anchor_bottom = 0.0
 offset_left = -200.0
 offset_top = 16.0
+grow_horizontal = 2
 theme = ExtResource("2_ui")
 
-[node name="WaveLabel" type="Label" parent="TopCenterPanel"]
+[node name="WaveLabel" type="Label" parent="TopCenterPanel" unique_id=1545820542]
+layout_mode = 0
 offset_right = 400.0
 offset_bottom = 36.0
-horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 30
 text = "第 0 波"
+horizontal_alignment = 1
 
-[node name="WaveTimerBar" type="ProgressBar" parent="TopCenterPanel"]
+[node name="WaveTimerBar" type="ProgressBar" parent="TopCenterPanel" unique_id=1224219258]
+layout_mode = 0
 offset_top = 40.0
 offset_right = 400.0
 offset_bottom = 62.0
@@ -73,65 +79,70 @@ max_value = 30.0
 value = 30.0
 show_percentage = false
 
-[node name="TimerLabel" type="Label" parent="TopCenterPanel"]
+[node name="TimerLabel" type="Label" parent="TopCenterPanel" unique_id=1363806041]
+layout_mode = 0
 offset_top = 66.0
 offset_right = 400.0
 offset_bottom = 92.0
-horizontal_alignment = 1
 theme_override_colors/font_color = Color(1, 0.92, 0.75, 1)
 theme_override_font_sizes/font_size = 24
 text = "剩余 -- 秒"
+horizontal_alignment = 1
 
-[node name="RightTopPanel" type="Control" parent="."]
+[node name="RightTopPanel" type="Control" parent="." unique_id=2020180051]
+layout_mode = 3
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
 offset_left = -300.0
-offset_right = -20.0
 offset_top = 16.0
+offset_right = -20.0
+grow_horizontal = 0
 theme = ExtResource("2_ui")
 
-[node name="MaterialLabel" type="Label" parent="RightTopPanel"]
+[node name="MaterialLabel" type="Label" parent="RightTopPanel" unique_id=1325515927]
+layout_mode = 0
 offset_right = 280.0
 offset_bottom = 32.0
-horizontal_alignment = 2
 theme_override_colors/font_color = Color(0.85, 1, 0.75, 1)
 theme_override_font_sizes/font_size = 26
 text = "材料 0"
+horizontal_alignment = 2
 
-[node name="SavingsLabel" type="Label" parent="RightTopPanel"]
+[node name="SavingsLabel" type="Label" parent="RightTopPanel" unique_id=283547774]
 visible = false
+layout_mode = 0
 offset_top = 36.0
 offset_right = 280.0
 offset_bottom = 62.0
-horizontal_alignment = 2
 theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 22
 text = "储蓄 0 (下波×2)"
+horizontal_alignment = 2
 
-[node name="LevelXpLabel" type="Label" parent="RightTopPanel"]
+[node name="LevelXpLabel" type="Label" parent="RightTopPanel" unique_id=403668014]
+layout_mode = 0
 offset_top = 66.0
 offset_right = 280.0
 offset_bottom = 92.0
-horizontal_alignment = 2
 theme_override_colors/font_color = Color(0.85, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 22
 text = "Lv.1  XP 0/38"
+horizontal_alignment = 2
 
-[node name="ToastLabel" type="Label" parent="RightTopPanel"]
+[node name="ToastLabel" type="Label" parent="RightTopPanel" unique_id=716106529]
 visible = false
+layout_mode = 0
 offset_top = 96.0
 offset_right = 280.0
 offset_bottom = 124.0
-horizontal_alignment = 2
 theme_override_colors/font_color = Color(1, 0.92, 0.55, 1)
 theme_override_font_sizes/font_size = 24
-text = ""
+horizontal_alignment = 2
 
-[node name="FpsLabel" type="Label" parent="."]
+[node name="FpsLabel" type="Label" parent="." unique_id=439388950]
 visible = false
-anchors_preset = 10
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -147,5 +158,113 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 20
-horizontal_alignment = 2
 text = "FPS 0"
+horizontal_alignment = 2
+
+[node name="LeftBottomPanel" type="Control" parent="." unique_id=1363145917]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -136.0
+offset_right = 304.0
+offset_bottom = 8.0
+grow_vertical = 0
+mouse_filter = 2
+theme = ExtResource("2_ui")
+
+[node name="CharDockRow" type="HBoxContainer" parent="LeftBottomPanel" unique_id=630234403]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 32.0
+offset_right = 10.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="CharPortraitPanel" type="PanelContainer" parent="LeftBottomPanel/CharDockRow" unique_id=240428127]
+custom_minimum_size = Vector2(76, 76)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="PortraitMargins" type="MarginContainer" parent="LeftBottomPanel/CharDockRow/CharPortraitPanel" unique_id=816830307]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="CharPortraitTexture" type="TextureRect" parent="LeftBottomPanel/CharDockRow/CharPortraitPanel/PortraitMargins" unique_id=276053687]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CharDockBars" type="VBoxContainer" parent="LeftBottomPanel/CharDockRow" unique_id=241604798]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="DockHpRow" type="HBoxContainer" parent="LeftBottomPanel/CharDockRow/CharDockBars" unique_id=1460349986]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DockHpLbl" type="Label" parent="LeftBottomPanel/CharDockRow/CharDockBars/DockHpRow" unique_id=792527600]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.74, 0.78, 1)
+theme_override_font_sizes/font_size = 16
+text = "HP"
+vertical_alignment = 1
+
+[node name="DockHpBar" type="ProgressBar" parent="LeftBottomPanel/CharDockRow/CharDockBars/DockHpRow" unique_id=220970781]
+custom_minimum_size = Vector2(120, 18)
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+show_percentage = false
+
+[node name="DockHpVal" type="Label" parent="LeftBottomPanel/CharDockRow/CharDockBars/DockHpRow" unique_id=1348510976]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.28, 0.24, 1)
+theme_override_font_sizes/font_size = 16
+text = "100"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="DockArmorRow" type="HBoxContainer" parent="LeftBottomPanel/CharDockRow/CharDockBars" unique_id=214634208]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DockArmorLbl" type="Label" parent="LeftBottomPanel/CharDockRow/CharDockBars/DockArmorRow" unique_id=888992907]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.74, 0.78, 1)
+theme_override_font_sizes/font_size = 16
+text = "护"
+vertical_alignment = 1
+
+[node name="DockArmorBar" type="ProgressBar" parent="LeftBottomPanel/CharDockRow/CharDockBars/DockArmorRow" unique_id=505396115]
+custom_minimum_size = Vector2(120, 18)
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="DockArmorVal" type="Label" parent="LeftBottomPanel/CharDockRow/CharDockBars/DockArmorRow" unique_id=785368460]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.82, 0.98, 1)
+theme_override_font_sizes/font_size = 16
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="StatusIconsRow" type="HBoxContainer" parent="LeftBottomPanel/CharDockRow/CharDockBars" unique_id=1223772444]
+layout_mode = 2
+theme_override_constants/separation = 6

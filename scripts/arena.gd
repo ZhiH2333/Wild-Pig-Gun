@@ -263,6 +263,8 @@ func _on_all_waves_cleared() -> void:
 
 
 func show_pause_overlay() -> void:
+	if pause_overlay == null:
+		return
 	_pause_over_level_up = (RunState.pause_reason == RunState.PauseReason.LEVEL_UP)
 	pause_overlay.visible = true
 	var center_container: CanvasItem = pause_overlay.get_node_or_null("CenterContainer")
@@ -271,6 +273,8 @@ func show_pause_overlay() -> void:
 
 
 func hide_pause_overlay() -> void:
+	if pause_overlay == null:
+		return
 	pause_overlay.visible = false
 	if pause_overlay.has_method("reset_when_pause_closed"):
 		pause_overlay.reset_when_pause_closed()
@@ -278,6 +282,8 @@ func hide_pause_overlay() -> void:
 
 
 func open_in_game_settings() -> void:
+	if pause_overlay == null:
+		return
 	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
 		return
 	if not ResourceLoader.exists(SETTINGS_SCENE_PATH):
@@ -300,6 +306,8 @@ func open_in_game_settings() -> void:
 
 
 func close_in_game_settings() -> void:
+	if pause_overlay == null:
+		return
 	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
 		_in_game_settings_layer.queue_free()
 	_in_game_settings_layer = null
@@ -450,12 +458,14 @@ func _on_pause_resume_pressed() -> void:
 		close_in_game_settings()
 		return
 	if RunState.pause_reason == RunState.PauseReason.INTERSTITIAL:
-		if pause_overlay.visible:
+		if pause_overlay != null and pause_overlay.visible:
 			hide_pause_overlay()
 		else:
 			show_pause_overlay()
 		return
 	if RunState.pause_reason == RunState.PauseReason.LEVEL_UP:
+		if pause_overlay == null:
+			return
 		if _pause_over_level_up:
 			hide_pause_overlay()
 		else:

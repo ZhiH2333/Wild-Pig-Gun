@@ -38,6 +38,8 @@ func refresh_from_player(p: Node) -> void:
 	_fire.text = "速×%.2f" % fr
 	_move.text = "移×%.2f" % mv
 	_luck.text = "幸 %d" % lk
+	if _syn == null:
+		return
 	if sy > 1.001:
 		_syn.visible = true
 		_syn.text = "羁×%.2f" % sy
