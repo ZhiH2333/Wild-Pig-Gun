@@ -27,6 +27,7 @@ const RUN_SNAPSHOT_VERSION: int = 1
 const SETTINGS_SCENE_PATH: String = "res://scenes/settings.tscn"
 const PROJECTILE_SCENE: PackedScene = preload("res://scenes/projectile.tscn")
 const TUTORIAL_HINT_SCENE: PackedScene = preload("res://scenes/ui/tutorial_hint_panel.tscn")
+const ConsumableHotkeySlots = preload("res://scripts/game/consumable_hotkey_slots.gd")
 
 @onready var enemy_container: Node2D = $EnemyContainer
 @onready var projectile_container: Node2D = $ProjectileContainer
@@ -528,19 +529,25 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed() and not event.is_echo():
 		match event.physical_keycode:
 			KEY_1:
-				_try_use_shop_consumable("shop_medkit")
+				use_consumable_slot(1)
 			KEY_2:
-				_try_use_shop_consumable("shop_grenade")
+				use_consumable_slot(2)
 			KEY_3:
-				_try_use_shop_consumable("shop_smoke")
+				use_consumable_slot(3)
 			KEY_4:
-				_try_use_shop_consumable("shop_emp")
+				use_consumable_slot(4)
 			KEY_5:
-				_try_use_shop_consumable("shop_super_stim")
+				use_consumable_slot(5)
 			KEY_6:
-				_try_use_shop_consumable("shop_master_key")
+				use_consumable_slot(6)
 			KEY_7:
 				_try_activate_stopwatch()
+
+
+## 槽位 1–6 → 消耗品（供 HUD 触控条与快捷键共用）
+func use_consumable_slot(slot_one_based: int) -> void:
+	var sid: String = ConsumableHotkeySlots.shop_id_for_slot_one_based(slot_one_based)
+	_try_use_shop_consumable(sid)
 
 
 func _try_activate_stopwatch() -> void:

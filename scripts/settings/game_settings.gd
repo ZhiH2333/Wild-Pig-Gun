@@ -41,7 +41,11 @@ const LAYOUT_VJ_DEFAULT: Dictionary = {
 ## 暂停按钮默认布局（底边锚定坐标系）
 ## norm_center_x：水平中心 / 视口宽；norm_bottom_margin：底边距 / 视口高
 const LAYOUT_PAUSE_DEFAULT: Dictionary = {
-	"norm_center_x": 0.5, "norm_bottom_margin": 0.026, "scale": 1.0
+	"norm_center_x": 0.9, "norm_bottom_margin": 0.026, "scale": 1.0
+}
+## 消耗品 1–6 条：底边水平中心（与摇杆/暂停同套归一化坐标）
+const LAYOUT_CONSUMABLE_BAR_DEFAULT: Dictionary = {
+	"norm_center_x": 0.5, "norm_bottom_margin": 0.022, "scale": 1.0
 }
 
 const WINDOW_MODE_WINDOWED: String = "windowed"
@@ -463,6 +467,8 @@ func get_mobile_control_entry(id: String) -> Dictionary:
 		return LAYOUT_VJ_DEFAULT.duplicate()
 	if id == "mobile_pause":
 		return LAYOUT_PAUSE_DEFAULT.duplicate()
+	if id == "consumable_skill_bar":
+		return LAYOUT_CONSUMABLE_BAR_DEFAULT.duplicate()
 	return {}
 
 
@@ -488,7 +494,8 @@ func reset_mobile_control_layout() -> void:
 static func _make_default_layout() -> Dictionary:
 	return {
 		"virtual_joystick": {"norm_left": 0.0104, "norm_bottom_margin": 0.0185, "scale": 1.0},
-		"mobile_pause": {"norm_center_x": 0.5, "norm_bottom_margin": 0.026, "scale": 1.0},
+		"mobile_pause": {"norm_center_x": 0.9, "norm_bottom_margin": 0.026, "scale": 1.0},
+		"consumable_skill_bar": {"norm_center_x": 0.5, "norm_bottom_margin": 0.022, "scale": 1.0},
 	}
 
 
@@ -501,6 +508,7 @@ static func _load_layout_dict(raw: Variant, fallback_joystick_scale: float) -> D
 	var d: Dictionary = raw as Dictionary
 	var vj: Dictionary = result["virtual_joystick"]
 	var pb: Dictionary = result["mobile_pause"]
+	var csb: Dictionary = result["consumable_skill_bar"]
 	if d.has("virtual_joystick") and d["virtual_joystick"] is Dictionary:
 		var src: Dictionary = d["virtual_joystick"] as Dictionary
 		if src.has("scale"):
@@ -529,4 +537,17 @@ static func _load_layout_dict(raw: Variant, fallback_joystick_scale: float) -> D
 			var pause_h_ratio: float = (84.0 * float(pb["scale"])) / 1080.0
 			pb["norm_center_x"] = old_x
 			pb["norm_bottom_margin"] = clampf(1.0 - old_y - pause_h_ratio * 0.5, 0.0, 0.5)
+	if d.has("consumable_skill_bar") and d["consumable_skill_bar"] is Dictionary:
+		var src_c: Dictionary = d["consumable_skill_bar"] as Dictionary
+		if src_c.has("scale"):
+			csb["scale"] = clampf(float(src_c["scale"]), 0.5, 2.0)
+		if src_c.has("norm_center_x") and src_c.has("norm_bottom_margin"):
+			csb["norm_center_x"] = clampf(float(src_c["norm_center_x"]), 0.0, 1.0)
+			csb["norm_bottom_margin"] = clampf(float(src_c["norm_bottom_margin"]), 0.0, 0.5)
+		elif src_c.has("norm_x") and src_c.has("norm_y"):
+			var old_cx: float = clampf(float(src_c["norm_x"]), 0.0, 1.0)
+			var old_cy: float = clampf(float(src_c["norm_y"]), 0.0, 1.0)
+			var bar_h_ratio: float = (56.0 * float(csb["scale"])) / 1080.0
+			csb["norm_center_x"] = old_cx
+			csb["norm_bottom_margin"] = clampf(1.0 - old_cy - bar_h_ratio * 0.5, 0.0, 0.5)
 	return result

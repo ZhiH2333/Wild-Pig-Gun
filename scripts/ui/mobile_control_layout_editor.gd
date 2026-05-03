@@ -5,11 +5,14 @@ signal layout_configured
 ## 自定义控件布局编辑器
 ## 坐标系：底边锚定（norm_left / norm_bottom_margin）——与 virtual_controls_layout_host 完全一致
 
-enum ControlId { NONE, VIRTUAL_JOYSTICK, MOBILE_PAUSE }
+enum ControlId { NONE, VIRTUAL_JOYSTICK, MOBILE_PAUSE, CONSUMABLE_SKILL_BAR }
 
 const BASE_OUTER_RADIUS: float = 88.0
 const PAUSE_BTN_REF_W: float = 220.0
 const PAUSE_BTN_REF_H: float = 84.0
+## 与 `virtual_controls_layout_host` / `consumable_skill_dock` 一致（Minecraft 式方格）
+const CONSUMABLE_BAR_REF_W: float = 6.0 * 56.0 + 5.0 * 4.0
+const CONSUMABLE_BAR_REF_H: float = 56.0
 const TOAST_DURATION: float = 1.5
 
 var _pending_layout: Dictionary = {}
@@ -25,6 +28,7 @@ var _has_unsaved_changes: bool = false
 @onready var _layout_bounds: Control = $ControlsOverlay
 @onready var _joystick_widget: Control = $ControlsOverlay/JoystickWidget
 @onready var _pause_widget: Control = $ControlsOverlay/PauseWidget
+@onready var _consumable_widget: Control = $ControlsOverlay/ConsumableBarWidget
 @onready var _selection_menu: Control = $SelectionMenu
 @onready var _scale_down_btn: Button = $SelectionMenu/PanelContainer/Row/ScaleDownBtn
 @onready var _scale_up_btn: Button = $SelectionMenu/PanelContainer/Row/ScaleUpBtn
@@ -61,6 +65,7 @@ func _ready() -> void:
 	_pending_layout = {
 		"virtual_joystick": GameSettings.get_mobile_control_entry("virtual_joystick"),
 		"mobile_pause": GameSettings.get_mobile_control_entry("mobile_pause"),
+		"consumable_skill_bar": GameSettings.get_mobile_control_entry("consumable_skill_bar"),
 	}
 	_back_btn.pressed.connect(_on_back_pressed)
 	_scale_down_btn.pressed.connect(_on_scale_down)
@@ -77,6 +82,10 @@ func _ready() -> void:
 		_pause_widget.set_allow_input(false)
 	if _pause_widget.has_method("set_force_visible"):
 		_pause_widget.set_force_visible(true)
+	if _consumable_widget.has_method("set_allow_input"):
+		_consumable_widget.set_allow_input(false)
+	if _consumable_widget.has_method("set_force_visible"):
+		_consumable_widget.set_force_visible(true)
 	await get_tree().process_frame
 	_refresh_all_widgets()
 
@@ -127,6 +136,8 @@ func _hit_test(global_pos: Vector2, container_rect: Rect2) -> ControlId:
 		return ControlId.NONE
 	if _pause_widget.get_global_rect().has_point(global_pos):
 		return ControlId.MOBILE_PAUSE
+	if _consumable_widget.get_global_rect().has_point(global_pos):
+		return ControlId.CONSUMABLE_SKILL_BAR
 	if _joystick_widget.get_global_rect().has_point(global_pos):
 		return ControlId.VIRTUAL_JOYSTICK
 	return ControlId.NONE
@@ -146,13 +157,20 @@ func _drag_widget(global_pos: Vector2, container_rect: Rect2) -> void:
 			(new_pos.x - container_rect.position.x) / container_rect.size.x, 0.0, 1.0)
 		_pending_layout[key]["norm_bottom_margin"] = clampf(
 			(container_rect.end.y - new_pos.y - sz_y) / container_rect.size.y, 0.0, 0.5)
-	else:
+	elif _selected_id == ControlId.MOBILE_PAUSE:
 		var s: float = clampf(float(_pending_layout[key].get("scale", 1.0)), 0.5, 2.0)
 		var center_x: float = new_pos.x + PAUSE_BTN_REF_W * s * 0.5
 		_pending_layout[key]["norm_center_x"] = clampf(
 			(center_x - container_rect.position.x) / container_rect.size.x, 0.0, 1.0)
 		_pending_layout[key]["norm_bottom_margin"] = clampf(
 			(container_rect.end.y - new_pos.y - PAUSE_BTN_REF_H * s) / container_rect.size.y, 0.0, 0.5)
+	elif _selected_id == ControlId.CONSUMABLE_SKILL_BAR:
+		var s2: float = clampf(float(_pending_layout[key].get("scale", 1.0)), 0.5, 2.0)
+		var cx2: float = new_pos.x + CONSUMABLE_BAR_REF_W * s2 * 0.5
+		_pending_layout[key]["norm_center_x"] = clampf(
+			(cx2 - container_rect.position.x) / container_rect.size.x, 0.0, 1.0)
+		_pending_layout[key]["norm_bottom_margin"] = clampf(
+			(container_rect.end.y - new_pos.y - CONSUMABLE_BAR_REF_H * s2) / container_rect.size.y, 0.0, 0.5)
 
 	_has_unsaved_changes = true
 
@@ -160,6 +178,7 @@ func _drag_widget(global_pos: Vector2, container_rect: Rect2) -> void:
 func _refresh_all_widgets() -> void:
 	_apply_widget(ControlId.VIRTUAL_JOYSTICK)
 	_apply_widget(ControlId.MOBILE_PAUSE)
+	_apply_widget(ControlId.CONSUMABLE_SKILL_BAR)
 
 
 ## 根据 _pending_layout 将控件放置到屏幕上（与 layout_host 完全对称的坐标计算）
@@ -189,7 +208,7 @@ func _apply_widget(id: ControlId) -> void:
 		var h: float = container_rect.size.y
 		_pending_layout[key]["norm_left"] = (left - container_rect.position.x) / w
 		_pending_layout[key]["norm_bottom_margin"] = (container_rect.end.y - top - sz) / h
-	else:
+	elif id == ControlId.MOBILE_PAUSE:
 		var visual_w: float = PAUSE_BTN_REF_W * s
 		var visual_h: float = PAUSE_BTN_REF_H * s
 		if widget.has_method("set_scale_factor"):
@@ -207,6 +226,22 @@ func _apply_widget(id: ControlId) -> void:
 		var ph: float = container_rect.size.y
 		_pending_layout[key]["norm_center_x"] = (left + visual_w * 0.5 - container_rect.position.x) / pw
 		_pending_layout[key]["norm_bottom_margin"] = (container_rect.end.y - top - visual_h) / ph
+	else:
+		var vw: float = CONSUMABLE_BAR_REF_W * s
+		var vh: float = CONSUMABLE_BAR_REF_H * s
+		widget.scale = Vector2(s, s)
+		var norm_cxb: float = clampf(float(entry.get("norm_center_x", 0.5)), 0.0, 1.0)
+		var norm_bmb: float = clampf(float(entry.get("norm_bottom_margin", 0.022)), 0.0, 0.5)
+		var cx: float = container_rect.position.x + container_rect.size.x * norm_cxb
+		var top2: float = container_rect.end.y - vh - container_rect.size.y * norm_bmb
+		var left2: float = cx - vw * 0.5
+		left2 = clampf(left2, container_rect.position.x, container_rect.end.x - vw)
+		top2 = clampf(top2, container_rect.position.y, container_rect.end.y - vh)
+		widget.global_position = Vector2(left2, top2)
+		var pwx: float = container_rect.size.x
+		var phy: float = container_rect.size.y
+		_pending_layout[key]["norm_center_x"] = (left2 + vw * 0.5 - container_rect.position.x) / pwx
+		_pending_layout[key]["norm_bottom_margin"] = (container_rect.end.y - top2 - vh) / phy
 
 
 func _refresh_selection_menu() -> void:
@@ -277,8 +312,10 @@ func _on_reset_pressed() -> void:
 	var key: String = _id_to_key(_selected_id)
 	if _selected_id == ControlId.VIRTUAL_JOYSTICK:
 		_pending_layout[key] = GameSettings.LAYOUT_VJ_DEFAULT.duplicate()
-	else:
+	elif _selected_id == ControlId.MOBILE_PAUSE:
 		_pending_layout[key] = GameSettings.LAYOUT_PAUSE_DEFAULT.duplicate()
+	elif _selected_id == ControlId.CONSUMABLE_SKILL_BAR:
+		_pending_layout[key] = GameSettings.LAYOUT_CONSUMABLE_BAR_DEFAULT.duplicate()
 	_apply_widget(_selected_id)
 	_refresh_selection_menu()
 	_has_unsaved_changes = true
@@ -287,6 +324,7 @@ func _on_reset_pressed() -> void:
 func _on_save_pressed() -> void:
 	GameSettings.set_mobile_control_entry("virtual_joystick", _pending_layout["virtual_joystick"])
 	GameSettings.set_mobile_control_entry("mobile_pause", _pending_layout["mobile_pause"])
+	GameSettings.set_mobile_control_entry("consumable_skill_bar", _pending_layout["consumable_skill_bar"])
 	var vj_scale: float = clampf(float(_pending_layout["virtual_joystick"].get("scale", 1.0)),
 		GameSettings.JOYSTICK_SIZE_MIN, GameSettings.JOYSTICK_SIZE_MAX)
 	GameSettings.set_joystick_size(vj_scale)
@@ -316,12 +354,22 @@ func _on_exit_discard_and_exit_pressed() -> void:
 
 
 func _get_widget(id: ControlId) -> Control:
-	if id == ControlId.VIRTUAL_JOYSTICK:
-		return _joystick_widget
+	match id:
+		ControlId.VIRTUAL_JOYSTICK:
+			return _joystick_widget
+		ControlId.MOBILE_PAUSE:
+			return _pause_widget
+		ControlId.CONSUMABLE_SKILL_BAR:
+			return _consumable_widget
 	return _pause_widget
 
 
 func _id_to_key(id: ControlId) -> String:
-	if id == ControlId.VIRTUAL_JOYSTICK:
-		return "virtual_joystick"
+	match id:
+		ControlId.VIRTUAL_JOYSTICK:
+			return "virtual_joystick"
+		ControlId.MOBILE_PAUSE:
+			return "mobile_pause"
+		ControlId.CONSUMABLE_SKILL_BAR:
+			return "consumable_skill_bar"
 	return "mobile_pause"

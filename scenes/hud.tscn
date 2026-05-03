@@ -3,8 +3,10 @@
 [ext_resource type="Script" uid="uid://cg0wdavxcm72x" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="PackedScene" uid="uid://statstripwp" path="res://scenes/ui/stat_strip.tscn" id="3_stat"]
+[ext_resource type="Script" path="res://scripts/ui/consumable_skill_dock.gd" id="4_dock"]
 
 [node name="HUD" type="CanvasLayer" unique_id=1248882164]
+layer = 26
 script = ExtResource("1_hud")
 
 [node name="LeftTopPanel" type="Control" parent="." unique_id=2027735091]
@@ -160,3 +162,58 @@ theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 20
 text = "FPS 0"
 horizontal_alignment = 2
+
+[node name="ConsumableSkillDock" type="Control" parent="." unique_id=1988122100]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 356.0
+offset_bottom = 56.0
+mouse_filter = 0
+script = ExtResource("4_dock")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ConsumableSkillDock" unique_id=1988122101]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="S1" type="Button" parent="ConsumableSkillDock/HBoxContainer" unique_id=1988122102]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+focus_mode = 0
+text = "1\\n0"
+
+[node name="S2" type="Button" parent="ConsumableSkillDock/HBoxContainer" unique_id=1988122103]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+focus_mode = 0
+text = "2\\n0"
+
+[node name="S3" type="Button" parent="ConsumableSkillDock/HBoxContainer" unique_id=1988122104]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+focus_mode = 0
+text = "3\\n0"
+
+[node name="S4" type="Button" parent="ConsumableSkillDock/HBoxContainer" unique_id=1988122105]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+focus_mode = 0
+text = "4\\n0"
+
+[node name="S5" type="Button" parent="ConsumableSkillDock/HBoxContainer" unique_id=1988122106]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+focus_mode = 0
+text = "5\\n0"
+
+[node name="S6" type="Button" parent="ConsumableSkillDock/HBoxContainer" unique_id=1988122107]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+focus_mode = 0
+text = "6\\n0"

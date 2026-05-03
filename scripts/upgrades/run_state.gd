@@ -14,6 +14,7 @@ signal wave_changed(wave_index: int)
 signal gold_changed(gold: int)
 signal hp_changed(current: int, maximum: int)
 signal material_changed(current: int, savings: int)  # 阶段二：材料变化
+signal consumables_changed
 signal xp_changed(level: int, xp: int, need: int)
 signal level_up_queued(new_level: int)
 
@@ -122,6 +123,7 @@ func reset_session_play_banking() -> void:
 func _reset_shop_run_state() -> void:
 	shop_weapon_mods.clear()
 	shop_consumables.clear()
+	emit_signal("consumables_changed")
 	ammo_blessing.clear()
 	has_bone_armor = false
 	bone_armor_ready = false
@@ -153,6 +155,7 @@ func add_consumable(shop_id: String, amount: int = 1) -> void:
 	if shop_id.is_empty() or amount <= 0:
 		return
 	shop_consumables[shop_id] = int(shop_consumables.get(shop_id, 0)) + amount
+	emit_signal("consumables_changed")
 
 
 func get_consumable_count(shop_id: String) -> int:
@@ -166,6 +169,7 @@ func try_use_consumable(shop_id: String) -> bool:
 	shop_consumables[shop_id] = c - 1
 	if shop_consumables[shop_id] <= 0:
 		shop_consumables.erase(shop_id)
+	emit_signal("consumables_changed")
 	return true
 
 
@@ -453,9 +457,11 @@ func apply_snapshot_dict(d: Dictionary) -> void:
 	has_melee_necklace = bool(d.get("has_melee_necklace", false))
 	has_luck_hoof = bool(d.get("has_luck_hoof", false))
 	has_master_key = bool(d.get("has_master_key", false))
+	emit_signal("consumables_changed")
 
 
 func emit_hud_sync_signals() -> void:
 	emit_signal("wave_changed", wave_index)
 	emit_signal("material_changed", material_current, material_savings)
 	emit_signal("xp_changed", player_level, player_xp, xp_to_next_level())
+	emit_signal("consumables_changed")

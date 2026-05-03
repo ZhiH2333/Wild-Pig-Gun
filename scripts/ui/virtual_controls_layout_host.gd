@@ -6,6 +6,9 @@ extends Node
 const BASE_OUTER_RADIUS: float = 88.0
 const PAUSE_BTN_REF_W: float = 220.0
 const PAUSE_BTN_REF_H: float = 84.0
+## 与 `consumable_skill_dock.gd` 中方格尺寸保持同步（6 格 + 间距）
+const CONSUMABLE_DOCK_REF_W: float = 6.0 * 56.0 + 5.0 * 4.0
+const CONSUMABLE_DOCK_REF_H: float = 56.0
 
 var _joystick: Control = null
 var _pause_btn: Control = null
@@ -39,8 +42,12 @@ func _apply_layout() -> void:
 		return
 	var vj: Dictionary = GameSettings.get_mobile_control_entry("virtual_joystick")
 	var pb: Dictionary = GameSettings.get_mobile_control_entry("mobile_pause")
+	var csb: Dictionary = GameSettings.get_mobile_control_entry("consumable_skill_bar")
 	_apply_joystick_entry(_joystick, vj, vp_size)
 	_apply_pause_entry(_pause_btn, pb, vp_size)
+	var dock: Control = get_tree().get_first_node_in_group("consumable_skill_bar") as Control
+	if dock != null:
+		_apply_consumable_bar_entry(dock, csb, vp_size)
 
 
 ## 摇杆：底边锚定坐标系——左边距和底边距保持固定比例，scale 只改变尺寸不移动角落
@@ -74,6 +81,23 @@ func _apply_pause_entry(node: Control, entry: Dictionary, vp_size: Vector2) -> v
 	node.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	var visual_w: float = PAUSE_BTN_REF_W * s
 	var visual_h: float = PAUSE_BTN_REF_H * s
+	var center_x: float = vp_size.x * norm_cx
+	var top: float = vp_size.y - visual_h - vp_size.y * norm_bm
+	node.position = Vector2(
+		clampf(center_x - visual_w * 0.5, 0.0, vp_size.x - visual_w),
+		clampf(top, 0.0, vp_size.y - visual_h),
+	)
+
+
+## 消耗品 1–6 条：与暂停按钮相同的底边中心锚定，参考宽为槽位总宽
+func _apply_consumable_bar_entry(node: Control, entry: Dictionary, vp_size: Vector2) -> void:
+	var s: float = clampf(float(entry.get("scale", 1.0)), 0.5, 2.0)
+	var norm_cx: float = clampf(float(entry.get("norm_center_x", 0.5)), 0.0, 1.0)
+	var norm_bm: float = clampf(float(entry.get("norm_bottom_margin", 0.022)), 0.0, 0.5)
+	node.scale = Vector2(s, s)
+	node.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	var visual_w: float = CONSUMABLE_DOCK_REF_W * s
+	var visual_h: float = CONSUMABLE_DOCK_REF_H * s
 	var center_x: float = vp_size.x * norm_cx
 	var top: float = vp_size.y - visual_h - vp_size.y * norm_bm
 	node.position = Vector2(

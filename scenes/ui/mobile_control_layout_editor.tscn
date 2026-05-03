@@ -86,6 +86,19 @@ theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 28
 text = "暂停"
 
+[node name="ConsumableBarWidget" type="Button" parent="ControlsOverlay" unique_id=1434115873]
+layout_mode = 0
+offset_left = 782.0
+offset_top = 996.0
+offset_right = 1138.0
+offset_bottom = 1052.0
+focus_mode = 0
+mouse_filter = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 20
+text = "1–6 消耗品"
+
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=686550110]
 layout_mode = 1
 anchors_preset = 1
@@ -122,7 +135,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 0.88)
 theme_override_font_sizes/font_size = 20
-text = "点击选择控件，拖动可移动位置"
+text = "点击选择控件（摇杆 / 暂停 / 消耗品条），拖动可移动位置"
 horizontal_alignment = 1
 
 [node name="SelectionMenu" type="Control" parent="." unique_id=853414192]
