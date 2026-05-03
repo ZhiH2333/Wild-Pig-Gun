@@ -17,6 +17,15 @@ This is a **Godot 4.6 GDScript** game project (top-down roguelite shooter). No b
 | Open editor | `godot --editor --windowed` |
 | Import / re-import assets | `godot --headless --import` |
 
+### Emoji font subset (optional)
+
+Shrink **Noto Color Emoji** to only glyphs used in `data/`, `scripts/`, `scenes/` (~76 scalars in this project vs ~24 MB full font).
+
+1. `python3 -m venv tools/.venv && tools/.venv/bin/pip install -r tools/requirements-emoji-subset.txt`
+2. `NOTO_EMOJI_FONT=/path/to/NotoColorEmoji-Regular.ttf tools/.venv/bin/python tools/collect_emoji_codepoints.py --subset assets/fonts/NotoColorEmoji-GameSubset.ttf`
+3. `godot --headless --import` (regenerates `.godot/imported/` for the new TTF)
+4. In Godot, add `res://assets/fonts/NotoColorEmoji-GameSubset.ttf` as a **fallback** on the main UI font (`SourceHanSansSC-Bold.otf`), or set it on labels that only show `icon_emoji`.
+
 ### Testing
 
 | Action | Command |

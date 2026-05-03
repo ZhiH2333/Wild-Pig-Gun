@@ -19,3 +19,6 @@ artifacts/
 .cursor/*
 !.cursor/skills/
 !.cursor/skills/**
+
+# Local Python venv (emoji subset tooling)
+tools/.venv/

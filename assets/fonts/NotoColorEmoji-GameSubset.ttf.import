@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://c17gpxg33g3h"
-path="res://.godot/imported/SourceHanSansSC-Bold.otf-f670d20711b47a5ef6ba250a1d8ad5f1.fontdata"
+uid="uid://bqw48jlmt15kj"
+path="res://.godot/imported/NotoColorEmoji-GameSubset.ttf-57cf141e4e3d3182f0c0c9084ec0cf51.fontdata"
 
 [deps]
 
-source_file="res://assets/fonts/SourceHanSansSC-Bold.otf"
-dest_files=["res://.godot/imported/SourceHanSansSC-Bold.otf-f670d20711b47a5ef6ba250a1d8ad5f1.fontdata"]
+source_file="res://assets/fonts/NotoColorEmoji-GameSubset.ttf"
+dest_files=["res://.godot/imported/NotoColorEmoji-GameSubset.ttf-57cf141e4e3d3182f0c0c9084ec0cf51.fontdata"]
 
 [params]
 
@@ -27,15 +27,10 @@ subpixel_positioning=4
 keep_rounding_remainders=true
 oversampling=0.0
 Fallbacks=null
-fallbacks=[Resource("uid://bqw48jlmt15kj", "res://assets/fonts/NotoColorEmoji-GameSubset.ttf")]
+fallbacks=[]
 Compress=null
 compress=true
-preload=[{
-"chars": [],
-"glyphs": [],
-"name": "新建配置",
-"size": Vector2i(16, 0)
-}]
+preload=[]
 language_support={}
 script_support={}
 opentype_features={}
