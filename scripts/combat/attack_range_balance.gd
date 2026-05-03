@@ -5,6 +5,8 @@ class_name AttackRangeBalance
 
 ## 基础半径（像素），不含商店/调试加成
 const BASE_RADIUS_PX: float = 540.0
+## 近战命中半径：与默认攻击范围圆同一套比例（1/3 设计射程半径）
+const MELEE_RADIUS_PX: float = BASE_RADIUS_PX / 3.0
 ## 商店单次「攻击范围」物品增加量（须与 data/shop_items.json 中 value 一致）
 const SHOP_BONUS_RADIUS_PX: float = 52.0
 ## 有效半径下限（防止调试/存档写成极小值）

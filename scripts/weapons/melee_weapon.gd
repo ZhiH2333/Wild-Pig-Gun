@@ -8,7 +8,7 @@ var weapon_id: String = "hammer"
 var weapon_level: int = 1
 var damage: int = 16
 var _base_fire_interval: float = 0.55
-var melee_radius: float = 110.0
+var melee_radius: float = AttackRangeBalance.MELEE_RADIUS_PX
 var _trotter_combo: int = 0
 
 @onready var fire_timer: Timer = $FireTimer
@@ -25,7 +25,7 @@ func setup_from_catalog(wid: String) -> void:
 	var def: Dictionary = WeaponCatalog.find_def(wid)
 	damage = int(def.get("damage", 16))
 	_base_fire_interval = float(def.get("fire_interval", 0.55))
-	melee_radius = float(def.get("melee_radius", 110.0))
+	melee_radius = float(def.get("melee_radius", AttackRangeBalance.MELEE_RADIUS_PX))
 	set_meta("catalog_applied", true)
 	if fire_timer != null:
 		_sync_wait()
