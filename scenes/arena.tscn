@@ -569,60 +569,36 @@ theme_override_font_sizes/font_size = 28
 text = "暂停"
 script = ExtResource("16_mobile_pause")
 
-[node name="MobileSkillButton" type="Button" parent="VirtualJoystickLayer"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -300.0
-offset_top = -220.0
-offset_right = -192.0
-offset_bottom = -132.0
-grow_horizontal = 0
-grow_vertical = 0
+[node name="MobileSkillSlot1" type="Button" parent="VirtualJoystickLayer"]
+layout_mode = 0
+offset_right = 72.0
+offset_bottom = 72.0
 mouse_filter = 0
 focus_mode = 0
+theme = ExtResource("19_black_btn")
 script = ExtResource("24_mskill")
-button_label = "Q"
+skill_slot_index = 0
 
-[node name="MobileSkillButtonE" type="Button" parent="VirtualJoystickLayer"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -184.0
-offset_top = -220.0
-offset_right = -76.0
-offset_bottom = -132.0
-grow_horizontal = 0
-grow_vertical = 0
+[node name="MobileSkillSlot2" type="Button" parent="VirtualJoystickLayer"]
+layout_mode = 0
+offset_right = 72.0
+offset_bottom = 72.0
 mouse_filter = 0
 focus_mode = 0
+theme = ExtResource("19_black_btn")
 script = ExtResource("24_mskill")
 input_action = &"skill_secondary"
-button_label = "E"
+skill_slot_index = 1
 
-[node name="MobileSkillButtonR" type="Button" parent="VirtualJoystickLayer"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -68.0
-offset_top = -220.0
-offset_right = 40.0
-offset_bottom = -132.0
-grow_horizontal = 0
-grow_vertical = 0
+[node name="MobileSkillSlot3" type="Button" parent="VirtualJoystickLayer"]
+layout_mode = 0
+offset_right = 72.0
+offset_bottom = 72.0
 mouse_filter = 0
 focus_mode = 0
+theme = ExtResource("19_black_btn")
 script = ExtResource("24_mskill")
 input_action = &"skill_tertiary"
-button_label = "R"
+skill_slot_index = 2
 
 [node name="DebugMenu" parent="." instance=ExtResource("15_debug_menu")]

@@ -5,7 +5,15 @@ signal layout_configured
 ## 自定义控件布局编辑器
 ## 坐标系：底边锚定（norm_left / norm_bottom_margin）——与 virtual_controls_layout_host 完全一致
 
-enum ControlId { NONE, VIRTUAL_JOYSTICK, MOBILE_PAUSE, CONSUMABLE_SKILL_BAR }
+enum ControlId {
+	NONE,
+	VIRTUAL_JOYSTICK,
+	MOBILE_PAUSE,
+	CONSUMABLE_SKILL_BAR,
+	CHARACTER_SKILL_SLOT_1,
+	CHARACTER_SKILL_SLOT_2,
+	CHARACTER_SKILL_SLOT_3,
+}
 
 const BASE_OUTER_RADIUS: float = 88.0
 const PAUSE_BTN_REF_W: float = 220.0
@@ -13,6 +21,8 @@ const PAUSE_BTN_REF_H: float = 84.0
 ## 与 `virtual_controls_layout_host` / `consumable_skill_dock` 一致（Minecraft 式方格）
 const CONSUMABLE_BAR_REF_W: float = 6.0 * 56.0 + 5.0 * 4.0
 const CONSUMABLE_BAR_REF_H: float = 56.0
+## 与 `virtual_controls_layout_host` / 局内 `MobileSkillSlotN` 一致
+const CHARACTER_SKILL_SLOT_REF: float = 72.0
 const TOAST_DURATION: float = 1.5
 
 var _pending_layout: Dictionary = {}
@@ -29,6 +39,9 @@ var _has_unsaved_changes: bool = false
 @onready var _joystick_widget: Control = $ControlsOverlay/JoystickWidget
 @onready var _pause_widget: Control = $ControlsOverlay/PauseWidget
 @onready var _consumable_widget: Control = $ControlsOverlay/ConsumableBarWidget
+@onready var _skill_slot_1_widget: Control = $ControlsOverlay/SkillSlot1Widget
+@onready var _skill_slot_2_widget: Control = $ControlsOverlay/SkillSlot2Widget
+@onready var _skill_slot_3_widget: Control = $ControlsOverlay/SkillSlot3Widget
 @onready var _selection_menu: Control = $SelectionMenu
 @onready var _scale_down_btn: Button = $SelectionMenu/PanelContainer/Row/ScaleDownBtn
 @onready var _scale_up_btn: Button = $SelectionMenu/PanelContainer/Row/ScaleUpBtn
@@ -66,6 +79,9 @@ func _ready() -> void:
 		"virtual_joystick": GameSettings.get_mobile_control_entry("virtual_joystick"),
 		"mobile_pause": GameSettings.get_mobile_control_entry("mobile_pause"),
 		"consumable_skill_bar": GameSettings.get_mobile_control_entry("consumable_skill_bar"),
+		"character_skill_slot_1": GameSettings.get_mobile_control_entry("character_skill_slot_1"),
+		"character_skill_slot_2": GameSettings.get_mobile_control_entry("character_skill_slot_2"),
+		"character_skill_slot_3": GameSettings.get_mobile_control_entry("character_skill_slot_3"),
 	}
 	_back_btn.pressed.connect(_on_back_pressed)
 	_scale_down_btn.pressed.connect(_on_scale_down)
@@ -134,6 +150,12 @@ func _gui_input(event: InputEvent) -> void:
 func _hit_test(global_pos: Vector2, container_rect: Rect2) -> ControlId:
 	if not container_rect.has_point(global_pos):
 		return ControlId.NONE
+	if _skill_slot_3_widget.get_global_rect().has_point(global_pos):
+		return ControlId.CHARACTER_SKILL_SLOT_3
+	if _skill_slot_2_widget.get_global_rect().has_point(global_pos):
+		return ControlId.CHARACTER_SKILL_SLOT_2
+	if _skill_slot_1_widget.get_global_rect().has_point(global_pos):
+		return ControlId.CHARACTER_SKILL_SLOT_1
 	if _pause_widget.get_global_rect().has_point(global_pos):
 		return ControlId.MOBILE_PAUSE
 	if _consumable_widget.get_global_rect().has_point(global_pos):
@@ -171,6 +193,17 @@ func _drag_widget(global_pos: Vector2, container_rect: Rect2) -> void:
 			(cx2 - container_rect.position.x) / container_rect.size.x, 0.0, 1.0)
 		_pending_layout[key]["norm_bottom_margin"] = clampf(
 			(container_rect.end.y - new_pos.y - CONSUMABLE_BAR_REF_H * s2) / container_rect.size.y, 0.0, 0.5)
+	elif (
+		_selected_id == ControlId.CHARACTER_SKILL_SLOT_1
+		or _selected_id == ControlId.CHARACTER_SKILL_SLOT_2
+		or _selected_id == ControlId.CHARACTER_SKILL_SLOT_3
+	):
+		var s3: float = clampf(float(_pending_layout[key].get("scale", 1.0)), 0.5, 2.0)
+		var dim: float = CHARACTER_SKILL_SLOT_REF * s3
+		_pending_layout[key]["norm_right_margin"] = clampf(
+			(container_rect.end.x - new_pos.x - dim) / container_rect.size.x, 0.0, 0.5)
+		_pending_layout[key]["norm_bottom_margin"] = clampf(
+			(container_rect.end.y - new_pos.y - dim) / container_rect.size.y, 0.0, 0.5)
 
 	_has_unsaved_changes = true
 
@@ -179,6 +212,9 @@ func _refresh_all_widgets() -> void:
 	_apply_widget(ControlId.VIRTUAL_JOYSTICK)
 	_apply_widget(ControlId.MOBILE_PAUSE)
 	_apply_widget(ControlId.CONSUMABLE_SKILL_BAR)
+	_apply_widget(ControlId.CHARACTER_SKILL_SLOT_1)
+	_apply_widget(ControlId.CHARACTER_SKILL_SLOT_2)
+	_apply_widget(ControlId.CHARACTER_SKILL_SLOT_3)
 
 
 ## 根据 _pending_layout 将控件放置到屏幕上（与 layout_host 完全对称的坐标计算）
@@ -226,7 +262,7 @@ func _apply_widget(id: ControlId) -> void:
 		var ph: float = container_rect.size.y
 		_pending_layout[key]["norm_center_x"] = (left + visual_w * 0.5 - container_rect.position.x) / pw
 		_pending_layout[key]["norm_bottom_margin"] = (container_rect.end.y - top - visual_h) / ph
-	else:
+	elif id == ControlId.CONSUMABLE_SKILL_BAR:
 		var vw: float = CONSUMABLE_BAR_REF_W * s
 		var vh: float = CONSUMABLE_BAR_REF_H * s
 		widget.scale = Vector2(s, s)
@@ -242,6 +278,26 @@ func _apply_widget(id: ControlId) -> void:
 		var phy: float = container_rect.size.y
 		_pending_layout[key]["norm_center_x"] = (left2 + vw * 0.5 - container_rect.position.x) / pwx
 		_pending_layout[key]["norm_bottom_margin"] = (container_rect.end.y - top2 - vh) / phy
+	elif (
+		id == ControlId.CHARACTER_SKILL_SLOT_1
+		or id == ControlId.CHARACTER_SKILL_SLOT_2
+		or id == ControlId.CHARACTER_SKILL_SLOT_3
+	):
+		var dim_sq: float = CHARACTER_SKILL_SLOT_REF * s
+		widget.scale = Vector2.ONE
+		widget.custom_minimum_size = Vector2(dim_sq, dim_sq)
+		widget.size = Vector2(dim_sq, dim_sq)
+		var norm_rm: float = clampf(float(entry.get("norm_right_margin", 0.015)), 0.0, 0.5)
+		var norm_bms: float = clampf(float(entry.get("norm_bottom_margin", 0.22)), 0.0, 0.5)
+		var left_sq: float = container_rect.end.x - dim_sq - container_rect.size.x * norm_rm
+		var top_sq: float = container_rect.end.y - dim_sq - container_rect.size.y * norm_bms
+		left_sq = clampf(left_sq, container_rect.position.x, container_rect.end.x - dim_sq)
+		top_sq = clampf(top_sq, container_rect.position.y, container_rect.end.y - dim_sq)
+		widget.global_position = Vector2(left_sq, top_sq)
+		var pws: float = container_rect.size.x
+		var phs: float = container_rect.size.y
+		_pending_layout[key]["norm_right_margin"] = (container_rect.end.x - left_sq - dim_sq) / pws
+		_pending_layout[key]["norm_bottom_margin"] = (container_rect.end.y - top_sq - dim_sq) / phs
 
 
 func _refresh_selection_menu() -> void:
@@ -316,6 +372,12 @@ func _on_reset_pressed() -> void:
 		_pending_layout[key] = GameSettings.LAYOUT_PAUSE_DEFAULT.duplicate()
 	elif _selected_id == ControlId.CONSUMABLE_SKILL_BAR:
 		_pending_layout[key] = GameSettings.LAYOUT_CONSUMABLE_BAR_DEFAULT.duplicate()
+	elif _selected_id == ControlId.CHARACTER_SKILL_SLOT_1:
+		_pending_layout[key] = GameSettings.LAYOUT_CHARACTER_SKILL_SLOT_1_DEFAULT.duplicate()
+	elif _selected_id == ControlId.CHARACTER_SKILL_SLOT_2:
+		_pending_layout[key] = GameSettings.LAYOUT_CHARACTER_SKILL_SLOT_2_DEFAULT.duplicate()
+	elif _selected_id == ControlId.CHARACTER_SKILL_SLOT_3:
+		_pending_layout[key] = GameSettings.LAYOUT_CHARACTER_SKILL_SLOT_3_DEFAULT.duplicate()
 	_apply_widget(_selected_id)
 	_refresh_selection_menu()
 	_has_unsaved_changes = true
@@ -325,6 +387,12 @@ func _on_save_pressed() -> void:
 	GameSettings.set_mobile_control_entry("virtual_joystick", _pending_layout["virtual_joystick"])
 	GameSettings.set_mobile_control_entry("mobile_pause", _pending_layout["mobile_pause"])
 	GameSettings.set_mobile_control_entry("consumable_skill_bar", _pending_layout["consumable_skill_bar"])
+	GameSettings.set_mobile_control_entry(
+		"character_skill_slot_1", _pending_layout["character_skill_slot_1"])
+	GameSettings.set_mobile_control_entry(
+		"character_skill_slot_2", _pending_layout["character_skill_slot_2"])
+	GameSettings.set_mobile_control_entry(
+		"character_skill_slot_3", _pending_layout["character_skill_slot_3"])
 	var vj_scale: float = clampf(float(_pending_layout["virtual_joystick"].get("scale", 1.0)),
 		GameSettings.JOYSTICK_SIZE_MIN, GameSettings.JOYSTICK_SIZE_MAX)
 	GameSettings.set_joystick_size(vj_scale)
@@ -361,6 +429,12 @@ func _get_widget(id: ControlId) -> Control:
 			return _pause_widget
 		ControlId.CONSUMABLE_SKILL_BAR:
 			return _consumable_widget
+		ControlId.CHARACTER_SKILL_SLOT_1:
+			return _skill_slot_1_widget
+		ControlId.CHARACTER_SKILL_SLOT_2:
+			return _skill_slot_2_widget
+		ControlId.CHARACTER_SKILL_SLOT_3:
+			return _skill_slot_3_widget
 	return _pause_widget
 
 
@@ -372,4 +446,10 @@ func _id_to_key(id: ControlId) -> String:
 			return "mobile_pause"
 		ControlId.CONSUMABLE_SKILL_BAR:
 			return "consumable_skill_bar"
+		ControlId.CHARACTER_SKILL_SLOT_1:
+			return "character_skill_slot_1"
+		ControlId.CHARACTER_SKILL_SLOT_2:
+			return "character_skill_slot_2"
+		ControlId.CHARACTER_SKILL_SLOT_3:
+			return "character_skill_slot_3"
 	return "mobile_pause"

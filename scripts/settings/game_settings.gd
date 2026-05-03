@@ -47,6 +47,16 @@ const LAYOUT_PAUSE_DEFAULT: Dictionary = {
 const LAYOUT_CONSUMABLE_BAR_DEFAULT: Dictionary = {
 	"norm_center_x": 0.5, "norm_bottom_margin": 0.022, "scale": 1.0
 }
+## 角色技能 1–3：正方形按钮吸附屏幕右缘（norm_right_margin：距右缘 / 视口宽；norm_bottom_margin：距底缘 / 视口高）
+const LAYOUT_CHARACTER_SKILL_SLOT_1_DEFAULT: Dictionary = {
+	"norm_right_margin": 0.015, "norm_bottom_margin": 0.20, "scale": 1.0
+}
+const LAYOUT_CHARACTER_SKILL_SLOT_2_DEFAULT: Dictionary = {
+	"norm_right_margin": 0.015, "norm_bottom_margin": 0.33, "scale": 1.0
+}
+const LAYOUT_CHARACTER_SKILL_SLOT_3_DEFAULT: Dictionary = {
+	"norm_right_margin": 0.015, "norm_bottom_margin": 0.46, "scale": 1.0
+}
 
 const WINDOW_MODE_WINDOWED: String = "windowed"
 const WINDOW_MODE_BORDERLESS: String = "borderless"
@@ -469,6 +479,12 @@ func get_mobile_control_entry(id: String) -> Dictionary:
 		return LAYOUT_PAUSE_DEFAULT.duplicate()
 	if id == "consumable_skill_bar":
 		return LAYOUT_CONSUMABLE_BAR_DEFAULT.duplicate()
+	if id == "character_skill_slot_1":
+		return LAYOUT_CHARACTER_SKILL_SLOT_1_DEFAULT.duplicate()
+	if id == "character_skill_slot_2":
+		return LAYOUT_CHARACTER_SKILL_SLOT_2_DEFAULT.duplicate()
+	if id == "character_skill_slot_3":
+		return LAYOUT_CHARACTER_SKILL_SLOT_3_DEFAULT.duplicate()
 	return {}
 
 
@@ -496,6 +512,9 @@ static func _make_default_layout() -> Dictionary:
 		"virtual_joystick": {"norm_left": 0.0104, "norm_bottom_margin": 0.0185, "scale": 1.0},
 		"mobile_pause": {"norm_center_x": 0.9, "norm_bottom_margin": 0.026, "scale": 1.0},
 		"consumable_skill_bar": {"norm_center_x": 0.5, "norm_bottom_margin": 0.022, "scale": 1.0},
+		"character_skill_slot_1": LAYOUT_CHARACTER_SKILL_SLOT_1_DEFAULT.duplicate(),
+		"character_skill_slot_2": LAYOUT_CHARACTER_SKILL_SLOT_2_DEFAULT.duplicate(),
+		"character_skill_slot_3": LAYOUT_CHARACTER_SKILL_SLOT_3_DEFAULT.duplicate(),
 	}
 
 
@@ -550,4 +569,26 @@ static func _load_layout_dict(raw: Variant, fallback_joystick_scale: float) -> D
 			var bar_h_ratio: float = (56.0 * float(csb["scale"])) / 1080.0
 			csb["norm_center_x"] = old_cx
 			csb["norm_bottom_margin"] = clampf(1.0 - old_cy - bar_h_ratio * 0.5, 0.0, 0.5)
+	var slot_keys: PackedStringArray = PackedStringArray([
+		"character_skill_slot_1",
+		"character_skill_slot_2",
+		"character_skill_slot_3",
+	])
+	for sk in slot_keys:
+		var slot_def: Dictionary = result[sk] as Dictionary
+		if d.has(sk) and d[sk] is Dictionary:
+			var src_s: Dictionary = d[sk] as Dictionary
+			if src_s.has("scale"):
+				slot_def["scale"] = clampf(float(src_s["scale"]), 0.5, 2.0)
+			if src_s.has("norm_right_margin") and src_s.has("norm_bottom_margin"):
+				slot_def["norm_right_margin"] = clampf(float(src_s["norm_right_margin"]), 0.0, 0.5)
+				slot_def["norm_bottom_margin"] = clampf(float(src_s["norm_bottom_margin"]), 0.0, 0.5)
+			elif src_s.has("norm_x") and src_s.has("norm_y"):
+				var btn_dim_ratio: float = (72.0 * float(slot_def["scale"])) / 1080.0
+				var old_sx: float = clampf(float(src_s["norm_x"]), 0.0, 1.0)
+				var old_sy: float = clampf(float(src_s["norm_y"]), 0.0, 1.0)
+				slot_def["norm_right_margin"] = clampf(
+					1.0 - old_sx - btn_dim_ratio, 0.0, 0.5)
+				slot_def["norm_bottom_margin"] = clampf(
+					1.0 - old_sy - btn_dim_ratio, 0.0, 0.5)
 	return result

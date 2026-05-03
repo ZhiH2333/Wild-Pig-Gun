@@ -99,6 +99,45 @@ theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 20
 text = "1–6 消耗品"
 
+[node name="SkillSlot1Widget" type="Button" parent="ControlsOverlay"]
+layout_mode = 0
+offset_left = 1748.0
+offset_top = 668.0
+offset_right = 1820.0
+offset_bottom = 740.0
+focus_mode = 0
+mouse_filter = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 16
+text = "技能1\n💨"
+
+[node name="SkillSlot2Widget" type="Button" parent="ControlsOverlay"]
+layout_mode = 0
+offset_left = 1748.0
+offset_top = 556.0
+offset_right = 1820.0
+offset_bottom = 628.0
+focus_mode = 0
+mouse_filter = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 16
+text = "技能2\n🗯️"
+
+[node name="SkillSlot3Widget" type="Button" parent="ControlsOverlay"]
+layout_mode = 0
+offset_left = 1748.0
+offset_top = 444.0
+offset_right = 1820.0
+offset_bottom = 516.0
+focus_mode = 0
+mouse_filter = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 16
+text = "技能3\n🪶"
+
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=686550110]
 layout_mode = 1
 anchors_preset = 1
