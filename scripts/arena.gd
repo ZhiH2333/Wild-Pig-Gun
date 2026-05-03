@@ -48,6 +48,7 @@ var _in_game_settings_layer: Control = null
 var _pause_over_level_up: bool = false
 ## 当前波次刚开始时（`wave_started`）的整局快照，用于「放弃本波进度」写回续玩档
 var _checkpoint_at_wave_start: Dictionary = {}
+const AUTOSAVE_INTERVAL_SEC: float = 35.0
 
 
 func _ensure_active_slot_for_resume() -> void:
@@ -110,6 +111,20 @@ func _ready() -> void:
 	collect_timer.autostart = true
 	collect_timer.timeout.connect(_on_global_collect_tick)
 	add_child(collect_timer)
+	var autosave_timer := Timer.new()
+	autosave_timer.wait_time = AUTOSAVE_INTERVAL_SEC
+	autosave_timer.one_shot = false
+	autosave_timer.autostart = true
+	autosave_timer.timeout.connect(_on_autosave_timer_timeout)
+	add_child(autosave_timer)
+
+
+func _on_autosave_timer_timeout() -> void:
+	if get_tree().paused:
+		return
+	if interstitial_hub != null and interstitial_hub.visible:
+		return
+	_autosave_pending_run_if_possible()
 
 
 func _process(_delta: float) -> void:
