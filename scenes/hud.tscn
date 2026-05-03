@@ -43,11 +43,18 @@ offset_top = 60.0
 offset_right = 280.0
 offset_bottom = 90.0
 
-[node name="WeaponRow" type="HBoxContainer" parent="LeftTopPanel" unique_id=1550152195]
+[node name="CharacterSkillRow" type="HBoxContainer" parent="LeftTopPanel"]
 layout_mode = 0
 offset_top = 94.0
+offset_right = 360.0
+offset_bottom = 134.0
+theme_override_constants/separation = 6
+
+[node name="WeaponRow" type="HBoxContainer" parent="LeftTopPanel" unique_id=1550152195]
+layout_mode = 0
+offset_top = 138.0
 offset_right = 680.0
-offset_bottom = 146.0
+offset_bottom = 190.0
 theme_override_constants/separation = 8
 
 [node name="TopCenterPanel" type="Control" parent="." unique_id=1374229568]

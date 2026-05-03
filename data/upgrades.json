@@ -23,5 +23,8 @@
   {"id": "plague", "rarity": 2, "title": "瘟疫", "desc": "中毒 DPS +0.8", "short_desc": "毒 DOT +0.8", "kind": "poison_dps_flat", "value": 0.8, "icon": "res://assets/sprites/icon.png", "icon_emoji": "☠️", "stackable": true},
   {"id": "lingering_tox", "rarity": 2, "title": "滞留毒", "desc": "中毒时长 +12%", "short_desc": "毒时长 +12%", "kind": "poison_duration_pct", "value": 0.12, "icon": "res://assets/sprites/icon.png", "icon_emoji": "💀", "stackable": true},
   {"id": "tesla", "rarity": 2, "title": "特斯拉", "desc": "电击伤害 +10%", "short_desc": "电伤 +10%", "kind": "shock_damage_pct", "value": 0.10, "icon": "res://assets/sprites/icon.png", "icon_emoji": "⚡", "stackable": true},
-  {"id": "conductor", "rarity": 3, "title": "导体", "desc": "施加感电易伤 +0.06", "short_desc": "感电 +0.06", "kind": "shock_vuln_flat", "value": 0.06, "icon": "res://assets/sprites/icon.png", "icon_emoji": "🔌", "stackable": true}
+  {"id": "conductor", "rarity": 3, "title": "导体", "desc": "施加感电易伤 +0.06", "short_desc": "感电 +0.06", "kind": "shock_vuln_flat", "value": 0.06, "icon": "res://assets/sprites/icon.png", "icon_emoji": "🔌", "stackable": true},
+  {"id": "thorn_mail_passive", "rarity": 2, "title": "荆棘外皮", "desc": "受击时反弹 10% 伤害给附近敌人（上限叠加至 45%）", "short_desc": "荆棘反伤", "kind": "thorns_reflect_pct", "value": 0.10, "icon": "res://assets/sprites/icon.png", "icon_emoji": "🌿", "stackable": true},
+  {"id": "steady_scope", "rarity": 2, "title": "稳定瞄具", "desc": "攻击范围半径 +18", "short_desc": "范围 +18", "kind": "attack_range_flat", "value": 18.0, "icon": "res://assets/sprites/icon.png", "icon_emoji": "🔭", "stackable": true},
+  {"id": "second_wind", "rarity": 2, "title": "续命之风", "desc": "每秒回复 +0.35 生命", "short_desc": "回复 +0.35/s", "kind": "hp_regen_flat", "value": 0.35, "icon": "res://assets/sprites/icon.png", "icon_emoji": "💨", "stackable": true}
 ]

@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://player"]
+[gd_scene load_steps=6 format=3 uid="uid://player"]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/ui/player_hurt_feedback.gd" id="2_hurt_fb"]
 [ext_resource type="Script" path="res://scripts/player/attack_range_ring.gd" id="3_ring"]
+[ext_resource type="Script" path="res://scripts/player/player_skill_controller.gd" id="4_skills"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1"]
 radius = 16.0
@@ -10,6 +11,9 @@ height = 48.0
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_player")
+
+[node name="PlayerSkillController" type="Node" parent="."]
+script = ExtResource("4_skills")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_1")

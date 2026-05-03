@@ -353,3 +353,8 @@ func _spawn_material(mat_id: String, mat_amount: int) -> void:
 func apply_shop_emp_stun(duration_seconds: float) -> void:
 	_stun_time_left = maxf(_stun_time_left, duration_seconds)
 	armor = 0.0
+
+
+## 角色技能：仅眩晕，不清护甲
+func apply_skill_stun(duration_seconds: float) -> void:
+	_stun_time_left = maxf(_stun_time_left, duration_seconds)

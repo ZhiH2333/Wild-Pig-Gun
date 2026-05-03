@@ -3,6 +3,8 @@ extends Button
 ## 触控技能键：与设置页自定义控件（black_button_theme）一致的圆形外观。
 
 const FONT_BOLD: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
+@export var input_action: StringName = &"skill"
+@export var button_label: String = "Q"
 
 func _ready() -> void:
 	add_to_group("mobile_skill_button")
@@ -19,7 +21,7 @@ func _ready() -> void:
 	add_theme_color_override("font_hover_color", Color(0, 0, 0, 1))
 	add_theme_color_override("font_pressed_color", Color(0, 0, 0, 1))
 	_apply_circle_style(diam)
-	text = "技能"
+	text = button_label
 
 
 func _apply_circle_style(diam: float) -> void:
@@ -54,6 +56,6 @@ func _on_button_up() -> void:
 
 func _emit_skill_action(pressed: bool) -> void:
 	var ev: InputEventAction = InputEventAction.new()
-	ev.action = "skill"
+	ev.action = String(input_action)
 	ev.pressed = pressed
 	Input.parse_input_event(ev)

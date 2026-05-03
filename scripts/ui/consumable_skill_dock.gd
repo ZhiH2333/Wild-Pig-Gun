@@ -1,9 +1,8 @@
 extends Control
 class_name ConsumableSkillDock
 
-## 触控模式底栏：1–6 消耗品槽（Minecraft 热键栏式方格），与 `ConsumableHotkeySlots` 及 `arena.use_consumable_slot` 一致
+## 底栏 6 格消耗品：Minecraft 式槽位 + shop_items icon_emoji；触控或有库存时可见
 
-## 方格边长与间距（与 `virtual_controls_layout_host` / 布局编辑器中的参考尺寸保持同步）
 const LAYOUT_REF_CELL: float = 56.0
 const LAYOUT_REF_SEP: float = 4.0
 
@@ -23,8 +22,9 @@ func _ready() -> void:
 	_row.add_theme_constant_override("separation", int(LAYOUT_REF_SEP))
 	_style_buttons()
 	_connect_slots()
+	_ensure_slot_children()
 	_refresh_counts()
-	_on_mobile_controls_changed(GameSettings.mobile_controls_enabled)
+	_refresh_visibility()
 	if not RunState.consumables_changed.is_connected(_on_consumables_changed):
 		RunState.consumables_changed.connect(_on_consumables_changed)
 	if not GameSettings.mobile_controls_changed.is_connected(_on_mobile_controls_changed):
@@ -45,17 +45,56 @@ func _style_buttons() -> void:
 			var b: Button = c as Button
 			b.focus_mode = Control.FOCUS_NONE
 			b.flat = false
-			b.add_theme_font_override("font", FONT_BOLD)
-			b.add_theme_font_size_override("font_size", 18)
-			b.add_theme_color_override("font_color", Color(0.95, 0.95, 0.98, 1))
-			b.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
-			b.add_theme_constant_override("shadow_offset_x", 1)
-			b.add_theme_constant_override("shadow_offset_y", 1)
+			b.text = ""
+			b.clip_contents = false
 			b.custom_minimum_size = Vector2(LAYOUT_REF_CELL, LAYOUT_REF_CELL)
 			_apply_minecraft_slot_style(b)
 
 
-## 仿 Minecraft 物品栏格：深底、灰白描边、无圆角、轻微阴影
+func _ensure_slot_children() -> void:
+	for c in _row.get_children():
+		if not c is Button:
+			continue
+		var b: Button = c as Button
+		if b.get_node_or_null("EmojiLbl") != null:
+			continue
+		var emoji_l: Label = Label.new()
+		emoji_l.name = "EmojiLbl"
+		emoji_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		emoji_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		emoji_l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		emoji_l.add_theme_font_override("font", FONT_BOLD)
+		emoji_l.add_theme_font_size_override("font_size", 22)
+		emoji_l.set_anchors_preset(Control.PRESET_FULL_RECT)
+		emoji_l.anchor_bottom = 0.58
+		b.add_child(emoji_l)
+		var idx_l: Label = Label.new()
+		idx_l.name = "IdxLbl"
+		idx_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		idx_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		idx_l.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+		idx_l.add_theme_font_override("font", FONT_BOLD)
+		idx_l.add_theme_font_size_override("font_size", 10)
+		idx_l.add_theme_color_override("font_color", Color(0.75, 0.78, 0.92, 0.95))
+		idx_l.position = Vector2(4, 2)
+		idx_l.size = Vector2(18, 14)
+		b.add_child(idx_l)
+		var cnt_l: Label = Label.new()
+		cnt_l.name = "CountLbl"
+		cnt_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cnt_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		cnt_l.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		cnt_l.add_theme_font_override("font", FONT_BOLD)
+		cnt_l.add_theme_font_size_override("font_size", 12)
+		cnt_l.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+		cnt_l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
+		cnt_l.add_theme_constant_override("shadow_offset_x", 1)
+		cnt_l.add_theme_constant_override("shadow_offset_y", 1)
+		cnt_l.set_anchors_preset(Control.PRESET_FULL_RECT)
+		cnt_l.anchor_top = 0.55
+		b.add_child(cnt_l)
+
+
 func _apply_minecraft_slot_style(b: Button) -> void:
 	var normal: StyleBoxFlat = _make_slot_stylebox(false, false)
 	var hover: StyleBoxFlat = _make_slot_stylebox(true, false)
@@ -88,22 +127,48 @@ func _make_slot_stylebox(hover: bool, pressed: bool) -> StyleBoxFlat:
 	return s
 
 
+func _has_any_consumable() -> bool:
+	for i in range(1, 7):
+		var sid: String = _CHS.shop_id_for_slot_one_based(i)
+		if RunState.get_consumable_count(sid) > 0:
+			return true
+	return false
+
+
+func _refresh_visibility() -> void:
+	visible = GameSettings.mobile_controls_enabled or _has_any_consumable()
+
+
 func _on_consumables_changed() -> void:
 	_refresh_counts()
+	_refresh_visibility()
 
 
-func _on_mobile_controls_changed(enabled: bool) -> void:
-	visible = enabled
+func _on_mobile_controls_changed(_enabled: bool) -> void:
+	_refresh_visibility()
 
 
 func _refresh_counts() -> void:
 	for i in range(_row.get_child_count()):
 		var c: Node = _row.get_child(i)
-		if c is Button:
-			var slot: int = i + 1
-			var sid: String = _CHS.shop_id_for_slot_one_based(slot)
-			var n: int = RunState.get_consumable_count(sid)
-			(c as Button).text = "%d\n%d" % [slot, n]
+		if not c is Button:
+			continue
+		var b: Button = c as Button
+		var slot: int = i + 1
+		var sid: String = _CHS.shop_id_for_slot_one_based(slot)
+		var n: int = RunState.get_consumable_count(sid)
+		var def: Dictionary = BuildCatalog.get_shop_item_def(sid)
+		var emoji: String = str(def.get("icon_emoji", "·"))
+		var emoji_n: Label = b.get_node_or_null("EmojiLbl") as Label
+		var cnt_n: Label = b.get_node_or_null("CountLbl") as Label
+		var idx_n: Label = b.get_node_or_null("IdxLbl") as Label
+		if emoji_n != null:
+			emoji_n.text = emoji
+			emoji_n.modulate = Color(1, 1, 1, 1) if n > 0 else Color(0.45, 0.45, 0.5, 0.85)
+		if cnt_n != null:
+			cnt_n.text = str(n) if n > 0 else ""
+		if idx_n != null:
+			idx_n.text = str(slot)
 
 
 func _on_slot_pressed(slot_one_based: int) -> void:

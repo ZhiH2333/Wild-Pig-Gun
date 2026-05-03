@@ -36,6 +36,8 @@ var stat_synergy_damage_mult: float = 1.0
 var stat_damage_flat: int = 0
 ## 猪牙项链等：仅近战武器
 var stat_melee_damage_mult: float = 1.0
+## 通用升级「荆棘」等：受击时按百分比反伤附近敌人
+var stat_thorns_reflect_pct: float = 0.0
 ## 风速鸡：无敌帧结束后的短时移速爆发
 var shop_wind_burst_left: float = 0.0
 ## 烟雾弹 / 药剂 / 时停 等由 Arena 或自身每帧结算
@@ -81,7 +83,23 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var direction := _get_input_direction()
+	var sk: Node = get_node_or_null("PlayerSkillController")
+	var charged: bool = false
+	if sk != null and sk.has_method("process_skill_charge"):
+		charged = sk.call("process_skill_charge", delta) as bool
+	if not charged:
+		var direction := _get_input_direction()
+		_move_with_input(delta, direction)
+	else:
+		_finish_skill_frame(delta)
+	if sk != null:
+		if sk.has_method("tick_ph_storm"):
+			sk.call("tick_ph_storm", delta)
+		if sk.has_method("tick_cooldowns"):
+			sk.call("tick_cooldowns", delta)
+
+
+func _move_with_input(delta: float, direction: Vector2) -> void:
 	var move_mult: float = stat_move_speed_mult
 	if shop_wind_burst_left > 0.0:
 		var wburst: float = 1.5
@@ -117,6 +135,20 @@ func _physics_process(delta: float) -> void:
 		_debug_action = "移动中(无敌帧)"
 	else:
 		_debug_action = "移动 dir:(%.2f,%.2f)" % [direction.x, direction.y]
+	_apply_skill_frame_extras(delta)
+
+
+func _finish_skill_frame(delta: float) -> void:
+	var arena_rect := _get_arena_rect()
+	position = _apply_boundary_clamp(position, arena_rect)
+	if is_invincible:
+		_debug_action = "技能位移(无敌)"
+	else:
+		_debug_action = "技能位移"
+	_apply_skill_frame_extras(delta)
+
+
+func _apply_skill_frame_extras(delta: float) -> void:
 	_apply_hp_regen(delta)
 	if shop_stim_power_left > 0.0:
 		shop_stim_power_left = maxf(0.0, shop_stim_power_left - delta)
@@ -194,10 +226,29 @@ func get_pickup_collect_radius() -> float:
 
 
 func get_attack_range_radius() -> float:
+	var bonus: float = stat_attack_range_bonus
+	var sk: Node = get_node_or_null("PlayerSkillController")
+	if sk != null and sk.has_method("get_passive_attack_range_bonus"):
+		bonus += float(sk.call("get_passive_attack_range_bonus"))
 	return maxf(
 		AttackRangeBalance.MIN_RADIUS_PX,
-		AttackRangeBalance.BASE_RADIUS_PX + stat_attack_range_bonus
+		AttackRangeBalance.BASE_RADIUS_PX + bonus
 	)
+
+
+func get_crit_chance_effective() -> float:
+	var base: float = stat_crit_chance
+	var sk: Node = get_node_or_null("PlayerSkillController")
+	if sk != null and sk.has_method("get_passive_crit_chance_bonus"):
+		base += float(sk.call("get_passive_crit_chance_bonus"))
+	return clampf(base, 0.0, 1.0)
+
+
+func get_skill_outgoing_damage_mult() -> float:
+	var sk: Node = get_node_or_null("PlayerSkillController")
+	if sk != null and sk.has_method("get_outgoing_damage_mult"):
+		return float(sk.call("get_outgoing_damage_mult"))
+	return 1.0
 
 
 func get_shop_damage_stim_mult() -> float:
@@ -239,8 +290,16 @@ func apply_run_snapshot_stats(d: Dictionary) -> void:
 	stat_poison_duration_pct = maxf(0.0, float(d.get("stat_poison_duration_pct", 0.0)))
 	stat_shock_damage_mult = maxf(0.05, float(d.get("stat_shock_damage_mult", 1.0)))
 	stat_shock_vuln_apply_flat = maxf(0.0, float(d.get("stat_shock_vuln_apply_flat", 0.0)))
+	stat_thorns_reflect_pct = maxf(0.0, float(d.get("stat_thorns_reflect_pct", 0.0)))
 	global_position = Vector2(float(d.get("pos_x", 960.0)), float(d.get("pos_y", 540.0)))
 	emit_signal("hp_changed", current_hp, max_hp)
+	var sks: Variant = d.get("skill_state", {})
+	if has_node("PlayerSkillController"):
+		var sk: Node = get_node("PlayerSkillController")
+		if sk.has_method("sync_from_run_state"):
+			sk.call("sync_from_run_state")
+		if sks is Dictionary and not (sks as Dictionary).is_empty() and sk.has_method("apply_save_state"):
+			sk.call("apply_save_state", sks as Dictionary)
 
 
 func recompute_weapon_synergy() -> void:
@@ -291,6 +350,10 @@ func take_damage(amount: int) -> void:
 		amt = maxi(1, int(round(float(amount) * RunState.run_risk_mult)))
 	if RunState != null and RunState.has_melee_necklace and randf() < 0.10:
 		_melee_necklace_counter(amt)
+	amt = CharacterSkillImpl.modify_incoming_damage(self, amt)
+	if amt <= 0:
+		_debug_action = "被动闪避"
+		return
 	GameAudio.play_hurt_player()
 	# 扣血，不低于 0（需求 4.2）
 	current_hp = max(0, current_hp - amt)

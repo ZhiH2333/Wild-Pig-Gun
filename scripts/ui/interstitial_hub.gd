@@ -283,6 +283,7 @@ func _on_shop_confirm_buy() -> void:
 	var stitle: String = str(def.get("title", sid))
 	if not sid.is_empty():
 		RunState.append_run_choice("shop", _finished_wave_for_log, sid, stitle)
+	RunState.emit_hud_sync_signals()
 	_rebuild_shop_rows()
 	_refresh_status_panel()
 

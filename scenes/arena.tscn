@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://rena"]
+[gd_scene load_steps=29 format=3 uid="uid://rena"]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="Texture2D" uid="uid://du6nifp8b7xrl" path="res://assets/sprites/arena_bg.png" id="23_arena_bg"]
@@ -21,6 +21,7 @@
 [ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="20_font_bold"]
 [ext_resource type="Theme" uid="uid://dy36f4rj86vue" path="res://themes/settings_panel_theme.tres" id="21_settings_panel"]
 [ext_resource type="Material" path="res://resources/pause_overlay_bg_material.tres" id="22_pause_bg"]
+[ext_resource type="Script" path="res://scripts/ui/mobile_skill_button.gd" id="24_mskill"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_interstitial_root_panel"]
 bg_color = Color(0.06, 0.06, 0.09, 0.94)
@@ -567,5 +568,61 @@ theme_override_fonts/font = ExtResource("20_font_bold")
 theme_override_font_sizes/font_size = 28
 text = "暂停"
 script = ExtResource("16_mobile_pause")
+
+[node name="MobileSkillButton" type="Button" parent="VirtualJoystickLayer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -220.0
+offset_right = -192.0
+offset_bottom = -132.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 0
+focus_mode = 0
+script = ExtResource("24_mskill")
+button_label = "Q"
+
+[node name="MobileSkillButtonE" type="Button" parent="VirtualJoystickLayer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -184.0
+offset_top = -220.0
+offset_right = -76.0
+offset_bottom = -132.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 0
+focus_mode = 0
+script = ExtResource("24_mskill")
+input_action = &"skill_secondary"
+button_label = "E"
+
+[node name="MobileSkillButtonR" type="Button" parent="VirtualJoystickLayer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -68.0
+offset_top = -220.0
+offset_right = 40.0
+offset_bottom = -132.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 0
+focus_mode = 0
+script = ExtResource("24_mskill")
+input_action = &"skill_tertiary"
+button_label = "R"
 
 [node name="DebugMenu" parent="." instance=ExtResource("15_debug_menu")]

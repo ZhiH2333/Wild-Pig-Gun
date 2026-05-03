@@ -11,6 +11,7 @@ const WEAPON_SLOT_SCENE: PackedScene = preload("res://scenes/ui/weapon_slot.tscn
 @onready var hp_bar: ProgressBar = $LeftTopPanel/HPBar
 @onready var hp_label: Label = $LeftTopPanel/HPLabel
 @onready var stat_strip: StatStrip = $LeftTopPanel/StatStrip
+@onready var character_skill_row: HBoxContainer = $LeftTopPanel/CharacterSkillRow
 @onready var weapon_row: HBoxContainer = $LeftTopPanel/WeaponRow
 
 @onready var wave_label: Label = $TopCenterPanel/WaveLabel
@@ -27,6 +28,8 @@ var _toast_left: float = 0.0
 var _player: Node = null
 var _wave_duration: float = 30.0
 var _weapon_slots: Array[WeaponSlot] = []
+var _skill_cd_bars: Array[ProgressBar] = []
+var _skill_emoji_labels: Array[Label] = []
 
 
 func _ready() -> void:
@@ -100,6 +103,7 @@ func _process(delta: float) -> void:
 				toast_label.visible = false
 	if fps_label != null and fps_label.visible:
 		fps_label.text = "FPS %d" % Engine.get_frames_per_second()
+	_refresh_character_skill_cooldowns()
 
 
 func _setup_timer_bar_fill_style() -> void:
@@ -129,6 +133,68 @@ func setup(player: Node) -> void:
 			lo.loadout_updated.connect(refresh_weapon_slots)
 	refresh_weapon_slots()
 	_refresh_stats()
+	_rebuild_character_skill_row()
+
+
+func _rebuild_character_skill_row() -> void:
+	if character_skill_row == null:
+		return
+	for c in character_skill_row.get_children():
+		c.queue_free()
+	_skill_cd_bars.clear()
+	_skill_emoji_labels.clear()
+	if _player == null:
+		character_skill_row.visible = false
+		return
+	var sk: Node = _player.get_node_or_null("PlayerSkillController")
+	if sk == null or not sk.has_method("get_active_defs"):
+		character_skill_row.visible = false
+		return
+	var defs: Array = sk.call("get_active_defs") as Array
+	if defs.is_empty():
+		character_skill_row.visible = false
+		return
+	character_skill_row.visible = true
+	for d in defs:
+		if not (d is Dictionary):
+			continue
+		var def: Dictionary = d as Dictionary
+		var cell: VBoxContainer = VBoxContainer.new()
+		cell.custom_minimum_size = Vector2(56, 40)
+		character_skill_row.add_child(cell)
+		var em: Label = Label.new()
+		em.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		em.add_theme_font_size_override("font_size", 22)
+		em.text = str(def.get("icon_emoji", "✨"))
+		cell.add_child(em)
+		_skill_emoji_labels.append(em)
+		var bar: ProgressBar = ProgressBar.new()
+		bar.custom_minimum_size = Vector2(52, 10)
+		bar.max_value = 1.0
+		bar.step = 0.001
+		bar.show_percentage = false
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.15, 0.12, 0.22, 0.95)
+		sb.set_corner_radius_all(4)
+		bar.add_theme_stylebox_override("background", sb)
+		var sf := StyleBoxFlat.new()
+		sf.bg_color = Color(0.35, 0.78, 0.42, 0.92)
+		sf.set_corner_radius_all(4)
+		bar.add_theme_stylebox_override("fill", sf)
+		bar.value = 0.0
+		cell.add_child(bar)
+		_skill_cd_bars.append(bar)
+
+
+func _refresh_character_skill_cooldowns() -> void:
+	if _player == null or character_skill_row == null or not character_skill_row.visible:
+		return
+	var sk: Node = _player.get_node_or_null("PlayerSkillController")
+	if sk == null or not sk.has_method("get_slot_cooldown_ratio"):
+		return
+	for i in range(_skill_cd_bars.size()):
+		var ratio: float = float(sk.call("get_slot_cooldown_ratio", i))
+		_skill_cd_bars[i].value = ratio
 
 
 func _build_weapon_slots() -> void:
@@ -168,6 +234,10 @@ func _refresh_stats() -> void:
 
 func refresh_player_stats() -> void:
 	_refresh_stats()
+
+
+func rebuild_character_skills() -> void:
+	_rebuild_character_skill_row()
 
 
 func on_wave_timer_reset(duration_sec: float) -> void:

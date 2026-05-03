@@ -275,6 +275,7 @@ func capture_endgame_from_player(player: Node) -> void:
 		"stat_poison_duration_pct": player.stat_poison_duration_pct,
 		"stat_shock_damage_mult": player.stat_shock_damage_mult,
 		"stat_shock_vuln_apply_flat": player.stat_shock_vuln_apply_flat,
+		"stat_thorns_reflect_pct": player.stat_thorns_reflect_pct,
 		"player_level": player_level,
 		"player_xp": player_xp,
 	}
@@ -294,6 +295,19 @@ func _register_default_input_actions() -> void:
 		_add_key_to_action("pause_game", [KEY_ESCAPE])
 		_add_key_to_action("confirm", [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE])
 	_ensure_attack_range_preview_action()
+	_ensure_skill_input_actions()
+
+
+func _ensure_skill_input_actions() -> void:
+	if not InputMap.has_action("skill"):
+		InputMap.add_action("skill", 0.2)
+		_add_key_to_action("skill", [KEY_Q])
+	if not InputMap.has_action("skill_secondary"):
+		InputMap.add_action("skill_secondary", 0.2)
+		_add_key_to_action("skill_secondary", [KEY_E])
+	if not InputMap.has_action("skill_tertiary"):
+		InputMap.add_action("skill_tertiary", 0.2)
+		_add_key_to_action("skill_tertiary", [KEY_R])
 
 
 func _ensure_attack_range_preview_action() -> void:

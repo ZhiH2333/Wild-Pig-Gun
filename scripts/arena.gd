@@ -112,6 +112,22 @@ func _ready() -> void:
 	add_child(collect_timer)
 
 
+func _process(_delta: float) -> void:
+	if RunState.pause_reason != RunState.PauseReason.NONE:
+		return
+	if player == null:
+		return
+	var sk: Node = player.get_node_or_null("PlayerSkillController")
+	if sk == null:
+		return
+	if Input.is_action_just_pressed("skill"):
+		sk.call("try_activate_slot", 0)
+	if Input.is_action_just_pressed("skill_secondary"):
+		sk.call("try_activate_slot", 1)
+	if Input.is_action_just_pressed("skill_tertiary"):
+		sk.call("try_activate_slot", 2)
+
+
 ## 预加载所有敌人场景和预警场景
 func _preload_scenes() -> void:
 	for type in ENEMY_SCENE_MAP:
@@ -363,9 +379,13 @@ func build_run_snapshot() -> Dictionary:
 			"stat_poison_duration_pct": player.stat_poison_duration_pct,
 			"stat_shock_damage_mult": player.stat_shock_damage_mult,
 			"stat_shock_vuln_apply_flat": player.stat_shock_vuln_apply_flat,
+			"stat_thorns_reflect_pct": player.stat_thorns_reflect_pct,
 			"pos_x": player.global_position.x,
 			"pos_y": player.global_position.y,
 		}
+	var sk_node: Node = player.get_node_or_null("PlayerSkillController") if player != null else null
+	if sk_node != null and sk_node.has_method("get_save_state"):
+		pstats["skill_state"] = sk_node.call("get_save_state")
 	return {
 		"version": RUN_SNAPSHOT_VERSION,
 		"run_state": RunState.to_snapshot_dict(),
@@ -436,6 +456,8 @@ func _restore_run_from_snapshot(snap: Dictionary) -> void:
 	else:
 		_checkpoint_at_wave_start = {}
 	RunState.emit_hud_sync_signals()
+	if hud != null and hud.has_method("rebuild_character_skills"):
+		hud.rebuild_character_skills()
 
 
 func _clear_combat_entities() -> void:
@@ -661,5 +683,7 @@ func spawn_enemy_at(type: String, position: Vector2) -> void:
 
 
 func _on_enemy_died_xp(_dead_enemy: Node2D) -> void:
+	if player != null:
+		CharacterSkillImpl.on_enemy_killed_passives(player)
 	var gain: int = 2 + RunState.wave_index / 2
 	RunState.add_xp(gain)

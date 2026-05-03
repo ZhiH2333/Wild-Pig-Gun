@@ -67,6 +67,8 @@ func _effective_damage() -> int:
 		mult *= p.stat_synergy_damage_mult as float
 	if p != null and "stat_melee_damage_mult" in p:
 		mult *= float(p.stat_melee_damage_mult)
+	if p != null and p.has_method("get_skill_outgoing_damage_mult"):
+		mult *= float(p.call("get_skill_outgoing_damage_mult"))
 	var mat_bonus: float = 1.0
 	if p != null and "material_to_damage_kv" in p:
 		var kv: float = float(p.material_to_damage_kv)
@@ -121,9 +123,12 @@ func _melee_strike() -> void:
 				var fd: int = amt
 				var ic: bool = false
 				if p != null and "stat_crit_chance" in p and "stat_crit_mult" in p:
+					var cc_use: float = float(p.stat_crit_chance)
+					if p.has_method("get_crit_chance_effective"):
+						cc_use = float(p.call("get_crit_chance_effective"))
 					var roll: Dictionary = CombatMath.roll_damage_with_crit(
 						amt,
-						float(p.stat_crit_chance),
+						cc_use,
 						float(p.stat_crit_mult)
 					)
 					fd = int(roll["damage"])

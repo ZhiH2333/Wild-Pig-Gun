@@ -244,6 +244,9 @@ static func apply_upgrade_def(player: Node, def: Dictionary) -> void:
 		"shock_vuln_flat":
 			if "stat_shock_vuln_apply_flat" in player:
 				player.stat_shock_vuln_apply_flat += float(value)
+		"thorns_reflect_pct":
+			if "stat_thorns_reflect_pct" in player:
+				player.stat_thorns_reflect_pct = minf(0.45, float(player.stat_thorns_reflect_pct) + float(value))
 		"hp_regen_flat":
 			if "stat_hp_regen_per_sec" in player:
 				player.stat_hp_regen_per_sec += float(value)
@@ -473,6 +476,24 @@ static func default_shop_items() -> Array[Dictionary]:
 	return [
 		{"id": "shop_heal", "title": "治疗包", "base_price": 5, "tier": 1, "kind": "heal_flat", "value": 22},
 	]
+
+
+static var _shop_def_by_id: Dictionary = {}
+
+
+static func _ensure_shop_def_cache() -> void:
+	if not _shop_def_by_id.is_empty():
+		return
+	for d in default_shop_items():
+		var sid: String = str(d.get("id", ""))
+		if not sid.is_empty():
+			_shop_def_by_id[sid] = d
+
+
+## 消耗品栏等：按商店条目 id 取定义（含 icon_emoji）
+static func get_shop_item_def(shop_id: String) -> Dictionary:
+	_ensure_shop_def_cache()
+	return (_shop_def_by_id.get(shop_id, {}) as Dictionary).duplicate()
 
 
 static func apply_shop_def(player: Node, def: Dictionary) -> void:

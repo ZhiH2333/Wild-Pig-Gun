@@ -242,6 +242,8 @@ func _apply_player_hit_damage_and_status(body: Node2D) -> void:
 	var is_crit: bool = false
 	if pl != null and "stat_crit_chance" in pl and "stat_crit_mult" in pl:
 		var cc_use: float = float(pl.stat_crit_chance)
+		if pl.has_method("get_crit_chance_effective"):
+			cc_use = float(pl.call("get_crit_chance_effective"))
 		if force_skull_special:
 			cc_use = 1.0
 		var roll: Dictionary = CombatMath.roll_damage_with_crit(
@@ -335,9 +337,12 @@ func _spawn_chain_lightning(first_body: Node2D) -> void:
 		if best.has_method("take_damage"):
 			var ic: bool = false
 			if pl != null and "stat_crit_chance" in pl and "stat_crit_mult" in pl:
+				var cc2: float = float(pl.stat_crit_chance)
+				if pl.has_method("get_crit_chance_effective"):
+					cc2 = float(pl.call("get_crit_chance_effective"))
 				var roll: Dictionary = CombatMath.roll_damage_with_crit(
 					ch_dmg,
-					float(pl.stat_crit_chance),
+					cc2,
 					float(pl.stat_crit_mult)
 				)
 				ch_dmg = int(roll["damage"])

@@ -1,0 +1,19 @@
+[
+  {"id": "default_charge", "character_id": "default", "kind": "active", "slot": 0, "title": "野猪突击", "icon_emoji": "💨", "cooldown": 8.0, "implementation_id": "boar_wild_charge"},
+  {"id": "default_stomp", "character_id": "default", "kind": "active", "slot": 1, "title": "震地踏步", "icon_emoji": "🗯️", "cooldown": 10.0, "implementation_id": "boar_stomp"},
+  {"id": "default_iron", "character_id": "default", "kind": "passive", "slot": 0, "title": "铁皮猪皮", "icon_emoji": "🛡️", "cooldown": 0.0, "implementation_id": "boar_iron_skin"},
+  {"id": "default_rage", "character_id": "default", "kind": "passive", "slot": 0, "title": "暴怒模式", "icon_emoji": "😤", "cooldown": 0.0, "implementation_id": "boar_rage_mode"},
+  {"id": "default_blood", "character_id": "default", "kind": "passive", "slot": 0, "title": "嗜血本能", "icon_emoji": "🩸", "cooldown": 0.0, "implementation_id": "boar_bloodlust"},
+
+  {"id": "pc_transform", "character_id": "pigchicken", "kind": "active", "slot": 0, "title": "猪鸡变形", "icon_emoji": "🔀", "cooldown": 6.0, "implementation_id": "pc_transform_toggle"},
+  {"id": "pc_crow", "character_id": "pigchicken", "kind": "active", "slot": 1, "title": "公鸡打鸣", "icon_emoji": "📣", "cooldown": 12.0, "implementation_id": "pc_crow_cry"},
+  {"id": "pc_combo", "character_id": "pigchicken", "kind": "active", "slot": 2, "title": "猪鸡连击", "icon_emoji": "⚡", "cooldown": 18.0, "implementation_id": "pc_combo_burst"},
+  {"id": "pc_hybrid", "character_id": "pigchicken", "kind": "passive", "slot": 0, "title": "杂交优势", "icon_emoji": "🧬", "cooldown": 0.0, "implementation_id": "pc_hybrid_bonus"},
+  {"id": "pc_mixed", "character_id": "pigchicken", "kind": "passive", "slot": 0, "title": "混血本能", "icon_emoji": "✨", "cooldown": 0.0, "implementation_id": "pc_mixed_crit"},
+
+  {"id": "ch_feather", "character_id": "chicken", "kind": "active", "slot": 0, "title": "飞羽弹幕", "icon_emoji": "🪶", "cooldown": 7.0, "implementation_id": "ph_feather_fan"},
+  {"id": "ch_dash", "character_id": "chicken", "kind": "active", "slot": 1, "title": "鸡血冲刺", "icon_emoji": "🏃", "cooldown": 9.0, "implementation_id": "ph_blood_dash"},
+  {"id": "ch_ult", "character_id": "chicken", "kind": "active", "slot": 2, "title": "千羽乱舞", "icon_emoji": "🌟", "cooldown": 22.0, "implementation_id": "ph_feather_storm"},
+  {"id": "ch_dodge", "character_id": "chicken", "kind": "passive", "slot": 0, "title": "凌波微步", "icon_emoji": "💫", "cooldown": 0.0, "implementation_id": "ph_phantom_dodge"},
+  {"id": "ch_aim", "character_id": "chicken", "kind": "passive", "slot": 0, "title": "精准射击", "icon_emoji": "🎯", "cooldown": 0.0, "implementation_id": "ph_steady_aim"}
+]

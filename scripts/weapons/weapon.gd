@@ -93,6 +93,8 @@ func _effective_damage() -> int:
 		mult *= p.stat_synergy_damage_mult as float
 	if p != null and p.has_method("get_shop_damage_stim_mult"):
 		mult *= p.get_shop_damage_stim_mult() as float
+	if p != null and p.has_method("get_skill_outgoing_damage_mult"):
+		mult *= float(p.call("get_skill_outgoing_damage_mult"))
 	var mat_bonus: float = 1.0
 	if p != null and "material_to_damage_kv" in p:
 		var kv: float = float(p.material_to_damage_kv)
