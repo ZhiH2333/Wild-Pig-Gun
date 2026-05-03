@@ -229,6 +229,8 @@ func _on_material_collected(material_id: String, amount: int, drop_node: Node) -
 		return
 	if not is_instance_valid(drop_node):
 		return
+	if material_id == "gold":
+		GameAudio.play_get_coin()
 	if drop_node.get_meta("is_savings", false):
 		RunState.collect_savings()
 	else:

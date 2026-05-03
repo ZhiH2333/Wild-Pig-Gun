@@ -2,6 +2,10 @@ extends Node
 
 const STREAM_DIE: AudioStream = preload("res://assets/audio/die.mp3")
 const STREAM_UI: AudioStream = preload("res://assets/audio/ui_select.mp3")
+const STREAM_SHOOT: AudioStream = preload("res://assets/audio/shoot.mp3")
+const STREAM_GET_COIN: AudioStream = preload("res://assets/audio/get_coin.wav")
+## 射击 SFX 相对满幅的线性比例（默认 40%）
+const SHOOT_VOLUME_LINEAR: float = 0.4
 
 var _players: Array[AudioStreamPlayer] = []
 
@@ -34,7 +38,11 @@ func play_sfx(stream: AudioStream, volume_db: float = 0.0, pitch_scale: float = 
 
 
 func play_shoot() -> void:
-	pass
+	play_sfx(STREAM_SHOOT, linear_to_db(SHOOT_VOLUME_LINEAR))
+
+
+func play_get_coin() -> void:
+	play_sfx(STREAM_GET_COIN, -2.0)
 
 
 func play_die() -> void:
