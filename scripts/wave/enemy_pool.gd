@@ -4,13 +4,18 @@ class_name EnemyPool
 signal enemy_replaced(old_enemy: Node2D, new_enemy: Node2D)
 
 const MAX_ENEMIES: int = 100
+const MAX_ENEMIES_WEB: int = 60
 
 # 按生成顺序维护的队列（最旧在队首）
 var _active_enemies: Array[Node2D] = []
 
 
+func _max_enemies_alive() -> int:
+	return MAX_ENEMIES_WEB if OS.has_feature("web") else MAX_ENEMIES
+
+
 func register_enemy(enemy: Node2D) -> void:
-	if _active_enemies.size() >= MAX_ENEMIES:
+	if _active_enemies.size() >= _max_enemies_alive():
 		_replace_oldest(enemy)
 	else:
 		_active_enemies.append(enemy)
