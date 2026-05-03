@@ -126,7 +126,7 @@ func _build_run_line() -> String:
 
 func _build_power_line() -> String:
 	# Godot 4 已移除 OS.get_power_percent_left / get_power_state；Web 亦无通用电池读数。
-	var low_cpu: bool = OS.is_low_processor_usage_mode_enabled()
+	var low_cpu: bool = OS.is_in_low_processor_usage_mode()
 	return "power: n/a (no OS battery API in Godot 4) | low_processor_usage_mode=%s" % str(low_cpu).to_lower()
 
 
