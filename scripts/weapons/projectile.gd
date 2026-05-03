@@ -18,6 +18,9 @@ const DEFAULT_SPEED: float = 400.0
 ## 野猪榴弹：着地或命中敌人立刻范围爆炸（伤害 + 震屏）
 const GRENADE_AOE_RADIUS: float = 128.0
 const GRENADE_MAX_FLIGHT_SEC: float = 1.25
+## 敌方直线弹：超时与战场外扩边销毁（不依赖 VisibleOnScreenNotifier2D）
+const ENEMY_PROJECTILE_MAX_FLIGHT_SEC: float = 8.0
+const ENEMY_PROJECTILE_ARENA_DESPAWN_MARGIN: float = 160.0
 
 var direction: Vector2 = Vector2.RIGHT
 var damage: int = 10
@@ -46,6 +49,7 @@ var _grenade_flight: float = 0.0
 var _grenade_vel: Vector2 = Vector2.ZERO
 var _grenade_exploded: bool = false
 var _arc_phase: float = 0.0
+var _enemy_flight_time: float = 0.0
 
 @onready var _sprite: Sprite2D = $Sprite2D
 
@@ -134,7 +138,29 @@ func _physics_process(delta: float) -> void:
 		else:
 			_despawn_ghost_if_stale(delta)
 	else:
+		_enemy_flight_time += delta
+		if _enemy_flight_time >= ENEMY_PROJECTILE_MAX_FLIGHT_SEC:
+			queue_free()
+			return
+		var outer: Rect2 = _enemy_projectile_despawn_bounds()
+		if not outer.has_point(global_position):
+			queue_free()
+			return
 		position += direction * speed * delta
+
+
+func _enemy_projectile_despawn_bounds() -> Rect2:
+	var inner: Rect2 = Rect2(0.0, 0.0, 1920.0, 1080.0)
+	var arena: Node = get_tree().get_first_node_in_group("arena")
+	if arena != null and arena.has_method("get_arena_rect"):
+		inner = arena.call("get_arena_rect") as Rect2
+	var m: float = ENEMY_PROJECTILE_ARENA_DESPAWN_MARGIN
+	return Rect2(
+		inner.position.x - m,
+		inner.position.y - m,
+		inner.size.x + 2.0 * m,
+		inner.size.y + 2.0 * m
+	)
 
 
 func _despawn_ghost_if_stale(delta: float) -> void:
