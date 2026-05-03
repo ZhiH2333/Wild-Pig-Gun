@@ -50,15 +50,16 @@ func _print_snapshot(arena: Node) -> void:
 	var proc_ms: float = Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0
 	var phys_ms: float = Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0
 	var mem_static: float = Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0
-	var mem_tex: float = Performance.get_monitor(Performance.TEXTURE_MEM_USED) / 1048576.0
+	var mem_tex: float = Performance.get_monitor(Performance.RENDER_TEXTURE_MEM_USED) / 1048576.0
+	var mem_buf: float = Performance.get_monitor(Performance.RENDER_BUFFER_MEM_USED) / 1048576.0
 	var obj_n: int = int(Performance.get_monitor(Performance.OBJECT_COUNT))
 	var phys2d_obj: int = int(Performance.get_monitor(Performance.PHYSICS_2D_ACTIVE_OBJECTS))
 	var phys2d_pairs: int = int(Performance.get_monitor(Performance.PHYSICS_2D_COLLISION_PAIRS))
 	var draw_2d: int = int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
 	var prim_2d: int = int(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
-	var mem_dyn: float = Performance.get_monitor(Performance.MEMORY_DYNAMIC) / 1048576.0
+	var mem_vid: float = Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576.0
 	var orphan_n: int = int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
-	var vid_mem: float = Performance.get_monitor(Performance.MEMORY_VIDEO_MEM_USED) / 1048576.0
+	var res_n: int = int(Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT))
 	var enemies_n: int = get_tree().get_nodes_in_group("enemies").size()
 	var proj_n: int = 0
 	var mat_n: int = 0
@@ -87,7 +88,7 @@ func _print_snapshot(arena: Node) -> void:
 	print(
 		"\n[PerfLog] t=%.1fs | %s web=%s\n" % [Time.get_ticks_msec() / 1000.0, plat, str(web).to_lower()]
 		+ "  FPS=%.1f proc_ms=%.2f phys_ms=%.2f | draw_calls=%d primitives=%d\n" % [fps, proc_ms, phys_ms, draw_2d, prim_2d]
-		+ "  mem_MB static=%.1f dyn=%.1f tex=%.1f video=%.1f | objects=%d orphans=%d | phys2d_active=%d pairs=%d\n" % [mem_static, mem_dyn, mem_tex, vid_mem, obj_n, orphan_n, phys2d_obj, phys2d_pairs]
+		+ "  mem_MB static=%.1f render_tex=%.1f render_buf=%.1f render_video=%.1f | objects=%d resources=%d orphans=%d | phys2d_active=%d pairs=%d\n" % [mem_static, mem_tex, mem_buf, mem_vid, obj_n, res_n, orphan_n, phys2d_obj, phys2d_pairs]
 		+ "  arena_nodes=%d area2d=%d charbody2d=%d sprite2d=%d label=%d | enemies_grp=%d proj=%d mats=%d\n" % [nodes_under_arena, areas, cb2d, spr2d, lbl, enemies_n, proj_n, mat_n]
 		+ "  tree_paused=%s pause_reason=%s | master_peak_db=%.1f\n" % [str(paused).to_lower(), pr, master_peak]
 		+ "  particle_nodes=%d particle_emitting=%d\n" % [pc.x, pc.y]
