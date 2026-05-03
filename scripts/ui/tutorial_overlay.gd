@@ -48,8 +48,9 @@ func _ready() -> void:
 			+ "你将扮演一只武装到牙齿的野猪，在不断涌来的怪物浪潮中生存下去。\n"
 			+ "收集野猪币、升级构筑、击败 Boss，看看你能坚持到第几波！[/center]"
 		)
-	if _start_tutorial_btn:
-		_start_tutorial_btn.pressed.connect(_on_start_tutorial)
+	# 开始教程 → 设置页
+	# if _start_tutorial_btn:
+	# 	_start_tutorial_btn.pressed.connect(_on_start_tutorial)
 	if _skip_link:
 		_skip_link.flat = true
 		_skip_link.pressed.connect(_on_skip_tutorial)
@@ -71,10 +72,10 @@ func _show_input_select() -> void:
 	_input_select.visible = true
 
 
-func _on_start_tutorial() -> void:
-	TutorialSession.is_in_tutorial_settings = true
-	RunState.settings_return_scene_path = "res://scenes/main_menu.tscn"
-	get_tree().change_scene_to_file("res://scenes/settings.tscn")
+# func _on_start_tutorial() -> void:
+# 	TutorialSession.is_in_tutorial_settings = true
+# 	RunState.settings_return_scene_path = "res://scenes/main_menu.tscn"
+# 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 
 func _on_skip_tutorial() -> void:

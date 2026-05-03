@@ -1,7 +1,7 @@
 extends Control
 
 const MENU_BUTTON_CONTAINER_PATH: String = "MenuButtonsWrap/LeftMenuColumn/ButtonContainer"
-const TUTORIAL_OVERLAY_SCRIPT: Script = preload("res://scripts/ui/tutorial_overlay.gd")
+# const TUTORIAL_OVERLAY_SCRIPT: Script = preload("res://scripts/ui/tutorial_overlay.gd")
 const GITHUB_API_STABLE_LATEST: String = (
 	"https://api.github.com/repos/ZhiH2333/Wild-Pig-Gun/releases/latest"
 )
@@ -65,9 +65,10 @@ func _ready() -> void:
 	background.scale = Vector2(BACKGROUND_SWAY_OVERSCALE, BACKGROUND_SWAY_OVERSCALE)
 	if entrance_cover != null:
 		await _play_entrance_fade_in(entrance_cover)
-	if not SaveManager.get_tutorial_completed() and not SaveManager.has_pending_run():
-		TutorialSession.begin_from_main_menu()
-		TUTORIAL_OVERLAY_SCRIPT.call("try_attach", self)
+	# 开始教程（主菜单欢迎层）
+	# if not SaveManager.get_tutorial_completed() and not SaveManager.has_pending_run():
+	# 	TutorialSession.begin_from_main_menu()
+	# 	TUTORIAL_OVERLAY_SCRIPT.call("try_attach", self)
 	if SaveManager.get_tutorial_completed() and not GameSettings.has_selected_control_mode:
 		_show_control_mode_dialog()
 
