@@ -21,6 +21,10 @@ const GRENADE_MAX_FLIGHT_SEC: float = 1.25
 ## 敌方直线弹：超时与战场外扩边销毁（不依赖 VisibleOnScreenNotifier2D）
 const ENEMY_PROJECTILE_MAX_FLIGHT_SEC: float = 8.0
 const ENEMY_PROJECTILE_ARENA_DESPAWN_MARGIN: float = 160.0
+## 全图敌方直线弹并发上限（超出则移除最早创建的实例）
+const ENEMY_PROJECTILE_MAX_ALIVE: int = 120
+const ENEMY_PROJECTILE_MAX_ALIVE_WEB: int = 80
+static var _enemy_projectiles_alive: Array[Projectile] = []
 
 var direction: Vector2 = Vector2.RIGHT
 var damage: int = 10
@@ -72,9 +76,14 @@ func _ready() -> void:
 		_spawn_magnetic_ring_at(global_position)
 	if team == TEAM_PLAYER and source_weapon_id == "boar_grenade" and bool(_fx.get("grenade_arc", false)):
 		_register_boar_grenade_cap()
+	if team == TEAM_ENEMY:
+		_register_enemy_projectile_alive_cap()
 
 
 func _exit_tree() -> void:
+	var ei: int = _enemy_projectiles_alive.find(self)
+	if ei >= 0:
+		_enemy_projectiles_alive.remove_at(ei)
 	var idx: int = _boar_grenade_live.find(self)
 	if idx >= 0:
 		_boar_grenade_live.remove_at(idx)
@@ -84,6 +93,17 @@ func _register_boar_grenade_cap() -> void:
 	_boar_grenade_live.append(self)
 	while _boar_grenade_live.size() > BOAR_GRENADE_MAX_ALIVE:
 		var oldest: Projectile = _boar_grenade_live.pop_front()
+		if oldest != null and is_instance_valid(oldest):
+			oldest.queue_free()
+
+
+func _register_enemy_projectile_alive_cap() -> void:
+	var cap: int = (
+		ENEMY_PROJECTILE_MAX_ALIVE_WEB if OS.has_feature("web") else ENEMY_PROJECTILE_MAX_ALIVE
+	)
+	_enemy_projectiles_alive.append(self)
+	while _enemy_projectiles_alive.size() > cap:
+		var oldest: Projectile = _enemy_projectiles_alive.pop_front()
 		if oldest != null and is_instance_valid(oldest):
 			oldest.queue_free()
 
