@@ -41,6 +41,11 @@ var _control_mode_dialog: Window = null
 
 
 func _ready() -> void:
+	var entrance_fade_in_from_first_screen: bool = RunState.consume_pending_main_menu_entrance_fade_in()
+	var entrance_cover: ColorRect = null
+	if entrance_fade_in_from_first_screen:
+		entrance_cover = _make_entrance_fade_cover()
+		add_child(entrance_cover)
 	GameMusic.ensure_playing_main_volume()
 	_apply_version_label()
 	_check_update_button.pressed.connect(_on_check_update_pressed)
@@ -58,11 +63,34 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_update_background_sway_pivot()
 	background.scale = Vector2(BACKGROUND_SWAY_OVERSCALE, BACKGROUND_SWAY_OVERSCALE)
+	if entrance_cover != null:
+		await _play_entrance_fade_in(entrance_cover)
 	if not SaveManager.get_tutorial_completed() and not SaveManager.has_pending_run():
 		TutorialSession.begin_from_main_menu()
 		TUTORIAL_OVERLAY_SCRIPT.call("try_attach", self)
 	if SaveManager.get_tutorial_completed() and not GameSettings.has_selected_control_mode:
 		_show_control_mode_dialog()
+
+
+func _make_entrance_fade_cover() -> ColorRect:
+	var cover: ColorRect = ColorRect.new()
+	cover.name = "EntranceFadeCover"
+	cover.set_anchors_preset(Control.PRESET_FULL_RECT)
+	cover.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cover.color = MenuEntrance.COVER_COLOR
+	cover.modulate = Color(1, 1, 1, 1)
+	cover.z_index = 120
+	return cover
+
+
+func _play_entrance_fade_in(cover: ColorRect) -> void:
+	var tw: Tween = create_tween()
+	tw.tween_property(cover, "modulate:a", 0.0, MenuEntrance.ENTRANCE_REVEAL_SEC).set_trans(
+		Tween.TRANS_QUART
+	).set_ease(Tween.EASE_OUT)
+	await tw.finished
+	if is_instance_valid(cover):
+		cover.queue_free()
 
 
 func _show_control_mode_dialog() -> void:

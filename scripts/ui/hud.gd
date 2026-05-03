@@ -65,6 +65,7 @@ func _ready() -> void:
 		push_error("[HUD] fps_label 节点路径失效，跳过 FPS 显示")
 
 	_apply_platform_margins()
+	_apply_left_panel_layout_vs_center_timer()
 
 	RunState.wave_changed.connect(_on_wave_changed)
 	RunState.material_changed.connect(_on_material_changed)
@@ -82,6 +83,12 @@ func _ready() -> void:
 		wave_timer_bar.visible = false
 	_setup_timer_bar_fill_style()
 
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
+
+
+func _on_viewport_size_changed() -> void:
+	_apply_left_panel_layout_vs_center_timer()
+
 
 func _apply_platform_margins() -> void:
 	if OS.get_name() == "Android":
@@ -93,6 +100,35 @@ func _apply_platform_margins() -> void:
 		if right_top_panel != null:
 			right_top_panel.offset_right = -60
 			right_top_panel.offset_top = 56
+
+
+## 左上区块（血条/武器）不要横跨屏幕中线，避免与中央「波次/倒计时」叠在同一横带
+func _apply_left_panel_layout_vs_center_timer() -> void:
+	if left_top_panel == null:
+		return
+	var vw: float = maxf(1.0, get_viewport().get_visible_rect().size.x)
+	var ml: float = 20.0
+	var mt: float = 16.0
+	if OS.get_name() == "Android":
+		ml = 60.0
+		mt = 56.0
+	# 中央波次+计时文案约 400px 宽居中；右侧预留 gap，左侧集群右缘不超过约 vw/2 - 220
+	var max_w_px: float = mini(vw * 0.5 - 220.0, vw * 0.46)
+	max_w_px = maxf(max_w_px, 260.0)
+	var ar: float = clampf((ml + max_w_px) / vw, 0.28, 0.46)
+	left_top_panel.anchor_left = 0.0
+	left_top_panel.anchor_top = 0.0
+	left_top_panel.anchor_right = ar
+	left_top_panel.anchor_bottom = 0.26
+	left_top_panel.offset_left = ml
+	left_top_panel.offset_top = mt
+	left_top_panel.offset_right = -16.0
+	left_top_panel.offset_bottom = -16.0
+	left_top_panel.z_index = 0
+	if top_center_panel != null:
+		top_center_panel.z_index = 2
+	if right_top_panel != null:
+		right_top_panel.z_index = 1
 
 
 func _process(delta: float) -> void:

@@ -12,7 +12,7 @@ config_version=5
 
 config/name="WildPigGun"
 config/version="1.1.0"
-run/main_scene="uid://dctlwroemrtu0"
+run/main_scene="res://scenes/first_screen.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/show_image=false
 boot_splash/image="uid://cnwkdsgj53mma"
@@ -42,5 +42,6 @@ theme/custom="res://themes/game_ui_theme.tres"
 
 [rendering]
 
+environment/defaults/default_clear_color=Color(0.056, 0.048, 0.042, 1)
 rendering_device/driver.windows="d3d12"
 textures/vram_compression/import_etc2_astc=true

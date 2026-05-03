@@ -52,6 +52,8 @@ var run_risk_mult: float = 1.0
 var settings_return_scene_path: String = "res://scenes/main_menu.tscn"
 ## 角色图鉴返回目标场景（默认主菜单）
 var gallery_return_scene_path: String = "res://scenes/main_menu.tscn"
+## 由 first_screen 加载完成切换前置位：主菜单入场时从黑幕渐入一次
+var pending_main_menu_entrance_fade_in: bool = false
 ## 开局武器选择覆盖（为空时按角色默认武器）
 var selected_starting_weapon_ids: Array[String] = []
 ## 策划商店：已购买的武器改造（shop item id）
@@ -77,6 +79,12 @@ var shop_smoke_blind_left: float = 0.0
 
 func _ready() -> void:
 	_register_default_input_actions()
+
+
+func consume_pending_main_menu_entrance_fade_in() -> bool:
+	var was: bool = pending_main_menu_entrance_fade_in
+	pending_main_menu_entrance_fade_in = false
+	return was
 
 
 func _process(delta: float) -> void:

@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cg0wdavxcm72x" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="PackedScene" uid="uid://statstripwp" path="res://scenes/ui/stat_strip.tscn" id="3_stat"]
-[ext_resource type="Script" path="res://scripts/ui/consumable_skill_dock.gd" id="4_dock"]
+[ext_resource type="Script" uid="uid://4pnigc3sc35h" path="res://scripts/ui/consumable_skill_dock.gd" id="4_dock"]
 
 [node name="HUD" type="CanvasLayer" unique_id=1248882164]
 layer = 26
@@ -43,18 +43,19 @@ offset_top = 60.0
 offset_right = 280.0
 offset_bottom = 90.0
 
-[node name="CharacterSkillRow" type="HBoxContainer" parent="LeftTopPanel"]
+[node name="CharacterSkillRow" type="HBoxContainer" parent="LeftTopPanel" unique_id=1371014343]
 layout_mode = 0
-offset_top = 94.0
-offset_right = 360.0
-offset_bottom = 134.0
+offset_left = 4.0
+offset_top = 192.0
+offset_right = 364.0
+offset_bottom = 232.0
 theme_override_constants/separation = 6
 
 [node name="WeaponRow" type="HBoxContainer" parent="LeftTopPanel" unique_id=1550152195]
 layout_mode = 0
-offset_top = 138.0
+offset_top = 99.0
 offset_right = 680.0
-offset_bottom = 190.0
+offset_bottom = 151.0
 theme_override_constants/separation = 8
 
 [node name="TopCenterPanel" type="Control" parent="." unique_id=1374229568]
@@ -171,13 +172,10 @@ text = "FPS 0"
 horizontal_alignment = 2
 
 [node name="ConsumableSkillDock" type="Control" parent="." unique_id=1988122100]
-layout_mode = 1
+layout_mode = 3
 anchors_preset = 0
-offset_left = 0.0
-offset_top = 0.0
 offset_right = 356.0
 offset_bottom = 56.0
-mouse_filter = 0
 script = ExtResource("4_dock")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ConsumableSkillDock" unique_id=1988122101]
