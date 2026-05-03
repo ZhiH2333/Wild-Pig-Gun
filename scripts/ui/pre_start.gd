@@ -4,22 +4,6 @@ const CHAR_TUTORIAL_TIP_SCRIPT: Script = preload("res://scripts/ui/char_tutorial
 const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
 const WEAPON_CARD_WIDTH_FLOOR: float = 96.0
 const WEAPON_CARD_MIN_HEIGHT: float = 168.0
-## 与策划武器卡图标一致（卡片左上角）
-const WEAPON_CARD_EMOJI: Dictionary = {
-	"crude_pistol": "🔫",
-	"wild_shotgun": "💥",
-	"spin_revolver": "🌀",
-	"electric_gun": "⚡",
-	"feather_bow": "🏹",
-	"fire_snout": "🔥",
-	"magnetic_cannon": "🧲",
-	"frost_sprayer": "❄️",
-	"boar_grenade": "💣",
-	"crescent_blade": "🌙",
-	"trotter_flurry": "🐷",
-	"sniper_chicken": "🎯",
-}
-
 const _P_LEFT: String = "Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"
 const _P_WEAPON_GRID: String = "Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll/WeaponList"
 const _P_WEAPON_STATS: String = "Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"
@@ -256,10 +240,7 @@ func _weapon_card_tag_bg(design_category: String) -> Color:
 
 
 func _weapon_card_emoji(weapon_id: String) -> String:
-	var e: Variant = WEAPON_CARD_EMOJI.get(weapon_id, null)
-	if e == null:
-		return "◆"
-	return str(e)
+	return WeaponCatalog.display_emoji_for_weapon_id(weapon_id)
 
 
 func _rebuild_weapon_cards() -> void:

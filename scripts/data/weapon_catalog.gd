@@ -83,6 +83,30 @@ static func _fallback() -> Array[Dictionary]:
 	]
 
 
+## HUD / 开局选枪卡片等与策划一致的武器 emoji（不入 icon.png）
+const WEAPON_DISPLAY_EMOJI: Dictionary = {
+	"crude_pistol": "🔫",
+	"wild_shotgun": "💥",
+	"spin_revolver": "🌀",
+	"electric_gun": "⚡",
+	"feather_bow": "🏹",
+	"fire_snout": "🔥",
+	"magnetic_cannon": "🧲",
+	"frost_sprayer": "❄️",
+	"boar_grenade": "💣",
+	"crescent_blade": "🌙",
+	"trotter_flurry": "🐷",
+	"sniper_chicken": "🎯",
+}
+
+
+static func display_emoji_for_weapon_id(weapon_id: String) -> String:
+	var e: Variant = WEAPON_DISPLAY_EMOJI.get(weapon_id, null)
+	if e == null:
+		return "◆"
+	return str(e)
+
+
 static func find_def(weapon_id: String) -> Dictionary:
 	for d in load_defs():
 		if str(d.get("id", "")) == weapon_id:
