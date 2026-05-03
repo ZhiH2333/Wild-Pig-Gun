@@ -1,6 +1,8 @@
 extends Button
 
-## 触控技能键占位：注入 InputMap action「skill」（键鼠默认空格与此共用）。
+## 触控技能键：与设置页自定义控件（black_button_theme）一致的圆形外观。
+
+const FONT_BOLD: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
 
 func _ready() -> void:
 	add_to_group("mobile_skill_button")
@@ -11,23 +13,28 @@ func _ready() -> void:
 	focus_mode = Control.FOCUS_NONE
 	var diam: float = 88.0
 	custom_minimum_size = Vector2(diam, diam)
+	add_theme_font_override("font", FONT_BOLD)
+	add_theme_font_size_override("font_size", 20)
+	add_theme_color_override("font_color", Color(1, 1, 1, 1))
+	add_theme_color_override("font_hover_color", Color(0, 0, 0, 1))
+	add_theme_color_override("font_pressed_color", Color(0, 0, 0, 1))
 	_apply_circle_style(diam)
 	text = "技能"
-	add_theme_font_size_override("font_size", 20)
-	add_theme_color_override("font_color", Color(0.98, 0.99, 1.0, 0.95))
-	add_theme_color_override("font_hover_color", Color(1, 1, 1, 1))
-	add_theme_color_override("font_pressed_color", Color(0.95, 0.96, 1.0, 1))
 
 
 func _apply_circle_style(diam: float) -> void:
 	var r: int = int(floorf(diam * 0.5))
 	var n: StyleBoxFlat = StyleBoxFlat.new()
-	n.bg_color = Color(0.22, 0.48, 0.92, 0.62)
+	n.bg_color = Color(0, 0, 0, 0.55)
+	n.set_border_width_all(2)
+	n.border_color = Color(1, 1, 1, 0.2)
 	n.set_corner_radius_all(r)
 	var h: StyleBoxFlat = n.duplicate() as StyleBoxFlat
-	h.bg_color = Color(0.28, 0.58, 0.98, 0.78)
-	var p: StyleBoxFlat = n.duplicate() as StyleBoxFlat
-	p.bg_color = Color(0.14, 0.38, 0.82, 0.82)
+	h.bg_color = Color(1, 1, 1, 0.75)
+	h.border_color = Color(1, 1, 1, 1)
+	var p: StyleBoxFlat = StyleBoxFlat.new()
+	p.bg_color = Color(1, 1, 1, 1)
+	p.set_corner_radius_all(r)
 	add_theme_stylebox_override("normal", n)
 	add_theme_stylebox_override("hover", h)
 	add_theme_stylebox_override("pressed", p)

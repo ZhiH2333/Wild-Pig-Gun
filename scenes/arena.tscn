@@ -562,7 +562,9 @@ grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 0
 focus_mode = 0
-theme_override_font_sizes/font_size = 30
+theme = ExtResource("19_black_btn")
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 28
 text = "暂停"
 script = ExtResource("16_mobile_pause")
 

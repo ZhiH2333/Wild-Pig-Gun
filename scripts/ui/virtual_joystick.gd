@@ -1,5 +1,10 @@
 extends Control
 
+## 与设置页「自定义控件布局」同一套视觉：深色底 + 紫灰描边 + 金色摇杆（对齐 black_button / 面板）
+const COLOR_OUTER_FILL := Color(0.08, 0.07, 0.11, 0.78)
+const COLOR_OUTER_RING := Color(0.38, 0.34, 0.48, 0.55)
+const COLOR_STICK := Color(0.96, 0.88, 0.62, 0.92)
+
 const STICK_MAX_BASE: float = 80.0
 const BASE_OUTER_RADIUS: float = 88.0
 const BASE_INNER_RADIUS: float = 28.0
@@ -96,10 +101,10 @@ func _draw() -> void:
 	var inner_r: float = BASE_INNER_RADIUS * scale
 	var stick_max: float = STICK_MAX_BASE * scale
 	var c: Vector2 = size * 0.5
-	draw_circle(c, outer_r, Color(0.15, 0.15, 0.18, 0.65))
-	draw_arc(c, outer_r, 0.0, TAU, 32, Color(0.5, 0.5, 0.55, 0.5), 2.5)
+	draw_circle(c, outer_r, COLOR_OUTER_FILL)
+	draw_arc(c, outer_r, 0.0, TAU, 48, COLOR_OUTER_RING, 2.5)
 	var stick: Vector2 = output_vector * stick_max
-	draw_circle(c + stick, inner_r, Color(0.9, 0.85, 0.3, 0.85))
+	draw_circle(c + stick, inner_r, COLOR_STICK)
 
 
 func _on_mobile_controls_changed(_enabled: bool) -> void:
