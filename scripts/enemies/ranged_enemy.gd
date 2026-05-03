@@ -19,6 +19,7 @@ var _bullet_scene: PackedScene = null
 
 func _ready() -> void:
 	super._ready()
+	is_shop_mechanical = true
 	max_hp = 20
 	current_hp = 20
 	move_speed = 50.0
@@ -43,6 +44,10 @@ func _get_move_velocity() -> Vector2:
 
 
 func _physics_process(delta: float) -> void:
+	if RunState != null and RunState.stopwatch_frozen:
+		super._physics_process(delta)
+		queue_redraw()
+		return
 	_shoot_timer -= delta
 	if _shoot_timer <= 0.0 and target != null:
 		_shoot_timer = SHOOT_INTERVAL

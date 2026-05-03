@@ -4,7 +4,7 @@ extends CanvasLayer
 ## 左侧状态栏显示当前属性与武器，支持变卖武器
 signal continue_pressed
 
-const SHOP_OFFER_COUNT: int = 5
+const SHOP_OFFER_COUNT: int = 8
 const REFRESH_SHOP_COST: int = 3
 const REFRESH_UPGRADE_COST: int = 8
 const ITEM_CARD_SCENE: PackedScene = preload("res://scenes/ui/item_card.tscn")
@@ -34,6 +34,7 @@ var _status_vbox: VBoxContainer = null
 var _bottom_hint_label: Label = null
 var _sell_confirm: ConfirmationDialog = null
 var _pending_sell_node: Node = null
+var _ammo_window: Window = null
 
 
 func set_player(p: Node) -> void:
@@ -141,7 +142,10 @@ func _build_bottom_hint() -> void:
 	sep.modulate = Color(0.3, 0.3, 0.35, 0.7)
 	vbox.add_child(sep)
 	_bottom_hint_label = Label.new()
-	_bottom_hint_label.text = "提示：武器栏满时购买已有武器可升级（伤害+15%）· 点击左侧武器可变卖 · 每次变卖返还购买价的 50%"
+	_bottom_hint_label.text = (
+		"战斗快捷键：1急救针 2手雷 3烟雾 4脉冲 5鸡血 6万能钥匙 7时停怀表 · "
+		+ "武器栏满时购买已有武器可升级 · 左侧武器可变卖（50% 退款）"
+	)
 	_bottom_hint_label.add_theme_font_size_override("font_size", 15)
 	_bottom_hint_label.modulate = Color(0.65, 0.68, 0.75, 1.0)
 	_bottom_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -259,6 +263,12 @@ func _on_shop_confirm_buy() -> void:
 	_pending_shop_def.clear()
 	if def.is_empty() or _player == null:
 		return
+	if str(def.get("kind", "")) == "ammo_blessing_scroll":
+		var ab_price: int = _effective_price(def)
+		if not RunState.try_spend_material(ab_price):
+			return
+		_open_ammo_blessing_picker(def, ab_price)
+		return
 	if str(def.get("kind", "")) == "add_weapon":
 		var lo: Node = _player.get_node_or_null("WeaponLoadout")
 		var wid: String = str(def.get("value", ""))
@@ -275,6 +285,95 @@ func _on_shop_confirm_buy() -> void:
 		RunState.append_run_choice("shop", _finished_wave_for_log, sid, stitle)
 	_rebuild_shop_rows()
 	_refresh_status_panel()
+
+
+func _open_ammo_blessing_picker(bought: Dictionary, price_paid: int) -> void:
+	if _ammo_window != null and is_instance_valid(_ammo_window):
+		_ammo_window.queue_free()
+		_ammo_window = null
+	var lo: Node = _player.get_node_or_null("WeaponLoadout")
+	if lo == null or lo.get_child_count() == 0:
+		RunState.collect_material(price_paid)
+		_shop_toast_interstitial("无武器，已退还野猪币。")
+		return
+	var win := Window.new()
+	win.title = "弹药祝福"
+	win.size = Vector2i(460, 380)
+	win.unresizable = true
+	win.close_requested.connect(_on_ammo_blessing_close_requested.bind(win, price_paid))
+	var margin := MarginContainer.new()
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	win.add_child(margin)
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 8)
+	margin.add_child(vb)
+	var hint := Label.new()
+	hint.text = "选择要强化的武器（弹容×2、换弹加快）："
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vb.add_child(hint)
+	for c in lo.get_children():
+		if not ("weapon_id" in c):
+			continue
+		var wid: String = str(c.weapon_id)
+		var wdef: Dictionary = WeaponCatalog.find_def(wid)
+		var btn := Button.new()
+		btn.text = str(wdef.get("display_name", wdef.get("id", wid)))
+		btn.pressed.connect(_on_ammo_weapon_chosen.bind(win, bought, wid, price_paid))
+		vb.add_child(btn)
+	add_child(win)
+	_ammo_window = win
+	win.popup_centered()
+
+
+func _on_ammo_weapon_chosen(
+	win: Window,
+	bought: Dictionary,
+	weapon_id: String,
+	_price_paid: int
+) -> void:
+	if is_instance_valid(win):
+		win.set_meta("_ammo_done", true)
+	BuildCatalog.apply_ammo_blessing_to_weapon(weapon_id)
+	var sid: String = str(bought.get("id", ""))
+	var stitle: String = str(bought.get("title", sid))
+	if not sid.is_empty():
+		RunState.append_run_choice("shop", _finished_wave_for_log, sid, stitle)
+	if is_instance_valid(win):
+		win.queue_free()
+	_ammo_window = null
+
+
+func _on_ammo_blessing_close_requested(win: Window, price_paid: int) -> void:
+	if not is_instance_valid(win):
+		_ammo_window = null
+		return
+	if win.get_meta("_ammo_done", false):
+		_ammo_window = null
+		win.queue_free()
+		return
+	RunState.collect_material(price_paid)
+	_ammo_window = null
+	win.queue_free()
+	_rebuild_shop_rows()
+	_refresh_status_panel()
+
+
+func _shop_toast_interstitial(msg: String) -> void:
+	if _player == null:
+		return
+	var tree: SceneTree = _player.get_tree()
+	if tree == null:
+		return
+	var arena: Node = tree.get_first_node_in_group("arena")
+	if arena == null:
+		return
+	var h: Node = arena.get_node_or_null("HUD")
+	if h != null and h.has_method("show_toast"):
+		h.call("show_toast", msg, 2.2)
 
 
 func _on_refresh_shop_pressed() -> void:

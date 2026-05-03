@@ -13,6 +13,8 @@ var _pierce_extra: int = 0
 var _damage_element: StringName = &"physical"
 var _revolver_rounds_left: int = 6
 var _reload_time_left: float = 0.0
+var _virt_clip: int = 10
+var _shop_volley: int = 0
 
 @onready var fire_timer: Timer = $FireTimer
 
@@ -40,6 +42,9 @@ func setup_from_catalog(wid: String) -> void:
 	if wid == "spin_revolver":
 		_revolver_rounds_left = 6
 		_reload_time_left = 0.0
+		_virt_clip = 6
+	else:
+		_virt_clip = 10
 	set_physics_process(wid == "spin_revolver")
 	set_process(wid == "feather_bow")
 	if fire_timer != null:
@@ -70,7 +75,13 @@ func _sync_fire_timer_wait() -> void:
 	var p: Node = _find_player()
 	if p != null and "stat_fire_rate_mult" in p:
 		mult = maxf(0.2, p.stat_fire_rate_mult as float)
-	fire_timer.wait_time = _base_fire_interval / mult
+	if p != null and p.has_method("get_shop_fire_stim_mult"):
+		mult *= maxf(0.15, p.get_shop_fire_stim_mult() as float)
+	var bless_r: float = 1.0
+	if RunState != null and RunState.ammo_blessing.has(weapon_id):
+		var bd: Dictionary = RunState.ammo_blessing[weapon_id] as Dictionary
+		bless_r = float(bd.get("reload", 1.0))
+	fire_timer.wait_time = _base_fire_interval / mult / maxf(0.2, bless_r)
 
 
 func _effective_damage() -> int:
@@ -80,12 +91,17 @@ func _effective_damage() -> int:
 		mult *= p.stat_damage_mult as float
 	if p != null and "stat_synergy_damage_mult" in p:
 		mult *= p.stat_synergy_damage_mult as float
+	if p != null and p.has_method("get_shop_damage_stim_mult"):
+		mult *= p.get_shop_damage_stim_mult() as float
 	var mat_bonus: float = 1.0
 	if p != null and "material_to_damage_kv" in p:
 		var kv: float = float(p.material_to_damage_kv)
 		if kv > 0.0001:
 			mat_bonus += minf(0.45, float(RunState.material_current) * kv)
-	return maxi(1, int(round(float(damage) * mult * mat_bonus)))
+	var flat: int = 0
+	if p != null and "stat_damage_flat" in p:
+		flat = int(p.stat_damage_flat)
+	return maxi(1, int(round(float(damage) * mult * mat_bonus)) + flat)
 
 
 func _process(_delta: float) -> void:
@@ -157,11 +173,25 @@ func _on_fire_timer_timeout() -> void:
 		if _revolver_rounds_left <= 0:
 			_begin_spin_revolver_reload()
 			return
-		_revolver_rounds_left -= 1
+		var tri_cost: int = 3 if _run_has_trident() else 1
+		if _revolver_rounds_left < tri_cost:
+			_begin_spin_revolver_reload()
+			return
+		_revolver_rounds_left -= tri_cost
+		_shop_volley += tri_cost
+	else:
+		if _run_has_trident():
+			_shop_volley += 3
+		else:
+			_shop_volley += 1
 	var sorted_enemies: Array[Node2D] = _collect_enemies_sorted_by_distance(global_position)
 	if sorted_enemies.is_empty():
 		return
 	_fire_distributed(sorted_enemies)
+
+
+func _run_has_trident() -> bool:
+	return RunState != null and RunState.has_shop_item("shop_trident_evolution")
 
 
 func _begin_spin_revolver_reload() -> void:
@@ -172,9 +202,17 @@ func _begin_spin_revolver_reload() -> void:
 
 
 func _fire_distributed(sorted_enemies: Array[Node2D]) -> void:
+	if _run_has_trident():
+		_fire_trident_burst(sorted_enemies)
+		return
 	var container: Node = _get_projectile_container()
 	var total_dmg: int = _effective_damage()
 	var n: int = maxi(1, _pellet_count)
+	var mag_m: float = 1.0
+	if RunState != null and RunState.ammo_blessing.has(weapon_id):
+		var bd: Dictionary = RunState.ammo_blessing[weapon_id] as Dictionary
+		mag_m = float(bd.get("mag", 1.0))
+	n = maxi(1, int(round(float(n) * mag_m)))
 	var per_pellet: int = maxi(1, int(round(float(total_dmg) / float(n))))
 	var ec: int = sorted_enemies.size()
 	var slot: int = _projectile_weapon_slot()
@@ -193,16 +231,56 @@ func _fire_distributed(sorted_enemies: Array[Node2D]) -> void:
 			if n > 1:
 				var u: float = float(i) / float(n - 1)
 				ang = lerpf(-half_spread, half_spread, u)
-			_spawn_projectile(container, base_dir.rotated(ang), per_pellet, _pierce_extra)
+			_spawn_projectile(container, base_dir.rotated(ang), per_pellet, _pierce_extra, _skull_flags())
 		return
 	for i in range(n):
 		var ei: int = (slot + i) % ec
 		var target: Node2D = sorted_enemies[ei]
 		var base_dir: Vector2 = (target.global_position - global_position).normalized()
-		_spawn_projectile(container, base_dir, per_pellet, _pierce_extra)
+		_spawn_projectile(container, base_dir, per_pellet, _pierce_extra, _skull_flags())
 
 
-func _spawn_projectile(container: Node, dir: Vector2, dmg: int, pierce: int) -> void:
+func _fire_trident_burst(sorted_enemies: Array[Node2D]) -> void:
+	if sorted_enemies.is_empty():
+		return
+	var container: Node = _get_projectile_container()
+	var total_dmg: int = _effective_damage()
+	var trip: int = maxi(1, int(round(float(total_dmg) * 0.6)))
+	GameAudio.play_shoot()
+	var player_n: Node = _find_player()
+	var half_fan: float = deg_to_rad(22.0)
+	var target: Node2D = sorted_enemies[0]
+	var base_dir: Vector2 = (target.global_position - global_position).normalized()
+	if weapon_id == "sniper_chicken" and player_n != null:
+		WeaponCameraFx.sniper_hitstop_fire_and_forget(player_n)
+		_spawn_sniper_laser_line(target)
+	WeaponMuzzleFx.spawn_for_shot(self, weapon_id, base_dir)
+	for k in range(3):
+		var ang: float = lerpf(-half_fan, half_fan, float(k) / 2.0)
+		_spawn_projectile(container, base_dir.rotated(ang), trip, _pierce_extra, _skull_flags())
+
+
+func _effective_virt_clip() -> int:
+	var base_v: int = _virt_clip
+	var mag_m: float = 1.0
+	if RunState != null and RunState.ammo_blessing.has(weapon_id):
+		var bd: Dictionary = RunState.ammo_blessing[weapon_id] as Dictionary
+		mag_m = float(bd.get("mag", 1.0))
+	return maxi(1, int(round(float(base_v) * mag_m)))
+
+
+func _skull_flags() -> Dictionary:
+	var clip_i: int = _effective_virt_clip()
+	var skull: bool = (
+		RunState != null
+		and RunState.has_shop_item("shop_skull_mag")
+		and _shop_volley > 0
+		and (_shop_volley % clip_i) == 0
+	)
+	return {"skull": skull}
+
+
+func _spawn_projectile(container: Node, dir: Vector2, dmg: int, pierce: int, skull: Dictionary = {}) -> void:
 	var projectile: Node2D = projectile_scene.instantiate()
 	projectile.direction = dir
 	projectile.damage = dmg
@@ -213,6 +291,17 @@ func _spawn_projectile(container: Node, dir: Vector2, dmg: int, pierce: int) -> 
 		proj.pierce_extra = pierce
 		proj.damage_element = _damage_element
 		proj.source_weapon_id = weapon_id
+		if RunState != null:
+			if RunState.has_shop_item("shop_ghost_bullet"):
+				proj.shop_ghost_mode = true
+			if RunState.has_shop_item("shop_tornado_barrel"):
+				proj.shop_spiral = true
+			if RunState.has_shop_item("shop_wave_core"):
+				proj.shop_knockback_on_hit = true
+			if RunState.has_shop_item("shop_boomerang_mod"):
+				proj.shop_boomerang = true
+		if bool(skull.get("skull", false)):
+			proj.force_skull_special = true
 	container.add_child(projectile)
 	projectile.global_position = global_position
 

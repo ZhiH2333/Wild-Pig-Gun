@@ -25,6 +25,7 @@ const ENEMY_SCENE_MAP: Dictionary = {
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
 const RUN_SNAPSHOT_VERSION: int = 1
 const SETTINGS_SCENE_PATH: String = "res://scenes/settings.tscn"
+const PROJECTILE_SCENE: PackedScene = preload("res://scenes/projectile.tscn")
 const TUTORIAL_HINT_SCENE: PackedScene = preload("res://scenes/ui/tutorial_hint_panel.tscn")
 
 @onready var enemy_container: Node2D = $EnemyContainer
@@ -248,6 +249,7 @@ func _on_wave_timer_tick(remaining: float) -> void:
 
 ## 新波次开始时更新 HUD 波次显示
 func _on_wave_started(wave_index: int, duration_sec: float = 30.0) -> void:
+	RunState.reset_wave_shop_flags()
 	RunState.wave_index = wave_index
 	RunState.wave_changed.emit(wave_index)
 	if hud != null and hud.has_method("on_wave_timer_reset"):
@@ -346,6 +348,8 @@ func build_run_snapshot() -> Dictionary:
 			"shop_price_mult": player.shop_price_mult,
 			"material_to_damage_kv": player.material_to_damage_kv,
 			"stat_synergy_damage_mult": player.stat_synergy_damage_mult,
+			"stat_damage_flat": player.stat_damage_flat,
+			"stat_melee_damage_mult": player.stat_melee_damage_mult,
 			"stat_hp_regen_per_sec": player.stat_hp_regen_per_sec,
 			"stat_crit_chance": player.stat_crit_chance,
 			"stat_crit_mult": player.stat_crit_mult,
@@ -514,6 +518,125 @@ func _on_global_collect_tick() -> void:
 	for drop in material_container.get_children():
 		if drop.has_method("force_attract"):
 			drop.force_attract()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if RunState.pause_reason != RunState.PauseReason.NONE:
+		return
+	if player == null:
+		return
+	if event is InputEventKey and event.is_pressed() and not event.is_echo():
+		match event.physical_keycode:
+			KEY_1:
+				_try_use_shop_consumable("shop_medkit")
+			KEY_2:
+				_try_use_shop_consumable("shop_grenade")
+			KEY_3:
+				_try_use_shop_consumable("shop_smoke")
+			KEY_4:
+				_try_use_shop_consumable("shop_emp")
+			KEY_5:
+				_try_use_shop_consumable("shop_super_stim")
+			KEY_6:
+				_try_use_shop_consumable("shop_master_key")
+			KEY_7:
+				_try_activate_stopwatch()
+
+
+func _try_activate_stopwatch() -> void:
+	if RunState == null or not RunState.has_stopwatch or not RunState.stopwatch_ready:
+		return
+	if RunState.stopwatch_frozen:
+		return
+	RunState.stopwatch_ready = false
+	RunState.stopwatch_frozen = true
+	RunState.stopwatch_frozen_time_left = 3.0
+	if hud != null and hud.has_method("show_toast"):
+		hud.show_toast("时停 3 秒", 1.2)
+
+
+func _try_use_shop_consumable(shop_id: String) -> void:
+	if RunState == null:
+		return
+	match shop_id:
+		"shop_medkit":
+			if player.shop_medkit_cast_left > 0.0001:
+				return
+			if not RunState.try_use_consumable(shop_id):
+				return
+			player.set_meta("_shop_medkit_pending", true)
+			player.shop_medkit_cast_left = 0.5
+			if hud != null and hud.has_method("show_toast"):
+				hud.show_toast("注射…", 0.4)
+		"shop_grenade":
+			if not RunState.try_use_consumable(shop_id):
+				return
+			_spawn_consumable_grenade()
+		"shop_smoke":
+			if not RunState.try_use_consumable(shop_id):
+				return
+			RunState.shop_smoke_blind_left = 5.0
+			player.shop_smoke_haste_left = 5.0
+			if hud != null and hud.has_method("show_toast"):
+				hud.show_toast("烟雾 5 秒", 1.2)
+		"shop_emp":
+			if not RunState.try_use_consumable(shop_id):
+				return
+			_apply_shop_emp_pulse()
+			if hud != null and hud.has_method("show_toast"):
+				hud.show_toast("电磁脉冲", 1.0)
+		"shop_super_stim":
+			if not RunState.try_use_consumable(shop_id):
+				return
+			player.shop_stim_power_left = 10.0
+			player.shop_stim_fatigue_left = 0.0
+			if hud != null and hud.has_method("show_toast"):
+				hud.show_toast("超级鸡血 10 秒", 1.2)
+		"shop_master_key":
+			if not RunState.try_use_consumable(shop_id):
+				return
+			RunState.collect_material(8)
+			if hud != null and hud.has_method("show_toast"):
+				hud.show_toast("万能钥匙：+8 野猪币", 2.0)
+
+
+func _spawn_consumable_grenade() -> void:
+	if PROJECTILE_SCENE == null:
+		return
+	var proj_n: Node = PROJECTILE_SCENE.instantiate()
+	var proj: Projectile = proj_n as Projectile
+	if proj == null:
+		return
+	var toward: Vector2 = Vector2.RIGHT
+	var best_d: float = 1e12
+	for n in get_tree().get_nodes_in_group("enemies"):
+		if n is Node2D:
+			var e2: Node2D = n as Node2D
+			var dd: float = player.global_position.distance_squared_to(e2.global_position)
+			if dd < best_d:
+				best_d = dd
+				toward = (e2.global_position - player.global_position).normalized()
+	proj.direction = toward
+	proj.damage = maxi(22, int(round(player.stat_damage_mult * 20.0)))
+	proj.team = Projectile.TEAM_PLAYER
+	proj.source_weapon_id = "boar_grenade"
+	proj.damage_element = &"fire"
+	projectile_container.add_child(proj_n)
+	proj_n.global_position = player.global_position
+	GameAudio.play_shoot()
+
+
+func _apply_shop_emp_pulse() -> void:
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if e == null or not is_instance_valid(e):
+			continue
+		if not e is EnemyBase:
+			continue
+		var eb: EnemyBase = e as EnemyBase
+		if not eb.is_shop_mechanical:
+			continue
+		if eb.has_method("apply_shop_emp_stun"):
+			eb.call("apply_shop_emp_stun", 3.0)
 
 
 func _compute_harvest_bonus(finished_wave: int) -> int:

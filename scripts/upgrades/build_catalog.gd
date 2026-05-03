@@ -400,6 +400,39 @@ static func shop_purchase_preview_text(
 		"shock_vuln_flat":
 			var sv: float = float(player.stat_shock_vuln_apply_flat) if "stat_shock_vuln_apply_flat" in player else 0.0
 			lines.append("· 感电易伤施加：%.2f → %.2f" % [sv, sv + float(value)])
+		"heal_flat_and_max_hp":
+			var hv2: Variant = value
+			if hv2 is Dictionary:
+				var hd2: Dictionary = hv2 as Dictionary
+				lines.append(
+					"· 回复 %d HP，最大生命 +%d" % [int(hd2.get("heal", 0)), int(hd2.get("max_hp", 0))]
+				)
+		"damage_flat_perm":
+			lines.append("· 固定伤害 +%d（与乘数叠乘后生效）" % int(def.get("value", 0)))
+		"random_stat_boost_egg":
+			lines.append("· 随机：攻击/生命上限/移速 之一 +15%")
+		"serum_passive_swap":
+			lines.append("· 随机新被动，并随机移除一个旧被动（无被动则只加）")
+		"bone_armor_passive":
+			lines.append("· 每波一次：受击格挡并反弹 50% 伤害")
+		"chaos_dice_roll":
+			lines.append("· 50%% 强增益 / 25%% 无事 / 25%% 减益")
+		"luck_hoof_crit":
+			lines.append("· 暴击率 +10%%（可叠加上限）")
+		"wind_wings_passive":
+			lines.append("· 移速 +20%%，闪避后短暂再加速")
+		"gold_magnet_passive":
+			lines.append("· 击杀额外 +1 材料；波次结束结算加成")
+		"stopwatch_passive":
+			lines.append("· 每波一次 3 秒时停：敌人与敌弹静止")
+		"melee_necklace_passive":
+			lines.append("· 近战伤害 +30%%，受击 10%% 概率反击")
+		"ammo_blessing_scroll":
+			lines.append("· 付款后请选择武器：弹容×2，换弹速度约 +30%%")
+		"weapon_mod_ghost_wall", "weapon_mod_spiral", "weapon_mod_skull_last", "weapon_mod_hit_knockback_wave", "weapon_mod_trident", "weapon_mod_boomerang":
+			lines.append("· 全局武器改造，自下次战斗起对射击生效")
+		"consumable_medkit", "consumable_grenade", "consumable_smoke", "consumable_emp", "consumable_super_stim", "consumable_master_key":
+			lines.append("· 入库存；战斗中用快捷键 1–6 使用（见屏底提示）")
 		_:
 			lines.append("· %s" % str(def.get("desc", "参见物品说明")))
 	return "\n".join(lines)
@@ -444,10 +477,143 @@ static func default_shop_items() -> Array[Dictionary]:
 
 static func apply_shop_def(player: Node, def: Dictionary) -> void:
 	var kind: String = str(def.get("kind", ""))
+	var sid: String = str(def.get("id", ""))
 	if kind == "add_weapon":
 		apply_upgrade_def(player, def)
 		return
-	apply_upgrade_def(player, {
-		"kind": def["kind"],
-		"value": def["value"],
-	})
+	match kind:
+		"weapon_mod_ghost_wall", "weapon_mod_spiral", "weapon_mod_skull_last", "weapon_mod_hit_knockback_wave", "weapon_mod_trident", "weapon_mod_boomerang":
+			RunState.add_shop_weapon_mod(sid)
+		"heal_flat_and_max_hp":
+			var hv: Variant = def.get("value", {})
+			if hv is Dictionary:
+				var hd: Dictionary = hv as Dictionary
+				player.heal_flat(int(hd.get("heal", 0)))
+				player.add_max_hp(int(hd.get("max_hp", 0)))
+		"damage_flat_perm":
+			if "stat_damage_flat" in player:
+				player.stat_damage_flat += int(def.get("value", 0))
+		"random_stat_boost_egg":
+			_apply_random_egg(player)
+		"serum_passive_swap":
+			_apply_serum_swap(player)
+		"bone_armor_passive":
+			RunState.has_bone_armor = true
+			RunState.bone_armor_ready = true
+		"chaos_dice_roll":
+			_apply_chaos_dice(player)
+		"luck_hoof_crit":
+			RunState.has_luck_hoof = true
+			if "stat_crit_chance" in player:
+				player.stat_crit_chance = clampf(
+					float(player.stat_crit_chance) + float(def.get("value", 0.1)),
+					0.0,
+					1.0
+				)
+		"wind_wings_passive":
+			RunState.has_wind_wings = true
+			if "stat_move_speed_mult" in player:
+				player.stat_move_speed_mult *= 1.2
+		"gold_magnet_passive":
+			RunState.has_gold_magnet = true
+		"stopwatch_passive":
+			RunState.has_stopwatch = true
+			RunState.stopwatch_ready = true
+		"melee_necklace_passive":
+			RunState.has_melee_necklace = true
+			if "stat_melee_damage_mult" in player:
+				player.stat_melee_damage_mult *= 1.3
+		"ammo_blessing_scroll":
+			pass
+		"consumable_medkit", "consumable_grenade", "consumable_smoke", "consumable_emp", "consumable_super_stim", "consumable_master_key":
+			var add_n: int = maxi(1, int(def.get("value", 1)))
+			if kind == "consumable_grenade":
+				var cur: int = RunState.get_consumable_count(sid)
+				var space: int = maxi(0, 3 - cur)
+				RunState.add_consumable(sid, mini(add_n, space))
+			else:
+				RunState.add_consumable(sid, add_n)
+			if kind == "consumable_master_key":
+				RunState.has_master_key = true
+		_:
+			apply_upgrade_def(player, {"kind": def["kind"], "value": def["value"]})
+
+
+static func _shop_toast(player: Node, msg: String) -> void:
+	if player == null:
+		return
+	var tree: SceneTree = player.get_tree()
+	if tree == null:
+		return
+	var arena: Node = tree.get_first_node_in_group("arena")
+	if arena == null:
+		return
+	var hud: Node = arena.get_node_or_null("HUD")
+	if hud != null and hud.has_method("show_toast"):
+		hud.call("show_toast", msg, 2.8)
+
+
+static func _apply_random_egg(player: Node) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var pick: int = rng.randi_range(0, 2)
+	match pick:
+		0:
+			if "stat_damage_mult" in player:
+				player.stat_damage_mult *= 1.15
+			_shop_toast(player, "能量鸡蛋：攻击 +15%")
+		1:
+			player.add_max_hp(8)
+			_shop_toast(player, "能量鸡蛋：生命上限 +8（防御向）")
+		_:
+			if "stat_move_speed_mult" in player:
+				player.stat_move_speed_mult *= 1.15
+			_shop_toast(player, "能量鸡蛋：移速 +15%")
+
+
+static func _apply_serum_swap(player: Node) -> void:
+	var pool: Array[Dictionary] = all_upgrade_defs()
+	if pool.is_empty():
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var add_def: Dictionary = pool[rng.randi_range(0, pool.size() - 1)]
+	apply_upgrade_def(player, add_def)
+	var nid: String = str(add_def.get("id", ""))
+	if not nid.is_empty() and nid not in RunState.upgrade_ids:
+		RunState.upgrade_ids.append(nid)
+	var rem_pool: Array[String] = []
+	for u in RunState.upgrade_ids:
+		var us: String = str(u)
+		if us != nid:
+			rem_pool.append(us)
+	if not rem_pool.is_empty():
+		var rem: String = rem_pool[rng.randi_range(0, rem_pool.size() - 1)]
+		var new_ids: Array[String] = []
+		for u2 in RunState.upgrade_ids:
+			if str(u2) != rem:
+				new_ids.append(str(u2))
+		RunState.upgrade_ids = new_ids
+	_shop_toast(player, "变异血清：获得 %s" % str(add_def.get("title", nid)))
+
+
+static func _apply_chaos_dice(player: Node) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var r: float = rng.randf()
+	if r < 0.5:
+		if "stat_damage_mult" in player:
+			player.stat_damage_mult *= 1.28
+		if "stat_move_speed_mult" in player:
+			player.stat_move_speed_mult *= 1.12
+		_shop_toast(player, "混沌骰子：强力增效！")
+	elif r < 0.75:
+		_shop_toast(player, "混沌骰子：无事发生")
+	else:
+		if "stat_damage_mult" in player:
+			player.stat_damage_mult *= 0.88
+		_shop_toast(player, "混沌骰子：临时疲软…")
+
+
+static func apply_ammo_blessing_to_weapon(weapon_id: String) -> void:
+	RunState.ammo_blessing[weapon_id] = {"mag": 2.0, "reload": 1.0 / 0.7}

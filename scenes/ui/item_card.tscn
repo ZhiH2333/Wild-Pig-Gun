@@ -24,6 +24,17 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 theme_override_constants/separation = 10
 
+[node name="EmojiIcon" type="Label" parent="Margin/Main"]
+visible = false
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+vertical_alignment = 1
+text = ""
+
 [node name="Icon" type="TextureRect" parent="Margin/Main"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2

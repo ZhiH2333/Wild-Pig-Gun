@@ -28,6 +28,8 @@ var _popup_count_this_frame: int = 0
 
 ## 类型名称，子类设置，用于 debug 标签显示
 var enemy_type_name: String = "敌人"
+## 商店 EMP：机械系（如远程）为 true
+var is_shop_mechanical: bool = false
 ## 脚下类型名 / HP 等标签字号（CanvasItem.draw_string）
 const OVERHEAD_FONT_SIZE_NAME: int = 15
 const OVERHEAD_FONT_SIZE_HP: int = 14
@@ -52,6 +54,8 @@ var _shock_vuln_time_left: float = 0.0
 ## 冰霜喷射器：叠 3 层后冻结（与策划案一致）
 var _ice_stacks: int = 0
 var _freeze_time_left: float = 0.0
+## 商店 EMP / 时停等：眩晕无法移动
+var _stun_time_left: float = 0.0
 
 @onready var damage_timer: Timer = $DamageTimer
 
@@ -77,9 +81,27 @@ func _physics_process(_delta: float) -> void:
 	_tick_shock_vuln(_delta)
 	_tick_freeze(_delta)
 	_tick_dot_effects(_delta)
+	if _stun_time_left > 0.0001:
+		_stun_time_left = maxf(0.0, _stun_time_left - _delta)
+		velocity = Vector2.ZERO
+		move_and_slide()
+		queue_redraw()
+		return
+	if RunState != null and RunState.stopwatch_frozen:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		queue_redraw()
+		return
 	if target == null:
 		return
-	velocity = _get_move_velocity() * _totem_speed_mult() * _effective_move_slow_mult()
+	var mv: Vector2 = _get_move_velocity() * _totem_speed_mult() * _effective_move_slow_mult()
+	if RunState != null and RunState.shop_smoke_blind_left > 0.0001:
+		var h: int = int(get_instance_id() % 997)
+		var ang: float = float(Engine.get_physics_frames() + h) * 0.11
+		mv = (
+			Vector2.from_angle(ang) * move_speed * _totem_speed_mult() * _effective_move_slow_mult()
+		)
+	velocity = mv
 	move_and_slide()
 	_check_player_collision()
 	queue_redraw()
@@ -293,7 +315,10 @@ func _spawn_splits_if_needed() -> void:
 ## 生成掉落物，添加到 Arena 的 MaterialContainer（需求 10.1）
 func _spawn_drops() -> void:
 	# 必掉野猪币（材料）
-	_spawn_material("gold", gold_reward)
+	var gr: int = gold_reward
+	if RunState != null and RunState.has_gold_magnet:
+		gr += 1
+	_spawn_material("gold", gr)
 	# 概率掉落回血果子
 	if randf() < drop_heal_chance:
 		_spawn_material("heal", 1)
@@ -322,3 +347,9 @@ func _spawn_material(mat_id: String, mat_amount: int) -> void:
 	else:
 		get_tree().current_scene.add_child(drop)
 		drop.global_position = global_position
+
+
+## 商店电磁脉冲：眩晕 + 清护甲
+func apply_shop_emp_stun(duration_seconds: float) -> void:
+	_stun_time_left = maxf(_stun_time_left, duration_seconds)
+	armor = 0.0

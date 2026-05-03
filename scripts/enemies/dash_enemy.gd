@@ -34,6 +34,10 @@ func _get_move_velocity() -> Vector2:
 
 
 func _physics_process(delta: float) -> void:
+	if RunState != null and RunState.stopwatch_frozen:
+		super._physics_process(delta)
+		queue_redraw()
+		return
 	_cooldown_timer -= delta
 	if _is_dashing:
 		_dash_timer -= delta

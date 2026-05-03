@@ -25,6 +25,15 @@ var _damaged_ids: Dictionary = {}
 var damage_element: StringName = &"physical"
 ## 发射源武器 id（用于拖尾、链电、榴弹等）
 var source_weapon_id: String = ""
+## 商店模组（幽灵 / 螺旋 / 回旋 / 冲击波）
+var shop_ghost_mode: bool = false
+var shop_spiral: bool = false
+var shop_boomerang: bool = false
+var shop_knockback_on_hit: bool = false
+var force_skull_special: bool = false
+var _boomerang_t: float = 0.0
+var _boomerang_returned: bool = false
+var _lifetime_left: float = 99999.0
 
 var _fx: Dictionary = {}
 var _trail_seg_count: int = 0
@@ -41,6 +50,8 @@ func _ready() -> void:
 	if team == TEAM_PLAYER:
 		_hits_remaining = 1 + maxi(0, pierce_extra)
 		_fx = WeaponFxProfiles.profile(source_weapon_id)
+		if shop_ghost_mode:
+			_lifetime_left = 5.5
 		if bool(_fx.get("grenade_arc", false)):
 			_grenade_vel = direction.normalized() * speed + Vector2(0.0, -260.0)
 			_arc_phase = 0.0
@@ -83,15 +94,33 @@ func _spawn_magnetic_ring_at(world_pos: Vector2) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if team == TEAM_ENEMY and RunState != null and RunState.stopwatch_frozen:
+		return
 	if team == TEAM_PLAYER:
 		if source_weapon_id == "boar_grenade" and bool(_fx.get("grenade_arc", false)):
 			_physics_grenade(delta)
 		else:
+			if shop_spiral:
+				direction = direction.rotated(2.35 * delta).normalized()
 			position += direction * speed * delta
+			if shop_boomerang and not _boomerang_returned:
+				_boomerang_t += delta
+				if _boomerang_t >= 0.42:
+					direction = -direction
+					_boomerang_returned = true
 		_push_trail()
-		_despawn_if_beyond_player_attack_range()
+		if not shop_ghost_mode:
+			_despawn_if_beyond_player_attack_range()
+		else:
+			_despawn_ghost_if_stale(delta)
 	else:
 		position += direction * speed * delta
+
+
+func _despawn_ghost_if_stale(delta: float) -> void:
+	_lifetime_left -= delta
+	if _lifetime_left <= 0.0:
+		queue_free()
 
 
 func _physics_grenade(delta: float) -> void:
@@ -212,14 +241,21 @@ func _apply_player_hit_damage_and_status(body: Node2D) -> void:
 	var final_dmg: int = dmg_base
 	var is_crit: bool = false
 	if pl != null and "stat_crit_chance" in pl and "stat_crit_mult" in pl:
+		var cc_use: float = float(pl.stat_crit_chance)
+		if force_skull_special:
+			cc_use = 1.0
 		var roll: Dictionary = CombatMath.roll_damage_with_crit(
 			dmg_base,
-			float(pl.stat_crit_chance),
+			cc_use,
 			float(pl.stat_crit_mult)
 		)
 		final_dmg = int(roll["damage"])
 		is_crit = bool(roll["is_crit"])
 	body.take_damage(final_dmg, is_crit, damage_element)
+	if force_skull_special and body.has_method("apply_status_poison"):
+		body.call("apply_status_poison", 5.0, 5.0)
+	if shop_knockback_on_hit:
+		_knockback_wave(body.global_position)
 	if damage_element == &"fire" and body.has_method("apply_status_burn"):
 		var pl2: Node = get_tree().get_first_node_in_group("player")
 		var bdps: float = 2.0
@@ -251,6 +287,23 @@ func _apply_player_hit_damage_and_status(body: Node2D) -> void:
 		if pl5 != null and "stat_shock_vuln_apply_flat" in pl5:
 			sv += float(pl5.stat_shock_vuln_apply_flat)
 		body.call("apply_status_shock_vuln", sv, 4.5)
+
+
+func _knockback_wave(origin: Vector2) -> void:
+	const r: float = 150.0
+	const push: float = 280.0
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if e == null or not is_instance_valid(e) or not e is CharacterBody2D:
+			continue
+		var ch: CharacterBody2D = e as CharacterBody2D
+		if ch.global_position.distance_squared_to(origin) > r * r:
+			continue
+		var away: Vector2 = ch.global_position - origin
+		if away.length_squared() < 0.0001:
+			away = Vector2.UP
+		else:
+			away = away.normalized()
+		ch.velocity += away * push
 
 
 func _spawn_chain_lightning(first_body: Node2D) -> void:

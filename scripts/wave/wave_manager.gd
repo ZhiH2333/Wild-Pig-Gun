@@ -61,6 +61,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not is_wave_active:
 		return
+	if RunState != null and RunState.stopwatch_frozen:
+		return
 	_spawn_elapsed += delta
 	emit_signal("wave_timer_tick", wave_timer.time_left)
 

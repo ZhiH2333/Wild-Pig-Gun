@@ -32,6 +32,18 @@ var shop_price_mult: float = 1.0
 var material_to_damage_kv: float = 0.0
 ## 同标签武器 ≥2 时的全局伤害乘数（由 WeaponLoadout 重算）
 var stat_synergy_damage_mult: float = 1.0
+## 商店「野猪素」等：与最终伤害相加的平铺值（在武器基础伤害之后乘算前叠入）
+var stat_damage_flat: int = 0
+## 猪牙项链等：仅近战武器
+var stat_melee_damage_mult: float = 1.0
+## 风速鸡：无敌帧结束后的短时移速爆发
+var shop_wind_burst_left: float = 0.0
+## 烟雾弹 / 药剂 / 时停 等由 Arena 或自身每帧结算
+var shop_smoke_haste_left: float = 0.0
+var shop_stim_power_left: float = 0.0
+var shop_stim_fatigue_left: float = 0.0
+var shop_medkit_cast_left: float = 0.0
+var _was_invincible: bool = false
 ## 每秒生命回复（构筑）
 var stat_hp_regen_per_sec: float = 0.0
 ## 暴击率 0~1、暴击伤害倍率
@@ -70,8 +82,31 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	var direction := _get_input_direction()
-	velocity = direction * SPEED * stat_move_speed_mult
-	move_and_slide()
+	var move_mult: float = stat_move_speed_mult
+	if shop_wind_burst_left > 0.0:
+		var wburst: float = 1.5
+		if RunState != null and str(RunState.character_id) == "chicken":
+			wburst = 2.0
+		move_mult *= wburst
+		shop_wind_burst_left = maxf(0.0, shop_wind_burst_left - delta)
+	if shop_smoke_haste_left > 0.0:
+		move_mult *= 1.2
+		shop_smoke_haste_left = maxf(0.0, shop_smoke_haste_left - delta)
+	if shop_stim_power_left > 0.0:
+		move_mult *= 1.5
+	if shop_stim_fatigue_left > 0.0:
+		move_mult *= 0.8
+	if shop_medkit_cast_left > 0.0:
+		var prev_mk: float = shop_medkit_cast_left
+		shop_medkit_cast_left = maxf(0.0, shop_medkit_cast_left - delta)
+		if prev_mk > 0.0001 and shop_medkit_cast_left <= 0.0001 and has_meta("_shop_medkit_pending"):
+			remove_meta("_shop_medkit_pending")
+			heal_flat(40)
+		velocity = Vector2.ZERO
+		move_and_slide()
+	else:
+		velocity = direction * SPEED * move_mult
+		move_and_slide()
 	# 边界约束（需求 1.4）
 	var arena_rect := _get_arena_rect()
 	position = _apply_boundary_clamp(position, arena_rect)
@@ -83,6 +118,16 @@ func _physics_process(delta: float) -> void:
 	else:
 		_debug_action = "移动 dir:(%.2f,%.2f)" % [direction.x, direction.y]
 	_apply_hp_regen(delta)
+	if shop_stim_power_left > 0.0:
+		shop_stim_power_left = maxf(0.0, shop_stim_power_left - delta)
+		if shop_stim_power_left <= 0.0001:
+			shop_stim_fatigue_left = 5.0
+	if shop_stim_fatigue_left > 0.0:
+		shop_stim_fatigue_left = maxf(0.0, shop_stim_fatigue_left - delta)
+	if RunState != null and RunState.has_wind_wings:
+		if _was_invincible and not is_invincible:
+			shop_wind_burst_left = 0.5
+	_was_invincible = is_invincible
 
 
 ## 每秒生命回复结算
@@ -155,6 +200,18 @@ func get_attack_range_radius() -> float:
 	)
 
 
+func get_shop_damage_stim_mult() -> float:
+	if shop_stim_power_left > 0.0001:
+		return 1.5
+	if shop_stim_fatigue_left > 0.0001:
+		return 0.8
+	return 1.0
+
+
+func get_shop_fire_stim_mult() -> float:
+	return get_shop_damage_stim_mult()
+
+
 func apply_run_snapshot_stats(d: Dictionary) -> void:
 	max_hp = maxi(1, int(d.get("max_hp", 100)))
 	current_hp = clampi(int(d.get("current_hp", max_hp)), 0, max_hp)
@@ -168,6 +225,8 @@ func apply_run_snapshot_stats(d: Dictionary) -> void:
 	shop_price_mult = maxf(0.01, float(d.get("shop_price_mult", 1.0)))
 	material_to_damage_kv = maxf(0.0, float(d.get("material_to_damage_kv", 0.0)))
 	stat_synergy_damage_mult = maxf(0.05, float(d.get("stat_synergy_damage_mult", 1.0)))
+	stat_damage_flat = int(d.get("stat_damage_flat", 0))
+	stat_melee_damage_mult = maxf(0.05, float(d.get("stat_melee_damage_mult", 1.0)))
 	stat_hp_regen_per_sec = maxf(0.0, float(d.get("stat_hp_regen_per_sec", 0.0)))
 	stat_crit_chance = clampf(float(d.get("stat_crit_chance", 0.05)), 0.0, 1.0)
 	stat_crit_mult = maxf(1.0, float(d.get("stat_crit_mult", 1.5)))
@@ -219,9 +278,19 @@ func take_damage(amount: int) -> void:
 	if is_invincible:
 		_debug_action = "受伤免疫(无敌帧)"
 		return
+	if RunState != null and RunState.has_bone_armor and RunState.bone_armor_ready:
+		RunState.bone_armor_ready = false
+		_bone_armor_reflect(amount)
+		GameAudio.play_hurt_player()
+		_debug_action = "猪骨护甲格挡"
+		is_invincible = true
+		invincibility_timer.start()
+		return
 	var amt: int = amount
 	if RunState != null:
 		amt = maxi(1, int(round(float(amount) * RunState.run_risk_mult)))
+	if RunState != null and RunState.has_melee_necklace and randf() < 0.10:
+		_melee_necklace_counter(amt)
 	GameAudio.play_hurt_player()
 	# 扣血，不低于 0（需求 4.2）
 	current_hp = max(0, current_hp - amt)
@@ -257,6 +326,39 @@ func _screen_shake_hit() -> void:
 
 
 ## 无敌帧结束
+func _melee_necklace_counter(_incoming: int) -> void:
+	var best: Node2D = null
+	var best_d: float = 1e12
+	for n in get_tree().get_nodes_in_group("enemies"):
+		if n is Node2D:
+			var e2: Node2D = n as Node2D
+			var dd: float = global_position.distance_squared_to(e2.global_position)
+			if dd < best_d and dd < 140.0 * 140.0:
+				best_d = dd
+				best = e2
+	if best != null and best.has_method("take_damage"):
+		var rd: int = maxi(
+			1,
+			int(round(stat_damage_mult * stat_melee_damage_mult * 8.0))
+		)
+		best.take_damage(rd, false, &"physical")
+
+
+func _bone_armor_reflect(original: int) -> void:
+	var reflect: int = maxi(1, int(round(float(original) * 0.5)))
+	var best: Node2D = null
+	var best_d: float = 1e12
+	for n in get_tree().get_nodes_in_group("enemies"):
+		if n is Node2D:
+			var e2: Node2D = n as Node2D
+			var dd: float = global_position.distance_squared_to(e2.global_position)
+			if dd < best_d and dd < 500.0 * 500.0:
+				best_d = dd
+				best = e2
+	if best != null and best.has_method("take_damage"):
+		best.take_damage(reflect, false, &"physical")
+
+
 func _on_invincibility_timer_timeout() -> void:
 	is_invincible = false
 

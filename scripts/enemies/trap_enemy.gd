@@ -19,6 +19,9 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if RunState != null and RunState.stopwatch_frozen:
+		super._physics_process(delta)
+		return
 	_trap_cd -= delta
 	if _trap_cd <= 0.0 and target != null:
 		_trap_cd = TRAP_INTERVAL

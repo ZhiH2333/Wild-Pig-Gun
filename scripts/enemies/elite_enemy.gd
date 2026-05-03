@@ -34,6 +34,10 @@ func _get_move_velocity() -> Vector2:
 
 
 func _physics_process(delta: float) -> void:
+	if RunState != null and RunState.stopwatch_frozen:
+		super._physics_process(delta)
+		queue_redraw()
+		return
 	if current_phase < max_phases:
 		_phase_timer += delta
 		_check_phase_transition()

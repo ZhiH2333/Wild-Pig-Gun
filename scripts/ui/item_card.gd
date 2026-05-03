@@ -22,6 +22,7 @@ const _RARITY_SHADOW_ALPHA: Array[float] = [0.0, 0.6, 0.7, 0.8]
 
 var _pulse_tween: Tween = null
 
+@onready var _emoji: Label = $Margin/Main/EmojiIcon
 @onready var _icon: TextureRect = $Margin/Main/Icon
 @onready var _title: Label = $Margin/Main/Texts/Title
 @onready var _desc: Label = $Margin/Main/Texts/Desc
@@ -29,6 +30,8 @@ var _pulse_tween: Tween = null
 
 
 func _ready() -> void:
+	if _emoji != null:
+		_emoji.visible = false
 	_icon.texture = FALLBACK_ICON
 	_title.add_theme_font_size_override("font_size", 25)
 	_desc.add_theme_font_size_override("font_size", 19)
@@ -43,7 +46,12 @@ func setup_card(def: Dictionary, mode: String, price: int = -1, can_afford: bool
 	_title.text = title_text
 	var short_d: String = str(def.get("short_desc", def.get("desc", "")))
 	_desc.text = short_d
-	_apply_icon(str(def.get("icon", "")))
+	var emoji: String = str(def.get("icon_emoji", ""))
+	if emoji.is_empty():
+		var ic: String = str(def.get("icon", ""))
+		if not ic.is_empty() and not ic.begins_with("res://"):
+			emoji = ic
+	_apply_icon(str(def.get("icon", "")), emoji)
 	if mode == "shop":
 		_price.visible = true
 		_price.text = "%d 野猪币" % maxi(0, price)
@@ -55,7 +63,15 @@ func setup_card(def: Dictionary, mode: String, price: int = -1, can_afford: bool
 		modulate = Color.WHITE
 
 
-func _apply_icon(path: String) -> void:
+func _apply_icon(path: String, emoji: String = "") -> void:
+	if _emoji != null:
+		if not emoji.is_empty():
+			_emoji.text = emoji
+			_emoji.visible = true
+			_icon.visible = false
+			return
+		_emoji.visible = false
+	_icon.visible = true
 	if path.is_empty() or not ResourceLoader.exists(path):
 		_icon.texture = FALLBACK_ICON
 		return

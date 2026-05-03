@@ -65,12 +65,17 @@ func _effective_damage() -> int:
 		mult *= p.stat_damage_mult as float
 	if p != null and "stat_synergy_damage_mult" in p:
 		mult *= p.stat_synergy_damage_mult as float
+	if p != null and "stat_melee_damage_mult" in p:
+		mult *= float(p.stat_melee_damage_mult)
 	var mat_bonus: float = 1.0
 	if p != null and "material_to_damage_kv" in p:
 		var kv: float = float(p.material_to_damage_kv)
 		if kv > 0.0001:
 			mat_bonus += minf(0.45, float(RunState.material_current) * kv)
-	return maxi(1, int(round(float(damage) * mult * mat_bonus)))
+	var flat: int = 0
+	if p != null and "stat_damage_flat" in p:
+		flat = int(p.stat_damage_flat)
+	return maxi(1, int(round(float(damage) * mult * mat_bonus)) + flat)
 
 
 func _spawn_crescent_fx() -> void:
