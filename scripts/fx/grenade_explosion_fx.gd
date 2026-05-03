@@ -1,18 +1,32 @@
 extends Node2D
 
+## 榴弹爆炸扩散线；约 0.3s 后必定移除（不受 time_scale 影响）
+
 var _t: float = 0.0
-const DURATION: float = 0.35
+const DURATION: float = 0.3
+var _start_usec: int = 0
 
 
-func _process(delta: float) -> void:
-	_t += delta
-	queue_redraw()
-	if _t >= DURATION:
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_start_usec = Time.get_ticks_usec()
+	var tree: SceneTree = get_tree()
+	if tree != null:
+		tree.create_timer(DURATION, true, true).timeout.connect(_hard_free)
+
+
+func _hard_free() -> void:
+	if is_instance_valid(self):
 		queue_free()
 
 
+func _process(_delta: float) -> void:
+	_t = float(Time.get_ticks_usec() - _start_usec) / 1000000.0
+	queue_redraw()
+
+
 func _draw() -> void:
-	var k: float = _t / DURATION
+	var k: float = clampf(_t / DURATION, 0.0, 1.0)
 	var r: float = lerpf(8.0, 140.0, 1.0 - pow(1.0 - k, 2.2))
 	var a: float = (1.0 - k) * 0.75
 	draw_circle(Vector2.ZERO, r, Color(1.0, 0.55, 0.12, 0.18 * a))

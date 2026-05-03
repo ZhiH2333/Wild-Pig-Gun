@@ -7,6 +7,10 @@ const ENEMY_BULLET_TEXTURE: Texture2D = preload("res://assets/sprites/enemy_bull
 const CHAIN_LIGHTNING_SCRIPT: Script = preload("res://scripts/fx/chain_lightning_fx.gd")
 const MAGNETIC_RING_SCRIPT: Script = preload("res://scripts/fx/magnetic_pulse_ring.gd")
 const GRENADE_BURST_SCRIPT: Script = preload("res://scripts/fx/grenade_explosion_fx.gd")
+const GRENADE_SOFT_RING_SCRIPT: Script = preload("res://scripts/fx/grenade_soft_shockwave_fx.gd")
+## 场上同时存在的野猪榴弹实体上限（仅贴图/逻辑体，超过则移除最早一发，不触发爆炸）
+const BOAR_GRENADE_MAX_ALIVE: int = 5
+static var _boar_grenade_live: Array[Projectile] = []
 
 const TEAM_PLAYER: StringName = &"player"
 const TEAM_ENEMY: StringName = &"enemy"
@@ -62,6 +66,22 @@ func _ready() -> void:
 	_setup_visual()
 	if team == TEAM_PLAYER and bool(_fx.get("magnetic_ring", false)):
 		_spawn_magnetic_ring_at(global_position)
+	if team == TEAM_PLAYER and source_weapon_id == "boar_grenade" and bool(_fx.get("grenade_arc", false)):
+		_register_boar_grenade_cap()
+
+
+func _exit_tree() -> void:
+	var idx: int = _boar_grenade_live.find(self)
+	if idx >= 0:
+		_boar_grenade_live.remove_at(idx)
+
+
+func _register_boar_grenade_cap() -> void:
+	_boar_grenade_live.append(self)
+	while _boar_grenade_live.size() > BOAR_GRENADE_MAX_ALIVE:
+		var oldest: Projectile = _boar_grenade_live.pop_front()
+		if oldest != null and is_instance_valid(oldest):
+			oldest.queue_free()
 
 
 func _setup_visual() -> void:
@@ -372,16 +392,22 @@ func _grenade_explode_at_position() -> void:
 	if _grenade_exploded:
 		return
 	_grenade_exploded = true
+	GameAudio.play_boom()
 	var pl_n: Node = get_tree().get_first_node_in_group("player")
 	if pl_n != null:
-		WeaponCameraFx.punch_shake_simple(pl_n, 8.2, 0.18)
+		WeaponCameraFx.punch_shake_simple(pl_n, 4.2, 0.11)
 	var layer2: Node2D = _arena_layer()
 	if layer2 != null:
 		var burst: Node2D = Node2D.new()
-		layer2.add_child(burst)
 		burst.set_script(GRENADE_BURST_SCRIPT)
+		layer2.add_child(burst)
 		burst.global_position = global_position
 		burst.z_index = 6
+		var soft_ring: Node2D = Node2D.new()
+		soft_ring.set_script(GRENADE_SOFT_RING_SCRIPT)
+		layer2.add_child(soft_ring)
+		soft_ring.global_position = global_position
+		soft_ring.z_index = 7
 	var r: float = GRENADE_AOE_RADIUS
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if e == null or not is_instance_valid(e) or not e is Node2D:

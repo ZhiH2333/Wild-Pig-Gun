@@ -115,6 +115,7 @@ func _melee_strike() -> void:
 		_trotter_combo += 1
 		if _trotter_combo % 5 == 0 and p != null:
 			WeaponCameraFx.punch_shake_simple(p, 5.5, 0.12)
+	var hit_any: bool = false
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if e == null or not is_instance_valid(e):
 			continue
@@ -134,6 +135,9 @@ func _melee_strike() -> void:
 					fd = int(roll["damage"])
 					ic = bool(roll["is_crit"])
 				e.take_damage(fd, ic, &"physical")
+				hit_any = true
+	if hit_any:
+		GameAudio.play_shoot()
 
 
 func _on_fire_timer_timeout() -> void:

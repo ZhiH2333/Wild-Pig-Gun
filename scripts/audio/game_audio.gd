@@ -4,8 +4,11 @@ const STREAM_DIE: AudioStream = preload("res://assets/audio/die.mp3")
 const STREAM_UI: AudioStream = preload("res://assets/audio/ui_select.mp3")
 const STREAM_SHOOT: AudioStream = preload("res://assets/audio/shoot.mp3")
 const STREAM_GET_COIN: AudioStream = preload("res://assets/audio/get_coin.wav")
+const STREAM_BOOM: AudioStream = preload("res://assets/audio/boom.mp3")
 ## 射击 SFX 相对满幅的线性比例（默认 40%）
 const SHOOT_VOLUME_LINEAR: float = 0.4
+## 榴弹等爆炸 SFX 线性音量（再乘 GameSettings.sfx_linear）
+const BOOM_VOLUME_LINEAR: float = 0.52
 
 var _players: Array[AudioStreamPlayer] = []
 
@@ -47,6 +50,10 @@ func play_get_coin() -> void:
 
 func play_die() -> void:
 	play_sfx(STREAM_DIE, -2.0)
+
+
+func play_boom() -> void:
+	play_sfx(STREAM_BOOM, linear_to_db(BOOM_VOLUME_LINEAR))
 
 
 func play_ui_hover() -> void:
