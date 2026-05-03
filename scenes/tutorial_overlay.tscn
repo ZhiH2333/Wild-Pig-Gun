@@ -104,7 +104,7 @@ alignment = 1
 custom_minimum_size = Vector2(380, 120)
 layout_mode = 2
 text = "触控模式
-虚拟摇杆 + 触控按钮"
+虚拟按键 + 触控按钮"
 
 [node name="KeyboardBtn" type="Button" parent="InputSelectRoot/Center/VBox/Row"]
 custom_minimum_size = Vector2(380, 120)

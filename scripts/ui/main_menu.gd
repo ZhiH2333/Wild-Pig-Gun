@@ -77,7 +77,7 @@ func _ready() -> void:
 	# if not SaveManager.get_tutorial_completed() and not SaveManager.has_pending_run():
 	# 	TutorialSession.begin_from_main_menu()
 	# 	TUTORIAL_OVERLAY_SCRIPT.call("try_attach", self)
-	# 仅在主菜单询问键鼠/虚拟摇杆（首屏渐入结束后再弹；未勾选「不再提示」则每次进主菜单都会问）
+	# 仅在主菜单询问键鼠/虚拟按键（首屏渐入结束后再弹；未勾选「不再提示」则每次进主菜单都会问）
 	if not GameSettings.control_mode_launch_prompt_dismissed:
 		_show_control_mode_dialog()
 
@@ -146,7 +146,7 @@ func _show_control_mode_dialog() -> void:
 	title_l.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 1))
 	vbox.add_child(title_l)
 	var hint: Label = Label.new()
-	hint.text = "请选择键鼠或虚拟摇杆。\n触控设备建议使用虚拟摇杆。"
+	hint.text = "请选择键鼠或虚拟按键。\n触控设备建议使用虚拟按键。"
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_font_override("font", MENU_FONT)
 	hint.add_theme_font_size_override("font_size", 20)
@@ -158,7 +158,7 @@ func _show_control_mode_dialog() -> void:
 	btn_row.add_theme_constant_override("separation", 16)
 	vbox.add_child(btn_row)
 	var joystick_btn: Button = Button.new()
-	joystick_btn.text = "虚拟摇杆"
+	joystick_btn.text = "虚拟按键"
 	joystick_btn.theme = BLACK_BUTTON_THEME
 	joystick_btn.custom_minimum_size = Vector2(168, 52)
 	joystick_btn.add_theme_font_size_override("font_size", 20)

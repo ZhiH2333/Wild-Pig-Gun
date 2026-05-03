@@ -13,6 +13,7 @@ enum ControlId {
 	CHARACTER_SKILL_SLOT_1,
 	CHARACTER_SKILL_SLOT_2,
 	CHARACTER_SKILL_SLOT_3,
+	ATTACK_RANGE_BUTTON,
 }
 
 const BASE_OUTER_RADIUS: float = 88.0
@@ -42,6 +43,7 @@ var _has_unsaved_changes: bool = false
 @onready var _skill_slot_1_widget: Control = $ControlsOverlay/SkillSlot1Widget
 @onready var _skill_slot_2_widget: Control = $ControlsOverlay/SkillSlot2Widget
 @onready var _skill_slot_3_widget: Control = $ControlsOverlay/SkillSlot3Widget
+@onready var _attack_range_widget: Control = $ControlsOverlay/AttackRangeWidget
 @onready var _selection_menu: Control = $SelectionMenu
 @onready var _scale_down_btn: Button = $SelectionMenu/PanelContainer/Row/ScaleDownBtn
 @onready var _scale_up_btn: Button = $SelectionMenu/PanelContainer/Row/ScaleUpBtn
@@ -82,6 +84,7 @@ func _ready() -> void:
 		"character_skill_slot_1": GameSettings.get_mobile_control_entry("character_skill_slot_1"),
 		"character_skill_slot_2": GameSettings.get_mobile_control_entry("character_skill_slot_2"),
 		"character_skill_slot_3": GameSettings.get_mobile_control_entry("character_skill_slot_3"),
+		"attack_range_button": GameSettings.get_mobile_control_entry("attack_range_button"),
 	}
 	_back_btn.pressed.connect(_on_back_pressed)
 	_scale_down_btn.pressed.connect(_on_scale_down)
@@ -156,6 +159,8 @@ func _hit_test(global_pos: Vector2, container_rect: Rect2) -> ControlId:
 		return ControlId.CHARACTER_SKILL_SLOT_2
 	if _skill_slot_1_widget.get_global_rect().has_point(global_pos):
 		return ControlId.CHARACTER_SKILL_SLOT_1
+	if _attack_range_widget.get_global_rect().has_point(global_pos):
+		return ControlId.ATTACK_RANGE_BUTTON
 	if _pause_widget.get_global_rect().has_point(global_pos):
 		return ControlId.MOBILE_PAUSE
 	if _consumable_widget.get_global_rect().has_point(global_pos):
@@ -197,6 +202,7 @@ func _drag_widget(global_pos: Vector2, container_rect: Rect2) -> void:
 		_selected_id == ControlId.CHARACTER_SKILL_SLOT_1
 		or _selected_id == ControlId.CHARACTER_SKILL_SLOT_2
 		or _selected_id == ControlId.CHARACTER_SKILL_SLOT_3
+		or _selected_id == ControlId.ATTACK_RANGE_BUTTON
 	):
 		var s3: float = clampf(float(_pending_layout[key].get("scale", 1.0)), 0.5, 2.0)
 		var dim: float = CHARACTER_SKILL_SLOT_REF * s3
@@ -215,6 +221,7 @@ func _refresh_all_widgets() -> void:
 	_apply_widget(ControlId.CHARACTER_SKILL_SLOT_1)
 	_apply_widget(ControlId.CHARACTER_SKILL_SLOT_2)
 	_apply_widget(ControlId.CHARACTER_SKILL_SLOT_3)
+	_apply_widget(ControlId.ATTACK_RANGE_BUTTON)
 
 
 ## 根据 _pending_layout 将控件放置到屏幕上（与 layout_host 完全对称的坐标计算）
@@ -282,6 +289,7 @@ func _apply_widget(id: ControlId) -> void:
 		id == ControlId.CHARACTER_SKILL_SLOT_1
 		or id == ControlId.CHARACTER_SKILL_SLOT_2
 		or id == ControlId.CHARACTER_SKILL_SLOT_3
+		or id == ControlId.ATTACK_RANGE_BUTTON
 	):
 		var dim_sq: float = CHARACTER_SKILL_SLOT_REF * s
 		widget.scale = Vector2.ONE
@@ -289,6 +297,9 @@ func _apply_widget(id: ControlId) -> void:
 		widget.size = Vector2(dim_sq, dim_sq)
 		var norm_rm: float = clampf(float(entry.get("norm_right_margin", 0.015)), 0.0, 0.5)
 		var norm_bms: float = clampf(float(entry.get("norm_bottom_margin", 0.22)), 0.0, 0.5)
+		if id == ControlId.ATTACK_RANGE_BUTTON:
+			norm_rm = clampf(float(entry.get("norm_right_margin", 0.10)), 0.0, 0.5)
+			norm_bms = clampf(float(entry.get("norm_bottom_margin", 0.20)), 0.0, 0.5)
 		var left_sq: float = container_rect.end.x - dim_sq - container_rect.size.x * norm_rm
 		var top_sq: float = container_rect.end.y - dim_sq - container_rect.size.y * norm_bms
 		left_sq = clampf(left_sq, container_rect.position.x, container_rect.end.x - dim_sq)
@@ -378,6 +389,8 @@ func _on_reset_pressed() -> void:
 		_pending_layout[key] = GameSettings.LAYOUT_CHARACTER_SKILL_SLOT_2_DEFAULT.duplicate()
 	elif _selected_id == ControlId.CHARACTER_SKILL_SLOT_3:
 		_pending_layout[key] = GameSettings.LAYOUT_CHARACTER_SKILL_SLOT_3_DEFAULT.duplicate()
+	elif _selected_id == ControlId.ATTACK_RANGE_BUTTON:
+		_pending_layout[key] = GameSettings.LAYOUT_ATTACK_RANGE_DEFAULT.duplicate()
 	_apply_widget(_selected_id)
 	_refresh_selection_menu()
 	_has_unsaved_changes = true
@@ -393,6 +406,8 @@ func _on_save_pressed() -> void:
 		"character_skill_slot_2", _pending_layout["character_skill_slot_2"])
 	GameSettings.set_mobile_control_entry(
 		"character_skill_slot_3", _pending_layout["character_skill_slot_3"])
+	GameSettings.set_mobile_control_entry(
+		"attack_range_button", _pending_layout["attack_range_button"])
 	var vj_scale: float = clampf(float(_pending_layout["virtual_joystick"].get("scale", 1.0)),
 		GameSettings.JOYSTICK_SIZE_MIN, GameSettings.JOYSTICK_SIZE_MAX)
 	GameSettings.set_joystick_size(vj_scale)
@@ -435,6 +450,8 @@ func _get_widget(id: ControlId) -> Control:
 			return _skill_slot_2_widget
 		ControlId.CHARACTER_SKILL_SLOT_3:
 			return _skill_slot_3_widget
+		ControlId.ATTACK_RANGE_BUTTON:
+			return _attack_range_widget
 	return _pause_widget
 
 
@@ -452,4 +469,6 @@ func _id_to_key(id: ControlId) -> String:
 			return "character_skill_slot_2"
 		ControlId.CHARACTER_SKILL_SLOT_3:
 			return "character_skill_slot_3"
+		ControlId.ATTACK_RANGE_BUTTON:
+			return "attack_range_button"
 	return "mobile_pause"

@@ -68,6 +68,7 @@ var _hp_regen_accum: float = 0.0
 @onready var invincibility_timer: Timer = $InvincibilityTimer
 @onready var hurt_feedback: CanvasLayer = $HurtFeedback
 @onready var follow_camera: Camera2D = $Camera2D
+@onready var _sprite: Sprite2D = $Sprite2D
 
 
 func _ready() -> void:
@@ -90,8 +91,10 @@ func _physics_process(delta: float) -> void:
 	if not charged:
 		var direction := _get_input_direction()
 		_move_with_input(delta, direction)
+		_update_sprite_facing_from_horizontal(direction)
 	else:
 		_finish_skill_frame(delta)
+		_update_sprite_facing_from_horizontal(velocity)
 	if sk != null:
 		if sk.has_method("tick_ph_storm"):
 			sk.call("tick_ph_storm", delta)
@@ -177,6 +180,15 @@ func _apply_hp_regen(delta: float) -> void:
 		return
 	heal_flat(heal_amt)
 	_hp_regen_accum -= float(heal_amt)
+
+
+## 往右移动时水平翻转立绘，往左时恢复默认朝向；仅响应水平分量，竖直移动保持当前朝向
+func _update_sprite_facing_from_horizontal(motion: Vector2) -> void:
+	if not is_instance_valid(_sprite):
+		return
+	if absf(motion.x) <= 0.05:
+		return
+	_sprite.flip_h = motion.x > 0.0
 
 
 ## 读取 WASD / 虚拟摇杆并返回归一化方向向量（需求 1.1、1.2、1.3）

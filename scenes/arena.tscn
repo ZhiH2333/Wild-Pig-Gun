@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://rena"]
+[gd_scene load_steps=30 format=3 uid="uid://rena"]
 
 [ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
 [ext_resource type="Texture2D" uid="uid://du6nifp8b7xrl" path="res://assets/sprites/arena_bg.png" id="23_arena_bg"]
@@ -22,6 +22,7 @@
 [ext_resource type="Theme" uid="uid://dy36f4rj86vue" path="res://themes/settings_panel_theme.tres" id="21_settings_panel"]
 [ext_resource type="Material" path="res://resources/pause_overlay_bg_material.tres" id="22_pause_bg"]
 [ext_resource type="Script" path="res://scripts/ui/mobile_skill_button.gd" id="24_mskill"]
+[ext_resource type="Script" path="res://scripts/ui/mobile_attack_range_button.gd" id="25_mar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_interstitial_root_panel"]
 bg_color = Color(0.06, 0.06, 0.09, 0.94)
@@ -600,5 +601,14 @@ theme = ExtResource("19_black_btn")
 script = ExtResource("24_mskill")
 input_action = &"skill_tertiary"
 skill_slot_index = 2
+
+[node name="MobileAttackRangeButton" type="Button" parent="VirtualJoystickLayer"]
+layout_mode = 0
+offset_right = 72.0
+offset_bottom = 72.0
+mouse_filter = 0
+focus_mode = 0
+theme = ExtResource("19_black_btn")
+script = ExtResource("25_mar")
 
 [node name="DebugMenu" parent="." instance=ExtResource("15_debug_menu")]

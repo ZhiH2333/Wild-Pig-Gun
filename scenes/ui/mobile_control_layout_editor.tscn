@@ -138,6 +138,19 @@ theme_override_fonts/font = ExtResource("8_menu_font")
 theme_override_font_sizes/font_size = 16
 text = "技能3\n🪶"
 
+[node name="AttackRangeWidget" type="Button" parent="ControlsOverlay"]
+layout_mode = 0
+offset_left = 1656.0
+offset_top = 668.0
+offset_right = 1728.0
+offset_bottom = 740.0
+focus_mode = 0
+mouse_filter = 2
+theme = ExtResource("6_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "⭕️"
+
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=686550110]
 layout_mode = 1
 anchors_preset = 1
@@ -174,7 +187,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 0.88)
 theme_override_font_sizes/font_size = 20
-text = "点击选择控件（摇杆 / 暂停 / 消耗品条），拖动可移动位置"
+text = "点击选择控件（摇杆 / 暂停 / 消耗品条 / 攻击范围 / 技能），拖动可移动位置"
 horizontal_alignment = 1
 
 [node name="SelectionMenu" type="Control" parent="." unique_id=853414192]

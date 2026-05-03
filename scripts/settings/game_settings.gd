@@ -57,6 +57,10 @@ const LAYOUT_CHARACTER_SKILL_SLOT_2_DEFAULT: Dictionary = {
 const LAYOUT_CHARACTER_SKILL_SLOT_3_DEFAULT: Dictionary = {
 	"norm_right_margin": 0.015, "norm_bottom_margin": 0.46, "scale": 1.0
 }
+## 攻击范围（R / show_attack_range）：与技能格同一套右缘吸附坐标
+const LAYOUT_ATTACK_RANGE_DEFAULT: Dictionary = {
+	"norm_right_margin": 0.10, "norm_bottom_margin": 0.20, "scale": 1.0
+}
 
 const WINDOW_MODE_WINDOWED: String = "windowed"
 const WINDOW_MODE_BORDERLESS: String = "borderless"
@@ -90,7 +94,7 @@ var show_fps: bool = false
 var joystick_size: float = JOYSTICK_SIZE_DEFAULT
 var mobile_control_layout: Dictionary = _make_default_layout()
 var has_selected_control_mode: bool = false
-## 主菜单启动时是否跳过「键鼠 / 虚拟摇杆」询问（勾选不再提示后写入）
+## 主菜单启动时是否跳过「键鼠 / 虚拟按键」询问（勾选不再提示后写入）
 var control_mode_launch_prompt_dismissed: bool = false
 var selected_character_id: String = "default"
 var window_mode: String = WINDOW_MODE_WINDOWED
@@ -499,6 +503,8 @@ func get_mobile_control_entry(id: String) -> Dictionary:
 		return LAYOUT_CHARACTER_SKILL_SLOT_2_DEFAULT.duplicate()
 	if id == "character_skill_slot_3":
 		return LAYOUT_CHARACTER_SKILL_SLOT_3_DEFAULT.duplicate()
+	if id == "attack_range_button":
+		return LAYOUT_ATTACK_RANGE_DEFAULT.duplicate()
 	return {}
 
 
@@ -529,6 +535,7 @@ static func _make_default_layout() -> Dictionary:
 		"character_skill_slot_1": LAYOUT_CHARACTER_SKILL_SLOT_1_DEFAULT.duplicate(),
 		"character_skill_slot_2": LAYOUT_CHARACTER_SKILL_SLOT_2_DEFAULT.duplicate(),
 		"character_skill_slot_3": LAYOUT_CHARACTER_SKILL_SLOT_3_DEFAULT.duplicate(),
+		"attack_range_button": LAYOUT_ATTACK_RANGE_DEFAULT.duplicate(),
 	}
 
 
@@ -605,4 +612,18 @@ static func _load_layout_dict(raw: Variant, fallback_joystick_scale: float) -> D
 					1.0 - old_sx - btn_dim_ratio, 0.0, 0.5)
 				slot_def["norm_bottom_margin"] = clampf(
 					1.0 - old_sy - btn_dim_ratio, 0.0, 0.5)
+	var ar_def: Dictionary = result["attack_range_button"] as Dictionary
+	if d.has("attack_range_button") and d["attack_range_button"] is Dictionary:
+		var src_a: Dictionary = d["attack_range_button"] as Dictionary
+		if src_a.has("scale"):
+			ar_def["scale"] = clampf(float(src_a["scale"]), 0.5, 2.0)
+		if src_a.has("norm_right_margin") and src_a.has("norm_bottom_margin"):
+			ar_def["norm_right_margin"] = clampf(float(src_a["norm_right_margin"]), 0.0, 0.5)
+			ar_def["norm_bottom_margin"] = clampf(float(src_a["norm_bottom_margin"]), 0.0, 0.5)
+		elif src_a.has("norm_x") and src_a.has("norm_y"):
+			var ar_dim_ratio: float = (72.0 * float(ar_def["scale"])) / 1080.0
+			var old_ax: float = clampf(float(src_a["norm_x"]), 0.0, 1.0)
+			var old_ay: float = clampf(float(src_a["norm_y"]), 0.0, 1.0)
+			ar_def["norm_right_margin"] = clampf(1.0 - old_ax - ar_dim_ratio, 0.0, 0.5)
+			ar_def["norm_bottom_margin"] = clampf(1.0 - old_ay - ar_dim_ratio, 0.0, 0.5)
 	return result
