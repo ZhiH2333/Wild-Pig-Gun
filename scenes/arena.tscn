@@ -346,7 +346,7 @@ text = "确认放弃"
 alignment = 1
 
 [node name="QuitHoldTimer" type="Timer" parent="PauseOverlay"]
-wait_time = 3.0
+wait_time = 1.0
 one_shot = true
 
 [node name="LevelUpOverlay" type="CanvasLayer" parent="."]

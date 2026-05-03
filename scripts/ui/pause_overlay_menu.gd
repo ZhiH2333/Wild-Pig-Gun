@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-const HOLD_SECONDS: float = 3.0
+const HOLD_SECONDS: float = 1.0
 
 @onready var resume_button: Button = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/ResumeButton
 @onready var settings_button: Button = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/SettingsButton
@@ -8,12 +8,8 @@ const HOLD_SECONDS: float = 3.0
 @onready var quit_no_save_button: Button = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/QuitNoSaveButton
 @onready var quit_hold_progress: ProgressBar = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/QuitNoSaveButton/QuitHoldProgress
 @onready var quit_hold_label: Label = $MenuButtonsWrap/LeftMenuColumn/ButtonContainer/QuitNoSaveButton/QuitHoldLabel
-@onready var quit_confirm_overlay: Control = $QuitConfirmOverlay
-@onready var quit_dialog_confirm: Button = $QuitConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/ConfirmButton
-@onready var quit_dialog_cancel: Button = $QuitConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/CancelButton
 @onready var quit_hold_timer: Timer = $QuitHoldTimer
 
-var _is_quit_confirmed: bool = false
 var _is_holding_quit: bool = false
 
 
@@ -21,11 +17,8 @@ func _ready() -> void:
 	resume_button.pressed.connect(_on_resume_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	save_menu_button.pressed.connect(_on_save_menu_pressed)
-	quit_no_save_button.pressed.connect(_on_quit_no_save_pressed)
 	quit_no_save_button.button_down.connect(_on_quit_button_down)
 	quit_no_save_button.button_up.connect(_on_quit_button_up)
-	quit_dialog_confirm.pressed.connect(_on_quit_dialog_confirmed)
-	quit_dialog_cancel.pressed.connect(_on_quit_dialog_cancelled)
 	quit_hold_timer.timeout.connect(_on_quit_hold_timer_timeout)
 	quit_hold_timer.wait_time = HOLD_SECONDS
 	_style_quit_hold_bar()
@@ -35,10 +28,7 @@ func _ready() -> void:
 
 
 func _reset_quit_flow() -> void:
-	_is_quit_confirmed = false
 	_cancel_quit_hold()
-	if is_instance_valid(quit_confirm_overlay):
-		quit_confirm_overlay.visible = false
 	_refresh_quit_idle_text()
 
 
@@ -71,8 +61,8 @@ func _sync_quit_label_theme() -> void:
 
 
 func _refresh_quit_idle_text() -> void:
-	if _is_quit_confirmed:
-		quit_hold_label.text = "长按 3 秒不保存并退出"
+	if _is_holding_quit:
+		quit_hold_label.text = "松开取消"
 		return
 	quit_hold_label.text = "不保存并返回主菜单"
 
@@ -95,30 +85,10 @@ func _on_settings_pressed() -> void:
 		arena.open_in_game_settings()
 
 
-func _on_quit_no_save_pressed() -> void:
-	if _is_quit_confirmed:
-		return
-	if is_instance_valid(quit_confirm_overlay):
-		quit_confirm_overlay.visible = true
-
-
-func _on_quit_dialog_confirmed() -> void:
-	if is_instance_valid(quit_confirm_overlay):
-		quit_confirm_overlay.visible = false
-	_is_quit_confirmed = true
-	_refresh_quit_idle_text()
-
-
-func _on_quit_dialog_cancelled() -> void:
-	if is_instance_valid(quit_confirm_overlay):
-		quit_confirm_overlay.visible = false
-
-
 func _on_quit_button_down() -> void:
-	if not _is_quit_confirmed:
-		return
 	_is_holding_quit = true
 	quit_hold_progress.value = 0.0
+	_refresh_quit_idle_text()
 	quit_hold_timer.start(HOLD_SECONDS)
 
 

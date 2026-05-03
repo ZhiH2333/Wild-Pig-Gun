@@ -44,6 +44,8 @@ var _spawn_warning_scene: PackedScene = null
 var _wave_cfg: Dictionary = {}
 var _in_game_settings_layer: Control = null
 var _pause_over_level_up: bool = false
+## 当前波次刚开始时（`wave_started`）的整局快照，用于「放弃本波进度」写回续玩档
+var _checkpoint_at_wave_start: Dictionary = {}
 
 
 func _ensure_active_slot_for_resume() -> void:
@@ -250,6 +252,7 @@ func _on_wave_started(wave_index: int, duration_sec: float = 30.0) -> void:
 	RunState.wave_changed.emit(wave_index)
 	if hud != null and hud.has_method("on_wave_timer_reset"):
 		hud.on_wave_timer_reset(duration_sec)
+	_checkpoint_at_wave_start = build_run_snapshot()
 
 
 ## 通关（需求 7.5）
@@ -370,6 +373,8 @@ func build_run_snapshot() -> Dictionary:
 
 func save_run_and_return_to_menu() -> void:
 	var data: Dictionary = build_run_snapshot()
+	if not _checkpoint_at_wave_start.is_empty():
+		data["wave_start_checkpoint"] = _checkpoint_at_wave_start.duplicate(true)
 	if interstitial_hub != null and interstitial_hub.visible:
 		interstitial_hub.visible = false
 	SaveManager.save_pending_run(data)
@@ -380,7 +385,12 @@ func save_run_and_return_to_menu() -> void:
 
 
 func quit_to_menu_without_saving() -> void:
-	SaveManager.clear_pending_run()
+	if _checkpoint_at_wave_start.is_empty():
+		SaveManager.clear_pending_run()
+	else:
+		var data: Dictionary = _checkpoint_at_wave_start.duplicate(true)
+		data["wave_start_checkpoint"] = _checkpoint_at_wave_start.duplicate(true)
+		SaveManager.save_pending_run(data)
 	RunState.pause_reason = RunState.PauseReason.NONE
 	get_tree().paused = false
 	hide_pause_overlay()
@@ -415,6 +425,11 @@ func _restore_run_from_snapshot(snap: Dictionary) -> void:
 		var finished: int = wave_manager.current_wave
 		if finished > 0:
 			interstitial_hub.show_for_finished_wave(finished)
+	var wsc: Variant = snap.get("wave_start_checkpoint", {})
+	if wsc is Dictionary and not (wsc as Dictionary).is_empty():
+		_checkpoint_at_wave_start = (wsc as Dictionary).duplicate(true)
+	else:
+		_checkpoint_at_wave_start = {}
 	RunState.emit_hud_sync_signals()
 
 
