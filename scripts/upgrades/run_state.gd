@@ -20,10 +20,12 @@ signal level_up_queued(new_level: int)
 # 局内状态
 var character_id: String = "default"
 var wave_index: int = 0
-## 野猪钱包货币（野猪币；局内购物只用 material_current）
+## 未使用：持久化野猪币见 SaveManager.get_wallet_gold()；局内消费只用 material_current
 var gold: int = 0
 ## 本局开始时的系统滴答（毫秒），用于结算用时
 var run_start_ticks_msec: int = 0
+## 已计入存档槽 play_time 的本局秒数（避免重复累加）
+var _session_play_banked_sec: float = 0.0
 ## 暂停来源：用户 ESC 与波间界面互斥
 var pause_reason: PauseReason = PauseReason.NONE
 var upgrade_ids: Array[String] = []
@@ -66,7 +68,6 @@ func begin_new_run(p_character_id: String = "default", risk_mult: float = 1.0) -
 	last_endgame_weapon_labels.clear()
 	last_endgame_stats.clear()
 	run_seed = randi()
-	run_start_ticks_msec = Time.get_ticks_msec()
 	pause_reason = PauseReason.NONE
 	get_tree().paused = false
 	player_max_hp = 100
@@ -78,7 +79,21 @@ func begin_new_run(p_character_id: String = "default", risk_mult: float = 1.0) -
 	settings_return_scene_path = "res://scenes/main_menu.tscn"
 	gallery_return_scene_path = "res://scenes/main_menu.tscn"
 	selected_starting_weapon_ids.clear()
+	run_start_ticks_msec = Time.get_ticks_msec()
+	reset_session_play_banking()
 	run_started.emit(character_id)
+
+
+func reset_session_play_banking() -> void:
+	_session_play_banked_sec = 0.0
+
+
+## 返回自上次存档以来新增的局内游玩秒数，并推进基准（用于写入槽位累计时间）
+func consume_session_play_for_save() -> float:
+	var e: float = get_run_elapsed_seconds()
+	var delta: float = maxf(0.0, e - _session_play_banked_sec)
+	_session_play_banked_sec = e
+	return delta
 
 
 func enter_interstitial_pause() -> void:
@@ -227,6 +242,16 @@ func try_spend_material(cost: int) -> bool:
 	return true
 
 
+## 将当前局内野猪币余额写入野猪钱包并清零（波间继续、通关/失败展示结算后调用）
+func bank_run_material_to_wallet() -> void:
+	var amt: int = material_current
+	if amt <= 0:
+		return
+	SaveManager.bank_run_gold_to_wallet(amt)
+	material_current = 0
+	emit_signal("material_changed", material_current, material_savings)
+
+
 func xp_to_next_level() -> int:
 	return 22 + player_level * 16
 
@@ -299,6 +324,7 @@ func apply_snapshot_dict(d: Dictionary) -> void:
 			if item is Dictionary:
 				run_choice_log.append((item as Dictionary).duplicate(true))
 	pause_reason = PauseReason.NONE
+	reset_session_play_banking()
 
 
 func emit_hud_sync_signals() -> void:

@@ -1,0 +1,311 @@
+[gd_scene load_steps=11 format=3 uid="uid://gamestart_wpg"]
+
+[ext_resource type="Script" path="res://scripts/ui/game_start.gd" id="1_gs"]
+[ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
+[ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
+[ext_resource type="Texture2D" uid="uid://cd3upfbw3oy1" path="res://assets/ui/icon_back.svg" id="4_back"]
+[ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="5_black"]
+[ext_resource type="Theme" uid="uid://d7h2k9tabtheme1" path="res://themes/settings_tab_theme.tres" id="6_tab"]
+[ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="7_font"]
+[ext_resource type="Material" path="res://resources/subpage_blur_mat.tres" id="8_blur"]
+[ext_resource type="Theme" uid="uid://dy36f4rj86vue" path="res://themes/settings_panel_theme.tres" id="9_panel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.12, 0.1, 0.16, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.35, 0.5, 0.65)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="GameStart" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_ui")
+script = ExtResource("1_gs")
+
+[node name="BlurredBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+material = ExtResource("8_blur")
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.62)
+
+[node name="Vignette" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.18)
+
+[node name="Center" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 20.0
+offset_right = -28.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainColumn" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="HeaderMargins" type="MarginContainer" parent="Center/MainColumn"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_right = 22
+
+[node name="HeaderRow" type="HBoxContainer" parent="Center/MainColumn/HeaderMargins"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="BackButton" type="Button" parent="Center/MainColumn/HeaderMargins/HeaderRow"]
+custom_minimum_size = Vector2(168, 52)
+layout_mode = 2
+theme = ExtResource("5_black")
+theme_override_fonts/font = ExtResource("7_font")
+theme_override_constants/icon_max_width = 30
+theme_override_font_sizes/font_size = 24
+text = "返回"
+icon = ExtResource("4_back")
+alignment = 0
+
+[node name="TitleLabel" type="Label" parent="Center/MainColumn/HeaderMargins/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 42
+text = "开始游戏"
+vertical_alignment = 1
+
+[node name="MainCard" type="MarginContainer" parent="Center/MainColumn"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="CardColumn" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins"]
+layout_mode = 2
+theme_override_constants/separation = 12
+size_flags_vertical = 3
+
+[node name="TabButtonRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TabManage" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("6_tab")
+theme_override_fonts/font = ExtResource("7_font")
+theme_override_font_sizes/font_size = 26
+text = "管理"
+alignment = 1
+
+[node name="TabSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+custom_minimum_size = Vector2(1, 34)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 1, 1, 0.55)
+
+[node name="TabJourney" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/TabButtonRow"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("6_tab")
+theme_override_fonts/font = ExtResource("7_font")
+theme_override_font_sizes/font_size = 26
+text = "开始新旅程"
+alignment = 1
+
+[node name="BodyStack" type="MarginContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_top = 8
+
+[node name="ManagePage" type="Control" parent="Center/MainColumn/MainCard/Margins/CardColumn/BodyStack"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Scroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/BodyStack/ManagePage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+theme = ExtResource("9_panel")
+
+[node name="SlotList" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/BodyStack/ManagePage/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="JourneyPage" type="Control" parent="Center/MainColumn/MainCard/Margins/CardColumn/BodyStack"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SlotDetailOverlay" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RedBlurBackdrop" type="ColorRect" parent="SlotDetailOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.42, 0.08, 0.08, 0.55)
+
+[node name="BackdropDim" type="ColorRect" parent="SlotDetailOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.02, 0.08, 0.75)
+
+[node name="CenterContainer" type="CenterContainer" parent="SlotDetailOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="DialogCard" type="PanelContainer" parent="SlotDetailOverlay/CenterContainer"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="SlotDetailOverlay/CenterContainer/DialogCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Content" type="VBoxContainer" parent="SlotDetailOverlay/CenterContainer/DialogCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="SlotDetailOverlay/CenterContainer/DialogCard/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.92, 0.9, 1)
+theme_override_fonts/font = ExtResource("7_font")
+theme_override_font_sizes/font_size = 28
+text = "存档详情"
+horizontal_alignment = 1
+
+[node name="DetailRichText" type="RichTextLabel" parent="SlotDetailOverlay/CenterContainer/DialogCard/Margin/Content"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+bbcode_enabled = false
+fit_content = true
+scroll_active = false
+theme_override_font_sizes/normal_font_size = 18
+theme_override_colors/default_color = Color(0.9, 0.88, 0.85, 1)
+
+[node name="CloseButton" type="Button" parent="SlotDetailOverlay/CenterContainer/DialogCard/Margin/Content"]
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("5_black")
+theme_override_fonts/font = ExtResource("7_font")
+theme_override_font_sizes/font_size = 20
+text = "关闭"
+alignment = 1
+
+[node name="DeleteSlotButton" type="Button" parent="SlotDetailOverlay/CenterContainer/DialogCard/Margin/Content"]
+custom_minimum_size = Vector2(280, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+text = ""
+alignment = 1
+
+[node name="DeleteHoldProgress" type="ProgressBar" parent="SlotDetailOverlay/CenterContainer/DialogCard/Margin/Content/DeleteSlotButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+show_percentage = false
+max_value = 100.0
+fill_mode = 0
+
+[node name="DeleteHoldLabel" type="Label" parent="SlotDetailOverlay/CenterContainer/DialogCard/Margin/Content/DeleteSlotButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("7_font")
+theme_override_font_sizes/font_size = 20
+text = "删除此存档"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DeleteHoldTimer" type="Timer" parent="."]
+one_shot = true

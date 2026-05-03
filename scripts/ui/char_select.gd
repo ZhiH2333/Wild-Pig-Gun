@@ -32,6 +32,7 @@ func _on_back_button_pressed() -> void:
 
 func _on_character_chosen(character_id: String) -> void:
 	CHAR_TUTORIAL_TIP_SCRIPT.call("remove_from", self)
+	GameSettings.set_selected_character_id(character_id)
 	var risk: float = 1.25 if risk_check.button_pressed else 1.0
 	RunState.begin_new_run(character_id, risk)
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")

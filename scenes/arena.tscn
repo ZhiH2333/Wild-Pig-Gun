@@ -197,20 +197,40 @@ text = "保存并返回主菜单"
 alignment = 1
 
 [node name="QuitNoSaveButton" type="Button" parent="PauseOverlay/MenuButtonsWrap/LeftMenuColumn/ButtonContainer"]
+self_modulate = Color(1, 0.34, 0.34, 1)
+clip_contents = true
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme = ExtResource("19_black_btn")
 theme_override_fonts/font = ExtResource("20_font_bold")
-text = "不保存并返回主菜单"
+text = ""
 alignment = 1
 
-[node name="HintLabel" type="Label" parent="PauseOverlay/MenuButtonsWrap/LeftMenuColumn"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.72)
+[node name="QuitHoldProgress" type="ProgressBar" parent="PauseOverlay/MenuButtonsWrap/LeftMenuColumn/ButtonContainer/QuitNoSaveButton"]
+show_behind_parent = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+show_percentage = false
+max_value = 100.0
+
+[node name="QuitHoldLabel" type="Label" parent="PauseOverlay/MenuButtonsWrap/LeftMenuColumn/ButtonContainer/QuitNoSaveButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 theme_override_fonts/font = ExtResource("20_font_bold")
-theme_override_font_sizes/font_size = 18
-text = "提示：ESC 可快速继续或打开本菜单"
-autowrap_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "不保存并返回主菜单"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PauseTitle" type="Label" parent="PauseOverlay"]
 layout_mode = 1
@@ -221,6 +241,113 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("20_font_bold")
 theme_override_font_sizes/font_size = 48
 text = "已暂停"
+
+[node name="QuitConfirmOverlay" type="Control" parent="PauseOverlay"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RedBlurBackdrop" type="ColorRect" parent="PauseOverlay/QuitConfirmOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.42, 0.08, 0.08, 0.7)
+
+[node name="BackdropDim" type="ColorRect" parent="PauseOverlay/QuitConfirmOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.12, 0.02, 0.03, 0.72)
+
+[node name="CenterContainer" type="CenterContainer" parent="PauseOverlay/QuitConfirmOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DialogCard" type="PanelContainer" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme = ExtResource("21_settings_panel")
+
+[node name="Margin" type="MarginContainer" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer/DialogCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Content" type="VBoxContainer" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer/DialogCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TitleLabel" type="Label" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 26
+text = "放弃本局进度？"
+horizontal_alignment = 1
+
+[node name="BodyLabel" type="Label" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 22
+text = "返回主菜单将不保存当前进度，本局内尚未存入野猪钱包的野猪币将丢失。"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HoldHintLabel" type="Label" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.72, 0.72, 1)
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 18
+text = "确认后回到暂停菜单，长按红色按钮 3 秒才会退出。"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer/DialogCard/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow"]
+custom_minimum_size = Vector2(200, 56)
+layout_mode = 2
+theme = ExtResource("19_black_btn")
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_font_sizes/font_size = 22
+text = "取消"
+alignment = 1
+
+[node name="ConfirmButton" type="Button" parent="PauseOverlay/QuitConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow"]
+self_modulate = Color(0.78, 0.2, 0.2, 1)
+custom_minimum_size = Vector2(200, 56)
+layout_mode = 2
+theme = ExtResource("19_black_btn")
+theme_override_fonts/font = ExtResource("20_font_bold")
+theme_override_colors/font_color = Color(1, 0.88, 0.88, 1)
+theme_override_font_sizes/font_size = 22
+text = "确认放弃"
+alignment = 1
+
+[node name="QuitHoldTimer" type="Timer" parent="PauseOverlay"]
+wait_time = 3.0
+one_shot = true
 
 [node name="LevelUpOverlay" type="CanvasLayer" parent="."]
 process_mode = 3

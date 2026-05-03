@@ -65,6 +65,9 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var delete_confirm_overlay: Control = $DeleteConfirmOverlay
 @onready var delete_confirm_button: Button = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/ConfirmButton
 @onready var delete_cancel_button: Button = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/CancelButton
+@onready var check_clear_saves: CheckBox = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/CheckClearSaves
+@onready var check_clear_user_data: CheckBox = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/CheckClearUserData
+@onready var delete_confirm_hint_label: Label = $DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content/HoldHintLabel
 @onready var clear_result_overlay: Control = $ClearResultOverlay
 @onready var clear_result_message_label: Label = $ClearResultOverlay/CenterContainer/DialogCard/Margin/Content/MessageLabel
 @onready var clear_result_back_button: Button = $ClearResultOverlay/CenterContainer/DialogCard/Margin/Content/BackToMenuButton
@@ -72,6 +75,8 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 
 var is_clear_confirmed: bool = false
 var is_holding_clear_button: bool = false
+var _pending_clear_run_saves: bool = false
+var _pending_clear_user_data: bool = false
 var _is_syncing_ui: bool = false
 var _is_tutorial_mode: bool = false
 var _tab_buttons: Array[Button] = []
@@ -535,20 +540,30 @@ func _sync_clear_hold_label_theme() -> void:
 
 func _refresh_clear_button_idle_text() -> void:
 	if is_clear_confirmed:
-		clear_hold_label.text = "长按 3 秒清除所有数据"
+		clear_hold_label.text = "长按 3 秒执行清除"
 		clear_hint_label.text = "已确认，请长按直至红色进度条走满（约 3 秒）"
 		return
-	clear_hold_label.text = "清除所有数据"
-	clear_hint_label.text = "先点击确认，再长按 3 秒清除全部数据"
+	clear_hold_label.text = "清除数据"
+	clear_hint_label.text = "先点击确认，再长按 3 秒执行已选清除项"
 
 
 func _on_clear_all_button_pressed() -> void:
 	if is_clear_confirmed:
 		return
+	check_clear_saves.button_pressed = false
+	check_clear_user_data.button_pressed = false
+	delete_confirm_hint_label.text = "勾选后点击「确认删除」，再回到本页长按红色按钮执行。"
 	delete_confirm_overlay.visible = true
 
 
 func _on_clear_dialog_confirmed() -> void:
+	var want_saves: bool = check_clear_saves.button_pressed
+	var want_user: bool = check_clear_user_data.button_pressed
+	if not want_saves and not want_user:
+		delete_confirm_hint_label.text = "请至少勾选一项要清除的内容。"
+		return
+	_pending_clear_run_saves = want_saves
+	_pending_clear_user_data = want_user
 	delete_confirm_overlay.visible = false
 	is_clear_confirmed = true
 	_refresh_clear_button_idle_text()
@@ -556,6 +571,8 @@ func _on_clear_dialog_confirmed() -> void:
 
 func _on_clear_dialog_cancelled() -> void:
 	delete_confirm_overlay.visible = false
+	_pending_clear_run_saves = false
+	_pending_clear_user_data = false
 
 
 func _on_clear_all_button_down() -> void:
@@ -600,23 +617,34 @@ func _on_clear_hold_timer_timeout() -> void:
 func _execute_clear_all_data() -> void:
 	clear_all_data_button.disabled = true
 	clear_hold_label.text = "正在清除..."
-	clear_hint_label.text = "请稍候，正在重置数据并返回主菜单"
-	var is_save_cleared: bool = SaveManager.delete_all_save_data()
-	var is_settings_cleared: bool = GameSettings.clear_all_settings_data()
-	SaveManager.clear_pending_run()
+	clear_hint_label.text = "请稍候，正在处理所选清除项"
+	var saves_ok: bool = true
+	var user_ok: bool = true
+	if _pending_clear_run_saves and _pending_clear_user_data:
+		saves_ok = SaveManager.delete_all_save_data()
+		user_ok = GameSettings.clear_all_settings_data()
+	elif _pending_clear_run_saves:
+		saves_ok = SaveManager.delete_all_run_saves()
+	elif _pending_clear_user_data:
+		user_ok = SaveManager.delete_user_progress_and_settings()
 	RunState.pause_reason = RunState.PauseReason.NONE
 	RunState.settings_return_scene_path = MAIN_MENU_SCENE_PATH
 	get_tree().paused = false
 	GameMusic.ensure_playing_main_volume()
 	_refresh_data_summary()
-	if is_save_cleared and is_settings_cleared:
-		clear_result_message_label.text = "所有数据已清除完成。"
+	_pending_clear_run_saves = false
+	_pending_clear_user_data = false
+	is_clear_confirmed = false
+	if saves_ok and user_ok:
+		clear_result_message_label.text = "所选数据已清除完成。"
 	else:
 		clear_result_message_label.text = "部分数据清除失败。\n请检查本地文件写入权限后重试。"
 	clear_result_overlay.visible = true
 
 
 func _on_clear_result_back_pressed() -> void:
+	is_clear_confirmed = false
+	clear_all_data_button.disabled = false
 	RunState.settings_return_scene_path = MAIN_MENU_SCENE_PATH
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
 

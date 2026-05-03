@@ -21,8 +21,8 @@ var _has_unsaved_changes: bool = false
 @export var embedded_in_tutorial: bool = false
 
 @onready var _back_btn: Button = $TopBar/BackBtn
-@onready var _preview_container: Control = $PreviewContainer
-@onready var _controls_overlay: Control = $ControlsOverlay
+## 全屏可编辑区（与 virtual_controls_layout_host 的 归一化坐标一致）
+@onready var _layout_bounds: Control = $ControlsOverlay
 @onready var _joystick_widget: Control = $ControlsOverlay/JoystickWidget
 @onready var _pause_widget: Control = $ControlsOverlay/PauseWidget
 @onready var _selection_menu: Control = $SelectionMenu
@@ -89,7 +89,7 @@ func _process(delta: float) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	var container_rect: Rect2 = _preview_container.get_global_rect()
+	var container_rect: Rect2 = _layout_bounds.get_global_rect()
 	if event is InputEventMouseButton:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
 		if mb.button_index != MOUSE_BUTTON_LEFT:
@@ -164,7 +164,7 @@ func _refresh_all_widgets() -> void:
 
 ## 根据 _pending_layout 将控件放置到屏幕上（与 layout_host 完全对称的坐标计算）
 func _apply_widget(id: ControlId) -> void:
-	var container_rect: Rect2 = _preview_container.get_global_rect()
+	var container_rect: Rect2 = _layout_bounds.get_global_rect()
 	if container_rect.size == Vector2.ZERO:
 		return
 	var key: String = _id_to_key(id)
@@ -229,7 +229,7 @@ func _position_selection_menu() -> void:
 	if not _selection_menu.visible:
 		return
 	var widget: Control = _get_widget(_selected_id)
-	var container_rect: Rect2 = _preview_container.get_global_rect()
+	var container_rect: Rect2 = _layout_bounds.get_global_rect()
 	var menu_w: float = _selection_menu.size.x
 	var menu_h: float = _selection_menu.size.y
 	var wx: float = widget.global_position.x

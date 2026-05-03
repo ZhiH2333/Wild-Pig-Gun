@@ -18,16 +18,48 @@ const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf
 
 const MAX_DAMAGE: float = 16.0
 const MAX_FIRE_RATE: float = 6.25
+const GAME_START_SCENE: String = "res://scenes/game_start.tscn"
 
 var weapon_defs: Array[Dictionary] = []
 var selected_weapon_id: String = "rifle"
 
 
+func _is_embedded_in_game_start() -> bool:
+	return bool(get_meta("game_start_embedded", false))
+
+
 func _ready() -> void:
 	GameMusic.duck_for_subpage()
+	CharacterData.sanitize_selected_character_setting()
 	_refresh_character_panel()
 	_setup_weapon_section()
 	CHAR_TUTORIAL_TIP_SCRIPT.call("try_add_to_scene_root", self)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_exit_pre_start_from_cancel()
+
+
+func _exit_pre_start_from_cancel() -> void:
+	CHAR_TUTORIAL_TIP_SCRIPT.call("remove_from", self)
+	GameMusic.ensure_playing_main_volume()
+	if _is_embedded_in_game_start():
+		var host: Node = _find_game_start_host()
+		if host != null and host.has_method("show_manage_tab"):
+			host.show_manage_tab()
+			return
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+
+func _find_game_start_host() -> Node:
+	var n: Node = get_parent()
+	while n != null:
+		if n.is_in_group("game_start"):
+			return n
+		n = n.get_parent()
+	return null
 
 
 func _refresh_character_panel() -> void:
@@ -113,18 +145,16 @@ func _refresh_weapon_stats(weapon_id: String) -> void:
 
 
 func _on_change_char_button_pressed() -> void:
-	RunState.gallery_return_scene_path = "res://scenes/pre_start.tscn"
+	if _is_embedded_in_game_start():
+		RunState.gallery_return_scene_path = GAME_START_SCENE
+	else:
+		RunState.gallery_return_scene_path = "res://scenes/pre_start.tscn"
 	get_tree().change_scene_to_file("res://scenes/char_gallery.tscn")
-
-
-func _on_back_button_pressed() -> void:
-	CHAR_TUTORIAL_TIP_SCRIPT.call("remove_from", self)
-	GameMusic.ensure_playing_main_volume()
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 
 func _on_start_button_pressed() -> void:
 	CHAR_TUTORIAL_TIP_SCRIPT.call("remove_from", self)
+	SaveManager.create_slot()
 	RunState.begin_new_run(str(GameSettings.selected_character_id), 1.0)
 	RunState.selected_starting_weapon_ids = [selected_weapon_id]
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")

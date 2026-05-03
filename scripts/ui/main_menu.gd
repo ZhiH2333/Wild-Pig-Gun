@@ -167,12 +167,19 @@ func _refresh_continue_button() -> void:
 
 
 func _on_continue_pressed() -> void:
+	var last: String = SaveManager.get_last_played_slot_id()
+	if SaveManager.slot_has_resumable_run(last):
+		SaveManager.active_save_slot_id = last
+	else:
+		var fid: String = SaveManager.find_first_slot_with_run()
+		if not fid.is_empty():
+			SaveManager.active_save_slot_id = fid
 	get_tree().change_scene_to_file("res://scenes/arena.tscn")
 
 
 func _on_start_pressed() -> void:
 	GameMusic.duck_for_subpage()
-	get_tree().change_scene_to_file("res://scenes/pre_start.tscn")
+	get_tree().change_scene_to_file("res://scenes/game_start.tscn")
 
 
 func _on_character_pressed() -> void:

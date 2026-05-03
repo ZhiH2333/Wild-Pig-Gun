@@ -46,6 +46,18 @@ var _in_game_settings_layer: Control = null
 var _pause_over_level_up: bool = false
 
 
+func _ensure_active_slot_for_resume() -> void:
+	if not SaveManager.active_save_slot_id.is_empty():
+		return
+	var last: String = SaveManager.get_last_played_slot_id()
+	if SaveManager.slot_has_resumable_run(last):
+		SaveManager.active_save_slot_id = last
+		return
+	var fid: String = SaveManager.find_first_slot_with_run()
+	if not fid.is_empty():
+		SaveManager.active_save_slot_id = fid
+
+
 func _ready() -> void:
 	add_to_group("arena")
 	_wave_cfg = WaveData.load_config()
@@ -53,7 +65,9 @@ func _ready() -> void:
 	GameMusic.enter_battle()
 	if player:
 		player.died.connect(_on_player_died)
-	var resume_run: bool = SaveManager.has_pending_run()
+	_ensure_active_slot_for_resume()
+	var snap_resume: Dictionary = SaveManager.load_pending_run()
+	var resume_run: bool = not snap_resume.is_empty()
 	if not resume_run:
 		if player != null:
 			CharacterData.apply_to_player(player, RunState.character_id)
@@ -76,8 +90,7 @@ func _ready() -> void:
 	if level_up_overlay != null and level_up_overlay.has_method("set_player"):
 		level_up_overlay.set_player(player)
 	if resume_run:
-		var snap: Dictionary = SaveManager.load_pending_run()
-		_restore_run_from_snapshot(snap)
+		_restore_run_from_snapshot(snap_resume)
 	else:
 		wave_manager.start_run()
 	if (
@@ -259,6 +272,8 @@ func show_pause_overlay() -> void:
 
 func hide_pause_overlay() -> void:
 	pause_overlay.visible = false
+	if pause_overlay.has_method("reset_when_pause_closed"):
+		pause_overlay.reset_when_pause_closed()
 	_pause_over_level_up = false
 
 
@@ -450,6 +465,7 @@ func _on_pause_resume_pressed() -> void:
 
 
 func _on_interstitial_continue_pressed() -> void:
+	RunState.bank_run_material_to_wallet()
 	wave_manager.start_next_wave()
 
 

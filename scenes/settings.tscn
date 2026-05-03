@@ -805,16 +805,30 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 22
-text = "是否清除所有数据？此操作无法恢复。"
+text = "请选择要清除的数据类型（可多选）。此操作无法恢复。"
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="CheckClearSaves" type="CheckBox" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=1888123001]
+layout_mode = 2
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 20
+text = "删除所有存档（局内进度）"
+
+[node name="CheckClearUserData" type="CheckBox" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=1888123002]
+layout_mode = 2
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 20
+text = "删除用户数据（设置、钱包与解锁等）"
 
 [node name="HoldHintLabel" type="Label" parent="DeleteConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=42944609]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.72, 0.72, 1)
 theme_override_fonts/font = SubResource("SystemFont_dialog")
 theme_override_font_sizes/font_size = 18
-text = "确认后回到设置页，长按红色按钮 3 秒才会执行清除。"
+text = "（此处将显示操作提示）"
 horizontal_alignment = 1
 autowrap_mode = 3
 

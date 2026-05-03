@@ -7,10 +7,14 @@ extends Control
 
 
 func _ready() -> void:
+	if not SaveManager.active_save_slot_id.is_empty():
+		SaveManager.add_play_time_to_slot(
+			SaveManager.active_save_slot_id, RunState.consume_session_play_for_save())
 	SaveManager.clear_pending_run()
 	SaveManager.record_run_finished(RunState.wave_index, true)
 	summary_label.text = _build_header_line()
 	detail_rich.text = RunEndSummaryText.build_bbcode_section()
+	RunState.bank_run_material_to_wallet()
 	main_menu_btn.pressed.connect(_on_main_menu_pressed)
 	copy_button.pressed.connect(_on_copy_pressed)
 

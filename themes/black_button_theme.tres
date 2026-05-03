@@ -1,9 +1,9 @@
-[gd_resource type="Theme" load_steps=9 format=3 uid="uid://b8dd63i2ua340"]
+[gd_resource type="Theme" format=3 uid="uid://b8dd63i2ua340"]
 
-[ext_resource type="Texture2D" uid="uid://cboxunkcheck01" path="res://assets/ui/checkbox_unchecked.svg" id="1_cb_unc"]
-[ext_resource type="Texture2D" uid="uid://cboxchecked001" path="res://assets/ui/checkbox_checked.svg" id="2_cb_chk"]
-[ext_resource type="Texture2D" uid="uid://cboxunkdisab01" path="res://assets/ui/checkbox_unchecked_disabled.svg" id="3_cb_ud"]
-[ext_resource type="Texture2D" uid="uid://cboxchkdisab01" path="res://assets/ui/checkbox_checked_disabled.svg" id="4_cb_cd"]
+[ext_resource type="Texture2D" uid="uid://dy02mlo6rvo41" path="res://assets/ui/checkbox_unchecked.svg" id="1_cb_unc"]
+[ext_resource type="Texture2D" uid="uid://dy0jgfparw441" path="res://assets/ui/checkbox_checked.svg" id="2_cb_chk"]
+[ext_resource type="Texture2D" uid="uid://dy02mlp76tf41" path="res://assets/ui/checkbox_unchecked_disabled.svg" id="3_cb_ud"]
+[ext_resource type="Texture2D" uid="uid://dy0jglp76tf41" path="res://assets/ui/checkbox_checked_disabled.svg" id="4_cb_cd"]
 
 [sub_resource type="StyleBoxFlat" id="sb_btn_disabled"]
 content_margin_left = 16.0
@@ -82,12 +82,6 @@ CheckBox/colors/font_hover_color = Color(0, 0, 0, 1)
 CheckBox/colors/font_hover_pressed_color = Color(0, 0, 0, 1)
 CheckBox/colors/font_pressed_color = Color(0, 0, 0, 1)
 CheckBox/font_sizes/font_size = 24
-CheckBox/styles/disabled = SubResource("sb_btn_disabled")
-CheckBox/styles/focus = SubResource("sb_btn_hover")
-CheckBox/styles/hover = SubResource("sb_btn_hover")
-CheckBox/styles/hover_pressed = SubResource("sb_btn_pressed")
-CheckBox/styles/normal = SubResource("sb_btn_normal")
-CheckBox/styles/pressed = SubResource("sb_btn_pressed")
 CheckBox/icons/checked = ExtResource("2_cb_chk")
 CheckBox/icons/checked_disabled = ExtResource("4_cb_cd")
 CheckBox/icons/radio_checked = ExtResource("2_cb_chk")
@@ -96,4 +90,9 @@ CheckBox/icons/radio_unchecked = ExtResource("1_cb_unc")
 CheckBox/icons/radio_unchecked_disabled = ExtResource("3_cb_ud")
 CheckBox/icons/unchecked = ExtResource("1_cb_unc")
 CheckBox/icons/unchecked_disabled = ExtResource("3_cb_ud")
-
+CheckBox/styles/disabled = SubResource("sb_btn_disabled")
+CheckBox/styles/focus = SubResource("sb_btn_hover")
+CheckBox/styles/hover = SubResource("sb_btn_hover")
+CheckBox/styles/hover_pressed = SubResource("sb_btn_pressed")
+CheckBox/styles/normal = SubResource("sb_btn_normal")
+CheckBox/styles/pressed = SubResource("sb_btn_pressed")

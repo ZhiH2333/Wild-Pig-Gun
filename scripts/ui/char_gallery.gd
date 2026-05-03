@@ -312,7 +312,7 @@ func _build_shop_cards() -> void:
 	var wallet: int = SaveManager.get_wallet_gold()
 	if offers.is_empty():
 		var empty_lbl: Label = Label.new()
-		empty_lbl.text = "暂无可购角色（已解锁全部）。\n野猪钱包：%d 野猪币（局内拾取的野猪币在结算时并入野猪钱包）。" % wallet
+		empty_lbl.text = "暂无可购角色（已解锁全部）。\n野猪钱包：%d 野猪币（波间继续或本局结束时，局内余额会并入钱包）。" % wallet
 		empty_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		empty_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		empty_lbl.add_theme_font_size_override("font_size", 20)
@@ -455,7 +455,7 @@ func _on_purchase_hold_completed() -> void:
 		_build_profile_sections()
 	else:
 		_close_purchase_overlay()
-		shop_result_dialog.dialog_text = "野猪币不足（需要 %d）。\n完成一局后，局内拾取的野猪币会并入野猪钱包。" % price
+		shop_result_dialog.dialog_text = "野猪币不足（需要 %d）。\n对局中拾取的野猪币用于波间商店；余额会在进入下一波或本局结束时并入野猪钱包。" % price
 		shop_result_dialog.popup_centered()
 
 

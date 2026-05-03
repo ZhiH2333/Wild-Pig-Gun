@@ -2,6 +2,7 @@ extends RefCounted
 class_name CharacterData
 
 const PATH: String = "res://data/characters.json"
+const FALLBACK_PLAYER_SPRITE: String = "res://assets/sprites/wildpig.png"
 
 
 static func load_config() -> Dictionary:
@@ -153,13 +154,16 @@ static func _apply_sprite(player: Node, d: Dictionary) -> void:
 	var spr: Sprite2D = player.get_node_or_null("Sprite2D") as Sprite2D
 	if spr == null:
 		return
-	var tex_path: String = str(d.get("sprite_path", "res://assets/sprites/wildpig.png"))
-	if not ResourceLoader.exists(tex_path):
-		return
-	var tex: Texture2D = load(tex_path) as Texture2D
+	var tex_path: String = str(d.get("sprite_path", FALLBACK_PLAYER_SPRITE))
+	var tex: Texture2D = _load_player_texture(tex_path)
 	if tex == null:
+		push_warning("CharacterData: 无法加载角色贴图 %s，使用默认" % tex_path)
+		tex = _load_player_texture(FALLBACK_PLAYER_SPRITE)
+	if tex == null:
+		push_error("CharacterData: 默认贴图也加载失败: %s" % FALLBACK_PLAYER_SPRITE)
 		return
 	spr.texture = tex
+	spr.visible = true
 	var scale_override: float = float(d.get("sprite_scale", -1.0))
 	if scale_override <= 0.0001:
 		var h: float = float(tex.get_height())
@@ -168,6 +172,14 @@ static func _apply_sprite(player: Node, d: Dictionary) -> void:
 		else:
 			scale_override = 1.0
 	spr.scale = Vector2(scale_override, scale_override)
+
+
+static func _load_player_texture(path: String) -> Texture2D:
+	if path.is_empty():
+		return null
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path) as Texture2D
 
 
 static func _apply_traits(player: Node, d: Dictionary) -> void:
@@ -200,6 +212,7 @@ static func _builtin_default() -> Dictionary:
 		"id": "default",
 		"display_name": "标准野猪",
 		"description": "",
+		"sprite_path": FALLBACK_PLAYER_SPRITE,
 		"max_hp": 100,
 		"speed_mult": 1.0,
 		"damage_mult": 1.0,
