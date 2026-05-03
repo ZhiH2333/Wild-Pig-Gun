@@ -3,6 +3,9 @@ class_name CharacterData
 
 const PATH: String = "res://data/characters.json"
 const FALLBACK_PLAYER_SPRITE: String = "res://assets/sprites/wildpig.png"
+## 选人 UI 与策划案「速度/攻击」标尺一致：野猪 50 速=1.0x、80 攻=1.0x
+const DISPLAY_SPEED_BASELINE: float = 50.0
+const DISPLAY_ATTACK_BASELINE: float = 80.0
 
 
 static func load_config() -> Dictionary:
@@ -115,6 +118,31 @@ static func find_character(character_id: String) -> Dictionary:
 	return _builtin_default()
 
 
+## 用于选人界面属性条（与 speed_mult / damage_mult 一致）
+static func get_display_hp(d: Dictionary) -> int:
+	return maxi(0, int(d.get("max_hp", 0)))
+
+
+static func get_display_speed_rating(d: Dictionary) -> int:
+	var m: float = float(d.get("speed_mult", 1.0))
+	return int(round(m * DISPLAY_SPEED_BASELINE))
+
+
+static func get_display_attack_rating(d: Dictionary) -> int:
+	var m: float = float(d.get("damage_mult", 1.0))
+	return int(round(m * DISPLAY_ATTACK_BASELINE))
+
+
+static func get_select_accent_color(character_id: String) -> Color:
+	match character_id:
+		"chicken":
+			return Color(0.55, 0.38, 0.88, 1.0)
+		"pigchicken":
+			return Color(0.32, 0.72, 0.48, 1.0)
+		_:
+			return Color(0.5, 0.5, 0.54, 1.0)
+
+
 static func get_starting_weapon_ids(character_id: String) -> Array:
 	var d: Dictionary = find_character(character_id)
 	var w: Variant = d.get("starting_weapons", [])
@@ -210,10 +238,10 @@ static func _apply_traits(player: Node, d: Dictionary) -> void:
 static func _builtin_default() -> Dictionary:
 	return {
 		"id": "default",
-		"display_name": "标准野猪",
-		"description": "",
+		"display_name": "野猪",
+		"description": "暴力肉盾 · 近战强化型",
 		"sprite_path": FALLBACK_PLAYER_SPRITE,
-		"max_hp": 100,
+		"max_hp": 90,
 		"speed_mult": 1.0,
 		"damage_mult": 1.0,
 	}

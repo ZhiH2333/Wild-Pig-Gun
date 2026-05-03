@@ -7,6 +7,7 @@ const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf
 @onready var char_sprite: TextureRect = $Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/PortraitPanel/PortraitMargins/CharSprite
 @onready var char_name_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/CharNameLabel
 @onready var char_desc_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/CharDescLabel
+@onready var char_stats_vbox: VBoxContainer = $Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/CharStatsVBox
 @onready var weapon_list: VBoxContainer = $Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll/WeaponList
 @onready var weapon_name_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/WeaponNameLabel
 @onready var weapon_kind_label: Label = $Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/MetaRow/WeaponKindLabel
@@ -65,11 +66,14 @@ func _find_game_start_host() -> Node:
 func _refresh_character_panel() -> void:
 	var character_id: String = str(GameSettings.selected_character_id)
 	var character: Dictionary = CharacterData.find_character(character_id)
-	var display_name: String = str(character.get("display_name", "标准野猪"))
+	var display_name: String = str(character.get("display_name", "野猪"))
 	var description: String = str(character.get("description", "暂无介绍"))
 	var sprite_path: String = str(character.get("sprite_path", "res://assets/sprites/wildpig.png"))
 	char_name_label.text = display_name
 	char_desc_label.text = description
+	for ch in char_stats_vbox.get_children():
+		ch.queue_free()
+	CharacterStatBarsUi.append_to_vbox(char_stats_vbox, character, true, true)
 	if not ResourceLoader.exists(sprite_path):
 		char_sprite.texture = null
 		return

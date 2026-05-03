@@ -2,37 +2,37 @@
   "characters": [
     {
       "id": "default",
-      "display_name": "标准野猪",
-      "description": "平衡型：步枪开局。",
+      "display_name": "野猪",
+      "description": "暴力肉盾 · 近战强化型",
       "sprite_path": "res://assets/sprites/wildpig.png",
-      "max_hp": 100,
+      "max_hp": 90,
       "speed_mult": 1.0,
       "damage_mult": 1.0,
       "starting_weapons": ["rifle"]
     },
     {
-      "id": "chicken",
-      "display_name": "野鸡",
-      "description": "占位角色：轻盈灵活，后续将补充专属特性。（野猪币解锁）",
-      "sprite_path": "res://assets/sprites/chik.png",
-      "max_hp": 90,
-      "speed_mult": 1.08,
-      "damage_mult": 0.96,
-      "starting_weapons": ["smg"],
-      "requires_purchase": true,
-      "purchase_price": 400
-    },
-    {
       "id": "pigchicken",
       "display_name": "野猪鸡",
-      "description": "占位角色：均衡偏生存，后续将补充专属特性。（野猪币解锁）",
+      "description": "混血奇才 · 万能变形型",
       "sprite_path": "res://assets/sprites/wpc.PNG",
-      "max_hp": 108,
-      "speed_mult": 1.0,
-      "damage_mult": 1.02,
+      "max_hp": 65,
+      "speed_mult": 1.4,
+      "damage_mult": 0.8125,
       "starting_weapons": ["rifle"],
       "requires_purchase": true,
       "purchase_price": 600
+    },
+    {
+      "id": "chicken",
+      "display_name": "野鸡",
+      "description": "飞天刺客 · 高速远攻型",
+      "sprite_path": "res://assets/sprites/chik.png",
+      "max_hp": 45,
+      "speed_mult": 1.9,
+      "damage_mult": 0.875,
+      "starting_weapons": ["smg"],
+      "requires_purchase": true,
+      "purchase_price": 400
     }
   ]
 }

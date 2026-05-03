@@ -14,6 +14,7 @@ const SETTINGS_PATH_DISPLAY: String = "user://game_settings.json"
 @onready var char_sprite: TextureRect = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/CharSprite
 @onready var name_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/NameLabel
 @onready var desc_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/DescLabel
+@onready var char_stats_vbox: VBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/CharStatsVBox
 @onready var page_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/NavRow/PageLabel
 @onready var select_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/SelectButton
 @onready var profile_contents: VBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileContents
@@ -56,7 +57,7 @@ func _ready() -> void:
 	_switch_tab(0)
 	characters = CharacterData.list_characters()
 	if characters.is_empty():
-		characters = [_default_character()]
+		characters = [CharacterData.find_character("default")]
 	current_index = _find_selected_index()
 	_refresh_display()
 	_build_shop_cards()
@@ -557,11 +558,11 @@ func _find_selected_index() -> int:
 
 func _get_current_character() -> Dictionary:
 	if current_index < 0 or current_index >= characters.size():
-		return _default_character()
+		return CharacterData.find_character("default")
 	var item: Variant = characters[current_index]
 	if item is Dictionary:
 		return item as Dictionary
-	return _default_character()
+	return CharacterData.find_character("default")
 
 
 func _refresh_display() -> void:
@@ -577,6 +578,9 @@ func _refresh_display() -> void:
 	else:
 		name_label.text = character_name
 	desc_label.text = character_desc
+	for ch in char_stats_vbox.get_children():
+		ch.queue_free()
+	CharacterStatBarsUi.append_to_vbox(char_stats_vbox, character, unlocked, true)
 	page_label.text = "%d / %d" % [current_index + 1, max(1, characters.size())]
 	_refresh_sprite(character)
 	if not unlocked:
@@ -629,12 +633,3 @@ func _on_select_button_pressed() -> void:
 func _on_back_button_pressed() -> void:
 	GameMusic.ensure_playing_main_volume()
 	get_tree().change_scene_to_file(str(RunState.gallery_return_scene_path))
-
-
-func _default_character() -> Dictionary:
-	return {
-		"id": "default",
-		"display_name": "野猪",
-		"description": "平衡型角色。",
-		"sprite_path": "res://assets/sprites/wildpig.png",
-	}

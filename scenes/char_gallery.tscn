@@ -223,6 +223,11 @@ text = "角色描述"
 horizontal_alignment = 1
 autowrap_mode = 3
 
+[node name="CharStatsVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents" unique_id=952142791]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
 [node name="NavRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents" unique_id=171422810]
 layout_mode = 2
 theme_override_constants/separation = 16
