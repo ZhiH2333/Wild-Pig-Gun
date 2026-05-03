@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://dxa2wvdb4tvlg"]
+[gd_scene load_steps=10 format=3 uid="uid://dxa2wvdb4tvlg"]
 
 [ext_resource type="Script" path="res://scripts/ui/first_screen.gd" id="1_fs"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
 [ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
 [ext_resource type="Texture2D" uid="uid://cnwkdsgj53mma" path="res://assets/sprites/logo.png" id="4_logo"]
 [ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="5_font"]
+[ext_resource type="Theme" path="res://themes/black_button_theme.tres" id="6_btn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_hint_bg"]
 content_margin_left = 18.0
@@ -30,6 +31,22 @@ corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_update_result_card"]
+content_margin_left = 22.0
+content_margin_top = 20.0
+content_margin_right = 22.0
+content_margin_bottom = 22.0
+bg_color = Color(0.08, 0.07, 0.1, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.38)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="FirstScreen" type="Control"]
 layout_mode = 3
@@ -78,7 +95,7 @@ theme_override_constants/separation = 28
 alignment = 1
 
 [node name="Logo" type="TextureRect" parent="CenterContent/VBox"]
-custom_minimum_size = Vector2(480, 126)
+custom_minimum_size = Vector2(720, 189)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("4_logo")
@@ -137,3 +154,210 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 color = Color(1, 1, 1, 0)
+
+[node name="VersionCorner" type="MarginContainer" parent="."]
+z_index = 10
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_top = -64.0
+offset_right = -24.0
+offset_bottom = -18.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="VersionRow" type="HBoxContainer" parent="VersionCorner"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 2
+
+[node name="VersionLabel" type="Label" parent="VersionCorner/VersionRow"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 0.9)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 18
+text = "v0.0.0"
+vertical_alignment = 1
+
+[node name="CheckUpdateButton" type="Button" parent="VersionCorner/VersionRow"]
+custom_minimum_size = Vector2(128, 44)
+layout_mode = 2
+theme = ExtResource("6_btn")
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 18
+text = "检查更新"
+
+[node name="UpdateCheckHTTP" type="HTTPRequest" parent="."]
+
+[node name="UpdateResultOverlay" type="Control" parent="."]
+visible = false
+z_index = 20
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="DimOverlay" type="ColorRect" parent="UpdateResultOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0, 0, 0, 0.62)
+
+[node name="Vignette" type="ColorRect" parent="UpdateResultOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.18)
+
+[node name="Center" type="CenterContainer" parent="UpdateResultOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ResultCard" type="PanelContainer" parent="UpdateResultOverlay/Center"]
+custom_minimum_size = Vector2(960, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_update_result_card")
+
+[node name="CardColumn" type="VBoxContainer" parent="UpdateResultOverlay/Center/ResultCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TitleLabel" type="Label" parent="UpdateResultOverlay/Center/ResultCard/CardColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 28
+text = "版本信息"
+horizontal_alignment = 1
+
+[node name="ErrorMessageLabel" type="Label" parent="UpdateResultOverlay/Center/ResultCard/CardColumn"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.88, 0.82, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 20
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="BodySplit" type="HBoxContainer" parent="UpdateResultOverlay/Center/ResultCard/CardColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 320)
+theme_override_constants/separation = 14
+
+[node name="LeftColumn" type="VBoxContainer" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.0
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="CurrentVersionLabel" type="Label" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.92, 0.88, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 20
+text = "当前版本：—"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="LatestVersionLabel" type="Label" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.92, 0.88, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 20
+text = "最新版本：—"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="OutdatedWarningLabel" type="Label" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.55, 0.42, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 22
+text = "您的版本已落后！"
+horizontal_alignment = 1
+
+[node name="DownloadLink" type="LinkButton" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_colors/font_hover_color = Color(0.85, 0.93, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.5, 0.7, 1, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 20
+text = "在浏览器中打开最新版本的 GitHub 下载页"
+uri = "https://github.com/ZhiH2333/Wild-Pig-Gun/releases"
+
+[node name="ColumnSep" type="ColorRect" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.35)
+
+[node name="RightColumn" type="VBoxContainer" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.0
+theme_override_constants/separation = 8
+
+[node name="ChangelogHeading" type="Label" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/RightColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 22
+text = "更新日志"
+horizontal_alignment = 1
+
+[node name="ChangelogScroll" type="ScrollContainer" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 260)
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 1
+
+[node name="ChangelogRichText" type="RichTextLabel" parent="UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/RightColumn/ChangelogScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.9, 0.88, 0.84, 1)
+theme_override_fonts/normal_font = ExtResource("5_font")
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = false
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+selection_enabled = true
+
+[node name="OkButton" type="Button" parent="UpdateResultOverlay/Center/ResultCard/CardColumn"]
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("6_btn")
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 20
+text = "确定"

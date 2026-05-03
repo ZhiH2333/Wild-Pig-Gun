@@ -178,6 +178,10 @@ static func apply_to_player(player: Node, character_id: String) -> void:
 		lo.equip_default_start(weapon_ids)
 
 
+## 局内玩家精灵按贴图高度归一后的目标像素高度（略大于旧版 56，战场更易辨认）
+const PLAYER_SPRITE_TARGET_HEIGHT_PX: float = 70.0
+
+
 static func _apply_sprite(player: Node, d: Dictionary) -> void:
 	var spr: Sprite2D = player.get_node_or_null("Sprite2D") as Sprite2D
 	if spr == null:
@@ -196,7 +200,7 @@ static func _apply_sprite(player: Node, d: Dictionary) -> void:
 	if scale_override <= 0.0001:
 		var h: float = float(tex.get_height())
 		if h > 0.001:
-			scale_override = 56.0 / h
+			scale_override = PLAYER_SPRITE_TARGET_HEIGHT_PX / h
 		else:
 			scale_override = 1.0
 	spr.scale = Vector2(scale_override, scale_override)

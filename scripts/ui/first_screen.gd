@@ -15,7 +15,23 @@ const BACKGROUND_SWAY_OVERSCALE: float = 1.14
 @onready var _load_status_label: Label = $CenterContent/VBox/LoadingBox/LoadStatusLabel
 @onready var _progress_bar: ProgressBar = $CenterContent/VBox/LoadingBox/ProgressBar
 @onready var _percent_label: Label = $CenterContent/VBox/LoadingBox/PercentLabel
+@onready var _version_label: Label = $VersionCorner/VersionRow/VersionLabel
+@onready var _check_update_button: Button = $VersionCorner/VersionRow/CheckUpdateButton
+@onready var _update_http: HTTPRequest = $UpdateCheckHTTP
+@onready var _update_overlay: Control = $UpdateResultOverlay
+@onready var _update_title: Label = $UpdateResultOverlay/Center/ResultCard/CardColumn/TitleLabel
+@onready var _update_error_message: Label = $UpdateResultOverlay/Center/ResultCard/CardColumn/ErrorMessageLabel
+@onready var _update_body_split: HBoxContainer = $UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit
+@onready var _update_current: Label = $UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn/CurrentVersionLabel
+@onready var _update_latest: Label = $UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn/LatestVersionLabel
+@onready var _update_outdated: Label = $UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn/OutdatedWarningLabel
+@onready var _update_download_link: LinkButton = $UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn/DownloadLink
+@onready var _update_changelog: RichTextLabel = (
+	$UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/RightColumn/ChangelogScroll/ChangelogRichText
+)
+@onready var _update_ok: Button = $UpdateResultOverlay/Center/ResultCard/CardColumn/OkButton
 
+var _version_update: VersionUpdateCheck = VersionUpdateCheck.new()
 var background_sway_phase: float = 0.0
 var background_sway_angle: float = 0.0
 var background_sway_angular_vel: float = 0.0
@@ -25,6 +41,23 @@ var _load_poll_active: bool = false
 
 func _ready() -> void:
 	GameMusic.ensure_playing_main_volume()
+	_version_update.setup(
+		_version_label,
+		_check_update_button,
+		_update_http,
+		_update_overlay,
+		_update_title,
+		_update_error_message,
+		_update_body_split,
+		_update_current,
+		_update_latest,
+		_update_outdated,
+		_update_download_link,
+		_update_changelog
+	)
+	_version_update.wire()
+	_version_update.wire_ok_button(_update_ok)
+	_version_update.apply_version_label()
 	_click_catcher.gui_input.connect(_on_click_catcher_gui_input)
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
@@ -51,6 +84,8 @@ func _process(delta: float) -> void:
 
 
 func _on_click_catcher_gui_input(event: InputEvent) -> void:
+	if _update_overlay.visible:
+		return
 	if _transitioning:
 		return
 	if event is InputEventMouseButton:
@@ -64,6 +99,8 @@ func _on_click_catcher_gui_input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _update_overlay.visible:
+		return
 	if _transitioning:
 		return
 	if event is InputEventKey:
