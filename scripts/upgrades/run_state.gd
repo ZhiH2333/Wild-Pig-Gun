@@ -216,7 +216,7 @@ func try_toggle_user_pause(arena: Node) -> void:
 		get_tree().paused = false
 		if arena != null and arena.has_method("hide_pause_overlay"):
 			arena.hide_pause_overlay()
-		GameMusic.resume_battle_after_user_unpause_from_settings_overlay()
+		GameMusic.finish_user_pause_resume()
 	else:
 		if not get_tree().paused:
 			pause_reason = PauseReason.USER

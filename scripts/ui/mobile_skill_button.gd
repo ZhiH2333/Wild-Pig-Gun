@@ -16,12 +16,11 @@ func _ready() -> void:
 	theme = BLACK_BTN_THEME
 	add_theme_font_override("font", FONT_BOLD)
 	add_theme_font_size_override("font_size", 16)
-	_on_mobile_controls_changed(GameSettings.mobile_controls_enabled)
+	visible = true
 	button_down.connect(_on_button_down)
 	button_up.connect(_on_button_up)
 	if RunState != null and not RunState.run_started.is_connected(_on_run_started):
 		RunState.run_started.connect(_on_run_started)
-	GameSettings.mobile_controls_changed.connect(_on_mobile_controls_changed)
 	focus_mode = Control.FOCUS_NONE
 	custom_minimum_size = Vector2(BASE_SLOT_PX, BASE_SLOT_PX)
 	_refresh_text()
@@ -41,10 +40,6 @@ func _refresh_text() -> void:
 		if skill_slot_index < defs.size():
 			em = str(defs[skill_slot_index].get("icon_emoji", "—"))
 	text = "%s\n%s" % [title, em]
-
-
-func _on_mobile_controls_changed(enabled: bool) -> void:
-	visible = enabled
 
 
 func _on_button_down() -> void:

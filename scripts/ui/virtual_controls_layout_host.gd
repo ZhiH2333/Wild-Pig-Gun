@@ -6,9 +6,10 @@ extends Node
 const BASE_OUTER_RADIUS: float = 88.0
 const PAUSE_BTN_REF_W: float = 220.0
 const PAUSE_BTN_REF_H: float = 84.0
-## 与 `consumable_skill_dock.gd` 中方格尺寸保持同步（6 格 + 间距）
+## 与 `consumable_skill_dock.gd` 中方格尺寸保持同步（6 格 + 间距 + 下方说明行）
 const CONSUMABLE_DOCK_REF_W: float = 6.0 * 56.0 + 5.0 * 4.0
-const CONSUMABLE_DOCK_REF_H: float = 56.0
+## 须与 ConsumableSkillDock.layout_ref_total_height() 一致（56+2+14）
+const CONSUMABLE_DOCK_REF_H: float = 72.0
 ## 角色技能正方形按键基准边长（与布局编辑器、mobile_skill_button 一致）
 const CHARACTER_SKILL_SLOT_REF: float = 72.0
 

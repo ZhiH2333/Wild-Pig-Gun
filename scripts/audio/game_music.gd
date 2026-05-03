@@ -23,6 +23,8 @@ const BATTLE_TITLES: Array[String] = [
 
 const VOLUME_DB_MAIN: float = 0.0
 const VOLUME_DB_SUBPAGE: float = -14.0
+## 战斗中断及局内选项页：仍播 war.mp3，音量低于战斗内
+const VOLUME_DB_BATTLE_MENU_OVERLAY: float = VOLUME_DB_SUBPAGE
 
 signal track_changed(title: String)
 
@@ -43,8 +45,10 @@ func _clear_in_game_settings_suspend() -> void:
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_player = AudioStreamPlayer.new()
 	_player.name = "GameMusicStream"
+	_player.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_player)
 	_player.bus = "Music"
 	_player.volume_db = VOLUME_DB_MAIN
@@ -99,6 +103,30 @@ func enter_battle() -> void:
 	_play_current_track()
 
 
+## 暂停菜单 / 局内选项：继续播放战场曲目（war），音量减弱
+func duck_battle_for_pause_overlay() -> void:
+	_clear_in_game_settings_suspend()
+	if _ctx != Context.BATTLE:
+		enter_battle()
+	_vol_offset_db = VOLUME_DB_BATTLE_MENU_OVERLAY
+	_apply_player_volume()
+	if not _player.playing:
+		_play_current_track()
+	else:
+		track_changed.emit(get_current_title())
+
+
+## 用户从暂停回到战斗：恢复战场全音量；若曾使用旧版「选项内静音」则仍走挂起恢复
+func finish_user_pause_resume() -> void:
+	if _suspended_in_game_settings:
+		resume_battle_after_user_unpause_from_settings_overlay()
+		return
+	if _ctx != Context.BATTLE:
+		return
+	_vol_offset_db = VOLUME_DB_MAIN
+	_apply_player_volume()
+
+
 func stop() -> void:
 	_clear_in_game_settings_suspend()
 	_player.stop()
@@ -107,30 +135,9 @@ func stop() -> void:
 	track_changed.emit("")
 
 
-## 场内暂停打开选项：停止出声，保留战斗曲目与播放进度（回到暂停菜单仍静音）
+## 场内暂停打开选项：与暂停菜单相同，播 war 并降低音量（不停播、不挂起）
 func mute_for_in_game_settings() -> void:
-	if _ctx != Context.BATTLE:
-		stop()
-		return
-	var resume_sec: float = 0.0
-	var was_stream_paused: bool = false
-	if _player.stream != null:
-		was_stream_paused = _player.stream_paused
-		if was_stream_paused:
-			resume_sec = _paused_position_sec
-		elif _player.playing:
-			resume_sec = _player.get_playback_position()
-		else:
-			# 整棵树暂停时 playing 常为 false，进度仍可读
-			resume_sec = _player.get_playback_position()
-	_suspended_battle_resume_sec = resume_sec
-	_suspended_battle_was_stream_paused = was_stream_paused
-	_suspended_in_game_settings = true
-	if _player.stream != null:
-		_player.stop()
-	_paused_position_sec = 0.0
-	_player.stream_paused = false
-	track_changed.emit("")
+	duck_battle_for_pause_overlay()
 
 
 ## 用户从暂停菜单继续游戏时调用：若曾打开过场内选项，从挂起点恢复 BGM

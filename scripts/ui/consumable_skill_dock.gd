@@ -1,10 +1,12 @@
 extends Control
 class_name ConsumableSkillDock
 
-## 底栏 6 格消耗品：Minecraft 式槽位 + shop_items icon_emoji；触控或有库存时可见
+## 底栏 6 格消耗品：Minecraft 式槽位 + shop_items icon_emoji；始终显示（键鼠亦可用快捷键使用）
 
 const LAYOUT_REF_CELL: float = 56.0
 const LAYOUT_REF_SEP: float = 4.0
+const LAYOUT_REF_COLUMN_SEP: float = 2.0
+const LAYOUT_REF_CAPTION_MIN_H: float = 14.0
 
 const _CHS = preload("res://scripts/game/consumable_hotkey_slots.gd")
 const FONT_BOLD: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
@@ -13,12 +15,17 @@ static func layout_ref_total_width() -> float:
 	return 6.0 * LAYOUT_REF_CELL + 5.0 * LAYOUT_REF_SEP
 
 
+static func layout_ref_total_height() -> float:
+	return LAYOUT_REF_CELL + LAYOUT_REF_COLUMN_SEP + LAYOUT_REF_CAPTION_MIN_H
+
+
 @onready var _row: HBoxContainer = $HBoxContainer
 
 
 func _ready() -> void:
 	add_to_group("consumable_skill_bar")
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	_wrap_row_with_captions()
 	_row.add_theme_constant_override("separation", int(LAYOUT_REF_SEP))
 	_style_buttons()
 	_connect_slots()
@@ -27,8 +34,40 @@ func _ready() -> void:
 	_refresh_visibility()
 	if not RunState.consumables_changed.is_connected(_on_consumables_changed):
 		RunState.consumables_changed.connect(_on_consumables_changed)
-	if not GameSettings.mobile_controls_changed.is_connected(_on_mobile_controls_changed):
-		GameSettings.mobile_controls_changed.connect(_on_mobile_controls_changed)
+func _wrap_row_with_captions() -> void:
+	var dock_root: Control = _row.get_parent() as Control
+	if dock_root == null:
+		return
+	var col: VBoxContainer = VBoxContainer.new()
+	col.name = "DockColumn"
+	col.set_anchors_preset(Control.PRESET_FULL_RECT)
+	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_theme_constant_override("separation", int(LAYOUT_REF_COLUMN_SEP))
+	dock_root.add_child(col)
+	_row.reparent(col)
+	var cap_row: HBoxContainer = HBoxContainer.new()
+	cap_row.name = "CaptionRow"
+	cap_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cap_row.add_theme_constant_override("separation", int(LAYOUT_REF_SEP))
+	col.add_child(cap_row)
+	for slot: int in range(1, 7):
+		var lab: Label = Label.new()
+		lab.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lab.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lab.clip_text = true
+		lab.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		var sid: String = _CHS.shop_id_for_slot_one_based(slot)
+		var def: Dictionary = BuildCatalog.get_shop_item_def(sid)
+		lab.text = str(def.get("title", sid))
+		lab.add_theme_font_override("font", FONT_BOLD)
+		lab.add_theme_font_size_override("font_size", 11)
+		lab.add_theme_color_override("font_color", Color(0.76, 0.78, 0.88, 0.92))
+		lab.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.55))
+		lab.add_theme_constant_override("shadow_offset_x", 1)
+		lab.add_theme_constant_override("shadow_offset_y", 1)
+		lab.custom_minimum_size = Vector2(LAYOUT_REF_CELL, LAYOUT_REF_CAPTION_MIN_H)
+		cap_row.add_child(lab)
 
 
 func _connect_slots() -> void:
@@ -127,24 +166,12 @@ func _make_slot_stylebox(hover: bool, pressed: bool) -> StyleBoxFlat:
 	return s
 
 
-func _has_any_consumable() -> bool:
-	for i in range(1, 7):
-		var sid: String = _CHS.shop_id_for_slot_one_based(i)
-		if RunState.get_consumable_count(sid) > 0:
-			return true
-	return false
-
-
 func _refresh_visibility() -> void:
-	visible = GameSettings.mobile_controls_enabled or _has_any_consumable()
+	visible = true
 
 
 func _on_consumables_changed() -> void:
 	_refresh_counts()
-	_refresh_visibility()
-
-
-func _on_mobile_controls_changed(_enabled: bool) -> void:
 	_refresh_visibility()
 
 

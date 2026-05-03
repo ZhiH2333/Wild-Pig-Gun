@@ -550,7 +550,7 @@ custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme = ExtResource("7_black_btn")
 theme_override_font_sizes/font_size = 24
-text = "启用虚拟摇杆与虚拟暂停按钮"
+text = "虚拟摇杆"
 
 [node name="JoystickSizeRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents" unique_id=1108998969]
 layout_mode = 2

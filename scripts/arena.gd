@@ -288,6 +288,8 @@ func show_pause_overlay() -> void:
 	if pause_overlay == null:
 		return
 	_pause_over_level_up = (RunState.pause_reason == RunState.PauseReason.LEVEL_UP)
+	if RunState.pause_reason == RunState.PauseReason.USER:
+		GameMusic.duck_battle_for_pause_overlay()
 	pause_overlay.visible = true
 	var center_container: CanvasItem = pause_overlay.get_node_or_null("CenterContainer")
 	if center_container != null:

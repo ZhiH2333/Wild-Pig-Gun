@@ -11,6 +11,7 @@ const GITHUB_API_NEWEST_RELEASE: String = (
 const GITHUB_TAG_PAGE_BASE: String = "https://github.com/ZhiH2333/Wild-Pig-Gun/releases/tag/"
 
 const BLACK_BUTTON_THEME: Theme = preload("res://themes/black_button_theme.tres")
+const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
 
 const BACKGROUND_SWAY_SPEED: float = 0.52
 const BACKGROUND_SWAY_AMP_RAD: float = deg_to_rad(5.2)
@@ -37,7 +38,7 @@ const BACKGROUND_SWAY_OVERSCALE: float = 1.14
 var background_sway_phase: float = 0.0
 var background_sway_angle: float = 0.0
 var background_sway_angular_vel: float = 0.0
-var _control_mode_dialog: Window = null
+var _control_mode_overlay: Control = null
 
 
 func _ready() -> void:
@@ -69,7 +70,8 @@ func _ready() -> void:
 	# if not SaveManager.get_tutorial_completed() and not SaveManager.has_pending_run():
 	# 	TutorialSession.begin_from_main_menu()
 	# 	TUTORIAL_OVERLAY_SCRIPT.call("try_attach", self)
-	if SaveManager.get_tutorial_completed() and not GameSettings.has_selected_control_mode:
+	# 仅在主菜单询问键鼠/虚拟摇杆（首屏渐入结束后再弹；未勾选「不再提示」则每次进主菜单都会问）
+	if not GameSettings.control_mode_launch_prompt_dismissed:
 		_show_control_mode_dialog()
 
 
@@ -95,25 +97,53 @@ func _play_entrance_fade_in(cover: ColorRect) -> void:
 
 
 func _show_control_mode_dialog() -> void:
-	_control_mode_dialog = Window.new()
-	_control_mode_dialog.title = "选择游玩方式"
-	_control_mode_dialog.min_size = Vector2i(460, 320)
-	_control_mode_dialog.unresizable = true
-	_control_mode_dialog.exclusive = true
-	_control_mode_dialog.transient = true
-	add_child(_control_mode_dialog)
-	var margin: MarginContainer = MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 24)
-	margin.add_theme_constant_override("margin_right", 24)
-	margin.add_theme_constant_override("margin_top", 16)
-	margin.add_theme_constant_override("margin_bottom", 20)
-	_control_mode_dialog.add_child(margin)
+	if _control_mode_overlay != null and is_instance_valid(_control_mode_overlay):
+		return
+	var root: Control = Control.new()
+	root.name = "ControlModeOverlay"
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.z_index = 25
+	add_child(root)
+	_control_mode_overlay = root
+	var dim: ColorRect = ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.62)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.add_child(dim)
+	var center: CenterContainer = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(center)
+	var card: PanelContainer = PanelContainer.new()
+	card.custom_minimum_size = Vector2(520, 0)
+	var card_sb: StyleBoxFlat = StyleBoxFlat.new()
+	card_sb.bg_color = Color(0.08, 0.07, 0.1, 0.96)
+	card_sb.set_border_width_all(1)
+	card_sb.border_color = Color(1, 1, 1, 0.38)
+	card_sb.set_corner_radius_all(8)
+	card_sb.content_margin_left = 22.0
+	card_sb.content_margin_top = 20.0
+	card_sb.content_margin_right = 22.0
+	card_sb.content_margin_bottom = 22.0
+	card.add_theme_stylebox_override("panel", card_sb)
+	center.add_child(card)
 	var vbox: VBoxContainer = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 16)
-	margin.add_child(vbox)
+	card.add_child(vbox)
+	var title_l: Label = Label.new()
+	title_l.text = "选择操作方式"
+	title_l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_l.add_theme_font_override("font", MENU_FONT)
+	title_l.add_theme_font_size_override("font_size", 28)
+	title_l.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 1))
+	vbox.add_child(title_l)
 	var hint: Label = Label.new()
-	hint.text = "请选择您的游玩方式：\n触控设备请选择「虚拟摇杆」\n桌面设备请选择「键盘鼠标」"
+	hint.text = "请选择键鼠或虚拟摇杆。\n触控设备建议使用虚拟摇杆。"
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_override("font", MENU_FONT)
 	hint.add_theme_font_size_override("font_size", 20)
+	hint.add_theme_color_override("font_color", Color(0.95, 0.92, 0.88, 1))
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(hint)
 	var btn_row: HBoxContainer = HBoxContainer.new()
@@ -122,12 +152,14 @@ func _show_control_mode_dialog() -> void:
 	vbox.add_child(btn_row)
 	var joystick_btn: Button = Button.new()
 	joystick_btn.text = "虚拟摇杆"
-	joystick_btn.custom_minimum_size = Vector2(160, 52)
+	joystick_btn.theme = BLACK_BUTTON_THEME
+	joystick_btn.custom_minimum_size = Vector2(168, 52)
 	joystick_btn.add_theme_font_size_override("font_size", 20)
 	btn_row.add_child(joystick_btn)
 	var keyboard_btn: Button = Button.new()
 	keyboard_btn.text = "键盘鼠标"
-	keyboard_btn.custom_minimum_size = Vector2(160, 52)
+	keyboard_btn.theme = BLACK_BUTTON_THEME
+	keyboard_btn.custom_minimum_size = Vector2(168, 52)
 	keyboard_btn.add_theme_font_size_override("font_size", 20)
 	btn_row.add_child(keyboard_btn)
 	var no_remind_check: CheckBox = CheckBox.new()
@@ -137,34 +169,26 @@ func _show_control_mode_dialog() -> void:
 	vbox.add_child(no_remind_check)
 	joystick_btn.pressed.connect(_on_control_mode_joystick.bind(no_remind_check))
 	keyboard_btn.pressed.connect(_on_control_mode_keyboard.bind(no_remind_check))
-	_control_mode_dialog.close_requested.connect(_on_control_mode_dialog_closed.bind(no_remind_check))
-	_control_mode_dialog.popup_centered()
 
 
 func _on_control_mode_joystick(no_remind_check: CheckBox) -> void:
 	GameSettings.set_mobile_controls_enabled(true)
 	if no_remind_check.button_pressed:
-		GameSettings.set_has_selected_control_mode(true)
+		GameSettings.set_control_mode_launch_prompt_dismissed(true)
 	_close_control_mode_dialog()
 
 
 func _on_control_mode_keyboard(no_remind_check: CheckBox) -> void:
 	GameSettings.set_mobile_controls_enabled(false)
 	if no_remind_check.button_pressed:
-		GameSettings.set_has_selected_control_mode(true)
-	_close_control_mode_dialog()
-
-
-func _on_control_mode_dialog_closed(no_remind_check: CheckBox) -> void:
-	if no_remind_check.button_pressed:
-		GameSettings.set_has_selected_control_mode(true)
+		GameSettings.set_control_mode_launch_prompt_dismissed(true)
 	_close_control_mode_dialog()
 
 
 func _close_control_mode_dialog() -> void:
-	if is_instance_valid(_control_mode_dialog):
-		_control_mode_dialog.queue_free()
-		_control_mode_dialog = null
+	if is_instance_valid(_control_mode_overlay):
+		_control_mode_overlay.queue_free()
+		_control_mode_overlay = null
 
 
 func _update_background_sway_pivot() -> void:

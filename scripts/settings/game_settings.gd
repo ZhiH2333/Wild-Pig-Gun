@@ -75,6 +75,7 @@ const UPDATE_CHANNEL_STABLE: String = "stable"
 const UPDATE_CHANNEL_PRERELEASE: String = "prerelease"
 const UPDATE_CHANNEL_DEFAULT: String = UPDATE_CHANNEL_STABLE
 const AUDIO_FLOAT_ENABLED_DEFAULT: bool = false
+const MOBILE_CONTROLS_ENABLED_DEFAULT: bool = true
 
 var master_linear: float = MASTER_LINEAR_DEFAULT
 var music_linear: float = MUSIC_LINEAR_DEFAULT
@@ -83,12 +84,14 @@ var vsync_enabled: bool = VSYNC_ENABLED_DEFAULT
 var vsync_fps: int = VSYNC_FPS_DEFAULT
 var ui_scale: float = UI_SCALE_DEFAULT
 var view_scale: float = VIEW_SCALE_DEFAULT
-var mobile_controls_enabled: bool = false
-var input_mode: InputMode = InputMode.KEYBOARD_MOUSE
+var mobile_controls_enabled: bool = MOBILE_CONTROLS_ENABLED_DEFAULT
+var input_mode: InputMode = InputMode.TOUCH
 var show_fps: bool = false
 var joystick_size: float = JOYSTICK_SIZE_DEFAULT
 var mobile_control_layout: Dictionary = _make_default_layout()
 var has_selected_control_mode: bool = false
+## 主菜单启动时是否跳过「键鼠 / 虚拟摇杆」询问（勾选不再提示后写入）
+var control_mode_launch_prompt_dismissed: bool = false
 var selected_character_id: String = "default"
 var window_mode: String = WINDOW_MODE_WINDOWED
 var resolution_width: int = RESOLUTION_WIDTH_DEFAULT
@@ -136,6 +139,10 @@ func load_from_disk() -> void:
 	joystick_size = clampf(
 		float(dict.get("joystick_size", JOYSTICK_SIZE_DEFAULT)), JOYSTICK_SIZE_MIN, JOYSTICK_SIZE_MAX)
 	has_selected_control_mode = bool(dict.get("has_selected_control_mode", false))
+	if dict.has("control_mode_launch_prompt_dismissed"):
+		control_mode_launch_prompt_dismissed = bool(dict.get("control_mode_launch_prompt_dismissed"))
+	else:
+		control_mode_launch_prompt_dismissed = has_selected_control_mode
 	selected_character_id = str(dict.get("selected_character_id", "default"))
 	if selected_character_id.is_empty():
 		selected_character_id = "default"
@@ -171,6 +178,7 @@ func save_to_disk() -> void:
 		"show_fps": show_fps,
 		"joystick_size": joystick_size,
 		"has_selected_control_mode": has_selected_control_mode,
+		"control_mode_launch_prompt_dismissed": control_mode_launch_prompt_dismissed,
 		"selected_character_id": selected_character_id,
 		"mobile_control_layout": mobile_control_layout,
 		"window_mode": window_mode,
@@ -274,6 +282,11 @@ func set_has_selected_control_mode(value: bool) -> void:
 	save_to_disk()
 
 
+func set_control_mode_launch_prompt_dismissed(value: bool) -> void:
+	control_mode_launch_prompt_dismissed = value
+	save_to_disk()
+
+
 func set_selected_character_id(character_id: String) -> void:
 	selected_character_id = character_id
 	if selected_character_id.is_empty():
@@ -324,11 +337,12 @@ func clear_all_settings_data() -> bool:
 	vsync_fps = VSYNC_FPS_DEFAULT
 	ui_scale = UI_SCALE_DEFAULT
 	view_scale = VIEW_SCALE_DEFAULT
-	mobile_controls_enabled = false
-	input_mode = InputMode.KEYBOARD_MOUSE
+	mobile_controls_enabled = MOBILE_CONTROLS_ENABLED_DEFAULT
+	input_mode = InputMode.TOUCH
 	show_fps = false
 	joystick_size = JOYSTICK_SIZE_DEFAULT
 	has_selected_control_mode = false
+	control_mode_launch_prompt_dismissed = false
 	selected_character_id = "default"
 	mobile_control_layout = _make_default_layout()
 	window_mode = WINDOW_MODE_WINDOWED
