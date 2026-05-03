@@ -1,13 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://prestart_wpg"]
+[gd_scene format=3 uid="uid://bfi0pcbrl788g"]
 
-[ext_resource type="Script" path="res://scripts/ui/pre_start.gd" id="1_pre_start"]
+[ext_resource type="Script" uid="uid://hq08b1nvcbb7" path="res://scripts/ui/pre_start.gd" id="1_pre_start"]
 [ext_resource type="Theme" uid="uid://cvj5mwkwvskxl" path="res://themes/game_ui_theme.tres" id="2_ui"]
-[ext_resource type="Texture2D" uid="uid://cs5ms7ejfvaqb" path="res://assets/sprites/mainmenu.png" id="3_bg"]
+[ext_resource type="Texture2D" uid="uid://d1kct7i6sypo" path="res://assets/sprites/mainmenu.png" id="3_bg"]
 [ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="5_black_btn"]
 [ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="6_menu_font"]
 [ext_resource type="Material" path="res://resources/subpage_blur_mat.tres" id="7_subpage_blur"]
 [ext_resource type="Theme" uid="uid://dy36f4rj86vue" path="res://themes/settings_panel_theme.tres" id="8_panel_theme"]
-[ext_resource type="Script" path="res://scripts/ui/touch_scroll_container.gd" id="9_touch_scroll"]
+[ext_resource type="Script" uid="uid://dcwoqwmle0dug" path="res://scripts/ui/touch_scroll_container.gd" id="9_touch_scroll"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_portrait"]
 bg_color = Color(0, 0, 0, 0.45)
@@ -22,18 +22,18 @@ corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_weapon_scroll_inner"]
-bg_color = Color(0.10, 0.09, 0.14, 0.52)
+bg_color = Color(0.1, 0.09, 0.14, 0.52)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.35, 0.30, 0.45, 0.70)
+border_color = Color(0.35, 0.3, 0.45, 0.7)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="PreStart" type="Control"]
+[node name="PreStart" type="Control" unique_id=59679379]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,7 +43,8 @@ grow_vertical = 2
 theme = ExtResource("2_ui")
 script = ExtResource("1_pre_start")
 
-[node name="BlurredBackground" type="TextureRect" parent="."]
+[node name="BlurredBackground" type="TextureRect" parent="." unique_id=2040804348]
+material = ExtResource("7_subpage_blur")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -54,9 +55,8 @@ mouse_filter = 2
 texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
-material = ExtResource("7_subpage_blur")
 
-[node name="DimOverlay" type="ColorRect" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="." unique_id=983540888]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -66,7 +66,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.62)
 
-[node name="Vignette" type="ColorRect" parent="."]
+[node name="Vignette" type="ColorRect" parent="." unique_id=1803892553]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -76,26 +76,25 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.18)
 
-[node name="Center" type="MarginContainer" parent="."]
+[node name="Center" type="MarginContainer" parent="." unique_id=750933815]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 28.0
-offset_top = 20.0
+offset_top = 36.0
 offset_right = -28.0
-offset_bottom = -24.0
+offset_bottom = -32.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MainColumn" type="VBoxContainer" parent="Center"]
+[node name="MainColumn" type="VBoxContainer" parent="Center" unique_id=1092818598]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-alignment = 0
-theme_override_constants/separation = 20
+theme_override_constants/separation = 14
 
-[node name="MainCard" type="MarginContainer" parent="Center/MainColumn"]
+[node name="MainCard" type="MarginContainer" parent="Center/MainColumn" unique_id=702450974]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -104,19 +103,19 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 0
 
-[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard"]
+[node name="Margins" type="MarginContainer" parent="Center/MainColumn/MainCard" unique_id=2147244245]
 layout_mode = 2
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 0
 
-[node name="MainRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins"]
+[node name="MainRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins" unique_id=1256693997]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 20
 
-[node name="LeftColumn" type="MarginContainer" parent="Center/MainColumn/MainCard/Margins/MainRow"]
+[node name="LeftColumn" type="MarginContainer" parent="Center/MainColumn/MainCard/Margins/MainRow" unique_id=1441399402]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -126,43 +125,43 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="LeftVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn"]
+[node name="LeftVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn" unique_id=1917904396]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="CharSectionTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"]
+[node name="CharSectionTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox" unique_id=1418473038]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
 theme_override_fonts/font = ExtResource("6_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "出战角色"
 
-[node name="CharSectionSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"]
+[node name="CharSectionSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox" unique_id=1429018162]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 color = Color(1, 1, 1, 0.35)
 
-[node name="PortraitPanel" type="PanelContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"]
+[node name="PortraitPanel" type="PanelContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox" unique_id=1328756004]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_portrait")
 
-[node name="PortraitMargins" type="MarginContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/PortraitPanel"]
+[node name="PortraitMargins" type="MarginContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/PortraitPanel" unique_id=1935421468]
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 14
 
-[node name="CharSprite" type="TextureRect" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/PortraitPanel/PortraitMargins"]
+[node name="CharSprite" type="TextureRect" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/PortraitPanel/PortraitMargins" unique_id=1537478073]
 custom_minimum_size = Vector2(220, 220)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="CharNameLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"]
+[node name="CharNameLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox" unique_id=1571633106]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
 theme_override_fonts/font = ExtResource("6_menu_font")
@@ -170,7 +169,7 @@ theme_override_font_sizes/font_size = 30
 text = "角色名称"
 horizontal_alignment = 1
 
-[node name="CharDescLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"]
+[node name="CharDescLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox" unique_id=1577487203]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.8, 0.76, 1)
 theme_override_font_sizes/font_size = 18
@@ -178,11 +177,11 @@ text = "角色描述"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="CharStatsVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"]
+[node name="CharStatsVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox" unique_id=1256416949]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="ChangeCharButton" type="Button" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"]
+[node name="ChangeCharButton" type="Button" parent="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox" unique_id=1129414917]
 custom_minimum_size = Vector2(276, 52)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -190,16 +189,15 @@ theme = ExtResource("5_black_btn")
 theme_override_fonts/font = ExtResource("6_menu_font")
 theme_override_font_sizes/font_size = 22
 text = "更换角色"
-alignment = 1
 
-[node name="ColumnDivider" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/MainRow"]
+[node name="ColumnDivider" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/MainRow" unique_id=1218547468]
 custom_minimum_size = Vector2(1, 80)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 color = Color(1, 1, 1, 0.2)
 
-[node name="RightColumn" type="MarginContainer" parent="Center/MainColumn/MainCard/Margins/MainRow"]
+[node name="RightColumn" type="MarginContainer" parent="Center/MainColumn/MainCard/Margins/MainRow" unique_id=1000285685]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -208,164 +206,149 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 8
 
-[node name="RightVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn"]
+[node name="RightVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn" unique_id=1695803049]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="WeaponHeaderRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox"]
-custom_minimum_size = Vector2(0, 260)
+[node name="WeaponHeaderRow" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox" unique_id=1910940981]
+custom_minimum_size = Vector2(0, 320)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 14
-alignment = 1
+theme_override_constants/separation = 10
 
-[node name="WeaponSectionTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow"]
+[node name="WeaponSectionTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow" unique_id=1861647157]
 layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 4
+size_flags_horizontal = 3
+size_flags_vertical = 0
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
 theme_override_fonts/font = ExtResource("6_menu_font")
 theme_override_font_sizes/font_size = 26
 text = "初始武器"
 
-[node name="WeaponScrollPanel" type="PanelContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow"]
+[node name="WeaponScrollPanel" type="PanelContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow" unique_id=1222186279]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_weapon_scroll_inner")
 
-[node name="WeaponScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel"]
+[node name="WeaponScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel" unique_id=184454934]
 layout_mode = 2
 size_flags_vertical = 3
-horizontal_scroll_mode = 0
 theme = ExtResource("8_panel_theme")
+horizontal_scroll_mode = 0
 script = ExtResource("9_touch_scroll")
 
-[node name="WeaponList" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll"]
+[node name="WeaponList" type="GridContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll" unique_id=1098523234]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 4
 
-[node name="WeaponSectionSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox"]
-custom_minimum_size = Vector2(0, 1)
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-color = Color(1, 1, 1, 0.35)
-
-[node name="StatsSectionTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
-theme_override_fonts/font = ExtResource("6_menu_font")
-theme_override_font_sizes/font_size = 22
-text = "武器详情"
-
-[node name="StatsSectionSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox"]
+[node name="StatsSectionSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox" unique_id=576149888]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 color = Color(1, 1, 1, 0.28)
 
-[node name="WeaponStatsBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox"]
+[node name="WeaponStatsBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox" unique_id=2073056523]
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/separation = 8
 
-[node name="WeaponNameLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"]
+[node name="WeaponNameLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox" unique_id=2073056524]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
 theme_override_fonts/font = ExtResource("6_menu_font")
 theme_override_font_sizes/font_size = 24
 text = "武器"
 
-[node name="MetaRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"]
+[node name="MetaRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox" unique_id=1329724830]
 layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="WeaponKindLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/MetaRow"]
+[node name="WeaponKindLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/MetaRow" unique_id=1195808239]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.8, 0.76, 1)
 theme_override_font_sizes/font_size = 17
 text = "类型：projectile"
 
-[node name="WeaponElementLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/MetaRow"]
+[node name="WeaponElementLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/MetaRow" unique_id=2072084854]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.8, 0.76, 1)
 theme_override_font_sizes/font_size = 17
 text = "属性：无"
 
-[node name="DamageRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"]
+[node name="DamageRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox" unique_id=1209484652]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="DamageTitleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/DamageRow"]
+[node name="DamageTitleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/DamageRow" unique_id=217316215]
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.8, 0.76, 1)
 theme_override_font_sizes/font_size = 17
 text = "伤害"
 
-[node name="DamageBar" type="ProgressBar" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/DamageRow"]
+[node name="DamageBar" type="ProgressBar" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/DamageRow" unique_id=301445318]
 custom_minimum_size = Vector2(120, 22)
 layout_mode = 2
 size_flags_horizontal = 3
 show_percentage = false
 
-[node name="DamageValueLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/DamageRow"]
+[node name="DamageValueLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/DamageRow" unique_id=1433817548]
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.8, 0.76, 1)
 theme_override_font_sizes/font_size = 17
-horizontal_alignment = 2
 text = "0"
+horizontal_alignment = 2
 
-[node name="FireRateRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"]
+[node name="FireRateRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox" unique_id=283849207]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="FireRateTitleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/FireRateRow"]
+[node name="FireRateTitleLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/FireRateRow" unique_id=1465508317]
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.8, 0.76, 1)
 theme_override_font_sizes/font_size = 17
 text = "射速"
 
-[node name="FireRateBar" type="ProgressBar" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/FireRateRow"]
+[node name="FireRateBar" type="ProgressBar" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/FireRateRow" unique_id=1958498064]
 custom_minimum_size = Vector2(120, 22)
 layout_mode = 2
 size_flags_horizontal = 3
 show_percentage = false
 
-[node name="FireRateValueLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/FireRateRow"]
+[node name="FireRateValueLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox/FireRateRow" unique_id=412505804]
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.8, 0.76, 1)
 theme_override_font_sizes/font_size = 17
-horizontal_alignment = 2
 text = "0"
+horizontal_alignment = 2
 
-[node name="FooterRow" type="HBoxContainer" parent="Center/MainColumn"]
+[node name="FooterRow" type="HBoxContainer" parent="Center/MainColumn" unique_id=2063335583]
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/separation = 0
-alignment = 0
 
-[node name="FooterSpacer" type="Control" parent="Center/MainColumn/FooterRow"]
+[node name="FooterSpacer" type="Control" parent="Center/MainColumn/FooterRow" unique_id=2034143188]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="StartButton" type="Button" parent="Center/MainColumn/FooterRow"]
+[node name="StartButton" type="Button" parent="Center/MainColumn/FooterRow" unique_id=932637171]
 custom_minimum_size = Vector2(320, 72)
 layout_mode = 2
 size_flags_horizontal = 0
 theme = ExtResource("5_black_btn")
+theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
 theme_override_fonts/font = ExtResource("6_menu_font")
 theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
 text = "开始游戏"
-alignment = 1
 
 [connection signal="pressed" from="Center/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/ChangeCharButton" to="." method="_on_change_char_button_pressed"]
 [connection signal="pressed" from="Center/MainColumn/FooterRow/StartButton" to="." method="_on_start_button_pressed"]

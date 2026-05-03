@@ -27,7 +27,7 @@ func equip_default_start(character_weapon_ids: Array) -> void:
 		_schedule_loadout_notify()
 		return
 	if character_weapon_ids.is_empty():
-		_add_weapon_by_id("rifle")
+		_add_weapon_by_id(WeaponCatalog.DEFAULT_STARTER_WEAPON_ID)
 	else:
 		for wid_variant in character_weapon_ids:
 			_add_weapon_by_id(str(wid_variant))

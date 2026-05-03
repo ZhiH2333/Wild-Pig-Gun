@@ -8,7 +8,7 @@
       "max_hp": 90,
       "speed_mult": 1.0,
       "damage_mult": 1.0,
-      "starting_weapons": ["rifle"]
+      "starting_weapons": ["crude_pistol"]
     },
     {
       "id": "pigchicken",
@@ -18,7 +18,7 @@
       "max_hp": 65,
       "speed_mult": 1.4,
       "damage_mult": 0.8125,
-      "starting_weapons": ["rifle"],
+      "starting_weapons": ["crude_pistol"],
       "requires_purchase": true,
       "purchase_price": 600
     },
@@ -30,7 +30,7 @@
       "max_hp": 45,
       "speed_mult": 1.9,
       "damage_mult": 0.875,
-      "starting_weapons": ["smg"],
+      "starting_weapons": ["crude_pistol"],
       "requires_purchase": true,
       "purchase_price": 400
     }

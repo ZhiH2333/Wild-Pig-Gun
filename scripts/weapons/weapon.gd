@@ -3,7 +3,7 @@ extends Node2D
 ## 武器脚本：自动发射子弹；多枪/多发时按距离优先把不同弹丸分给不同敌人（支持武器表 / 羁绊 / 材料转伤害）
 
 var projectile_scene: PackedScene = preload("res://scenes/projectile.tscn")
-var weapon_id: String = "rifle"
+var weapon_id: String = "crude_pistol"
 var weapon_level: int = 1
 var damage: int = 10
 var _base_fire_interval: float = 0.5

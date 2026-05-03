@@ -298,7 +298,7 @@ func _on_slot_start_pressed(slot_id: String, run: Dictionary) -> void:
 		return
 	var cid: String = str(GameSettings.selected_character_id)
 	var wids: Array = CharacterData.get_starting_weapon_ids(cid)
-	var wid: String = "rifle" if wids.is_empty() else str(wids[0])
+	var wid: String = WeaponCatalog.DEFAULT_STARTER_WEAPON_ID if wids.is_empty() else str(wids[0])
 	RunState.begin_new_run(cid, 1.0)
 	RunState.selected_starting_weapon_ids = [wid]
 	get_tree().change_scene_to_file(ARENA_SCENE)

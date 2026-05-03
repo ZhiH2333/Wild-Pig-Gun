@@ -148,7 +148,7 @@ static func get_starting_weapon_ids(character_id: String) -> Array:
 	var w: Variant = d.get("starting_weapons", [])
 	if w is Array and not (w as Array).is_empty():
 		return w as Array
-	return ["rifle"]
+	return [WeaponCatalog.DEFAULT_STARTER_WEAPON_ID]
 
 
 static func apply_character_visual(player: Node, character_id: String) -> void:
