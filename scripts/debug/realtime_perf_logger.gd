@@ -125,21 +125,9 @@ func _build_run_line() -> String:
 
 
 func _build_power_line() -> String:
-	var pct: float = OS.get_power_percent_left()
-	var st: int = int(OS.get_power_state())
-	var st_name: String = "unknown"
-	match st:
-		OS.POWERSTATE_ON_BATTERY:
-			st_name = "battery"
-		OS.POWERSTATE_NO_BATTERY:
-			st_name = "no_battery"
-		OS.POWERSTATE_CHARGING:
-			st_name = "charging"
-		OS.POWERSTATE_PLUGGED_IN:
-			st_name = "plugged"
-	if pct < 0.0:
-		return "power: %%=n/a state=%s" % st_name
-	return "power: %.0f%% state=%s" % [pct * 100.0, st_name]
+	# Godot 4 已移除 OS.get_power_percent_left / get_power_state；Web 亦无通用电池读数。
+	var low_cpu: bool = OS.is_low_processor_usage_mode_enabled()
+	return "power: n/a (no OS battery API in Godot 4) | low_processor_usage_mode=%s" % str(low_cpu).to_lower()
 
 
 func _particle_counts_under(root: Node) -> Vector2i:
