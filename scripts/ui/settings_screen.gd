@@ -2,6 +2,7 @@ extends Control
 
 const MAIN_MENU_SCENE_PATH: String = "res://scenes/main_menu.tscn"
 const CLEAR_HOLD_SECONDS: float = 3.0
+const DATA_TAB_HOLD_SECONDS: float = 1.0
 const COMMON_RESOLUTIONS: Array[Vector2i] = [
 	Vector2i(3840, 2160),
 	Vector2i(3440, 1440),
@@ -73,6 +74,12 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var clear_result_back_button: Button = $ClearResultOverlay/CenterContainer/DialogCard/Margin/Content/BackToMenuButton
 @onready var clear_hold_timer: Timer = $ClearHoldTimer
 
+var _data_tab_hold_timer: Timer
+var _holding_data_tab: bool = false
+var _dev_popup: PopupMenu
+var _ping_http: HTTPRequest
+var _ping_started_msec: int = 0
+
 var is_clear_confirmed: bool = false
 var is_holding_clear_button: bool = false
 var _pending_clear_run_saves: bool = false
@@ -97,6 +104,7 @@ func _ready() -> void:
 	_build_tab_button_styles()
 	for i: int in range(_tab_buttons.size()):
 		_tab_buttons[i].pressed.connect(_switch_tab.bind(i))
+	_setup_data_tab_dev_menu()
 	_switch_tab(0)
 	_build_static_option_buttons()
 	master_slider.value_changed.connect(_on_master_changed)
@@ -140,6 +148,101 @@ func _ready() -> void:
 	_apply_web_visibility()
 	_apply_tutorial_mode()
 	_refresh_tab_separator_visibility()
+
+
+func _setup_data_tab_dev_menu() -> void:
+	_data_tab_hold_timer = Timer.new()
+	_data_tab_hold_timer.one_shot = true
+	_data_tab_hold_timer.wait_time = DATA_TAB_HOLD_SECONDS
+	add_child(_data_tab_hold_timer)
+	_data_tab_hold_timer.timeout.connect(_on_data_tab_hold_timeout)
+	tab_btn_4.button_down.connect(_on_data_tab_button_down)
+	tab_btn_4.button_up.connect(_on_data_tab_button_up)
+	_dev_popup = PopupMenu.new()
+	add_child(_dev_popup)
+	_dev_popup.id_pressed.connect(_on_dev_popup_id_pressed)
+	_ping_http = HTTPRequest.new()
+	add_child(_ping_http)
+	_ping_http.request_completed.connect(_on_ping_request_completed)
+
+
+func _on_data_tab_button_down() -> void:
+	_holding_data_tab = true
+	_data_tab_hold_timer.start(DATA_TAB_HOLD_SECONDS)
+
+
+func _on_data_tab_button_up() -> void:
+	if _data_tab_hold_timer.time_left > 0.0:
+		_data_tab_hold_timer.stop()
+	_holding_data_tab = false
+
+
+func _on_data_tab_hold_timeout() -> void:
+	if not _holding_data_tab:
+		return
+	_dev_popup.clear()
+	_dev_popup.add_check_item("切换为未连接", 0)
+	_dev_popup.set_item_checked(0, AccountDevState.force_disconnected)
+	_dev_popup.add_check_item("切换为未登录", 1)
+	_dev_popup.set_item_checked(1, AccountDevState.force_logged_out)
+	_dev_popup.add_separator()
+	_dev_popup.add_item("ping API", 2)
+	var gr: Rect2 = tab_btn_4.get_global_rect()
+	_dev_popup.position = Vector2i(int(gr.position.x), int(gr.position.y + gr.size.y))
+	_dev_popup.reset_size()
+	_dev_popup.popup()
+
+
+func _on_dev_popup_id_pressed(id: int) -> void:
+	match id:
+		0:
+			AccountDevState.toggle_force_disconnected()
+		1:
+			AccountDevState.toggle_force_logged_out()
+		2:
+			_request_api_ping()
+		_:
+			pass
+
+
+func _request_api_ping() -> void:
+	if _ping_http.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		_show_dev_feedback_dialog("Ping", "请等待上一请求完成。")
+		return
+	_ping_started_msec = int(Time.get_ticks_msec())
+	var headers: PackedStringArray = PackedStringArray([
+		"User-Agent: WildPigGun-Settings-Ping/1.0",
+		"Accept: application/vnd.github+json",
+	])
+	var err: Error = _ping_http.request(
+		VersionUpdateCheck.GITHUB_API_STABLE_LATEST, headers, HTTPClient.METHOD_GET
+	)
+	if err != OK:
+		_show_dev_feedback_dialog("Ping 失败", "无法发起请求：%s" % str(err))
+
+
+func _on_ping_request_completed(
+	result: int, response_code: int, _headers: PackedStringArray, _body: PackedByteArray
+) -> void:
+	var elapsed: int = int(Time.get_ticks_msec()) - _ping_started_msec
+	if result != HTTPRequest.RESULT_SUCCESS:
+		_show_dev_feedback_dialog("Ping 失败", "网络结果码：%d" % result)
+		return
+	_show_dev_feedback_dialog(
+		"Ping 完成",
+		"HTTP %d · 约 %d ms\n（GET releases/latest）" % [response_code, elapsed]
+	)
+
+
+func _show_dev_feedback_dialog(title: String, message: String) -> void:
+	var d: AcceptDialog = AcceptDialog.new()
+	d.title = title
+	d.dialog_text = message
+	d.ok_button_text = "确定"
+	add_child(d)
+	d.close_requested.connect(d.queue_free)
+	d.confirmed.connect(d.queue_free)
+	d.popup_centered()
 
 
 func _apply_tutorial_mode() -> void:
