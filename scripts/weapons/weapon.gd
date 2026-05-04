@@ -138,33 +138,28 @@ func _draw() -> void:
 			draw_line(Vector2(12, 0) + p * 0.2, Vector2(12, 0) + p, Color(1.0, 0.92, 0.45, 0.75), 2.2, true)
 
 
-func _collect_enemies_sorted_by_distance(from_pos: Vector2) -> Array[Node2D]:
-	var result: Array[Node2D] = []
-	for n in get_tree().get_nodes_in_group("enemies"):
-		if n is Node2D:
-			result.append(n as Node2D)
-	result.sort_custom(func(a: Node2D, b: Node2D) -> bool:
+## 按距离排序，取最近的 n 个敌人（过滤已释放 / 待删除节点）
+func _get_nearest_enemies(p_cap: int) -> Array[Node2D]:
+	var raw: Array = get_tree().get_nodes_in_group("enemies")
+	var alive: Array[Node2D] = []
+	for e in raw:
+		if not e is Node2D:
+			continue
+		var nd: Node = e as Node
+		if not is_instance_valid(nd) or nd.is_queued_for_deletion():
+			continue
+		alive.append(e as Node2D)
+	if alive.is_empty():
+		return []
+	var from_pos: Vector2 = global_position
+	alive.sort_custom(func(a: Node2D, b: Node2D) -> bool:
 		return from_pos.distance_squared_to(a.global_position) < from_pos.distance_squared_to(b.global_position)
 	)
-	return result
-
-
-## 本武器在 WeaponLoadout 中「投射物武器」里的序号（0=最近敌人优先槽，1=次近…）
-func _projectile_weapon_slot() -> int:
-	var lo: Node = get_parent()
-	if lo == null:
-		return 0
-	var idx: int = 0
-	for c in lo.get_children():
-		if c == self:
-			return idx
-		if not ("weapon_id" in c):
-			continue
-		var def: Dictionary = WeaponCatalog.find_def(str(c.weapon_id))
-		if str(def.get("kind", "projectile")) != "projectile":
-			continue
-		idx += 1
-	return idx
+	var take: int = mini(p_cap, alive.size())
+	var out: Array[Node2D] = []
+	for i in range(take):
+		out.append(alive[i])
+	return out
 
 
 func _on_fire_timer_timeout() -> void:
@@ -186,10 +181,7 @@ func _on_fire_timer_timeout() -> void:
 			_shop_volley += 3
 		else:
 			_shop_volley += 1
-	var sorted_enemies: Array[Node2D] = _collect_enemies_sorted_by_distance(global_position)
-	if sorted_enemies.is_empty():
-		return
-	_fire_distributed(sorted_enemies)
+	_fire_distributed()
 
 
 func _run_has_trident() -> bool:
@@ -203,9 +195,12 @@ func _begin_spin_revolver_reload() -> void:
 	queue_redraw()
 
 
-func _fire_distributed(sorted_enemies: Array[Node2D]) -> void:
+func _fire_distributed() -> void:
 	if _run_has_trident():
-		_fire_trident_burst(sorted_enemies)
+		var tri_targets: Array[Node2D] = _get_nearest_enemies(1)
+		if tri_targets.is_empty():
+			return
+		_fire_trident_burst(tri_targets)
 		return
 	var container: Node = _get_projectile_container()
 	var total_dmg: int = _effective_damage()
@@ -215,29 +210,20 @@ func _fire_distributed(sorted_enemies: Array[Node2D]) -> void:
 		var bd: Dictionary = RunState.ammo_blessing[weapon_id] as Dictionary
 		mag_m = float(bd.get("mag", 1.0))
 	n = maxi(1, int(round(float(n) * mag_m)))
+	var targets: Array[Node2D] = _get_nearest_enemies(n)
+	if targets.is_empty():
+		return
 	var per_pellet: int = maxi(1, int(round(float(total_dmg) / float(n))))
-	var ec: int = sorted_enemies.size()
-	var slot: int = _projectile_weapon_slot()
-	var half_spread: float = deg_to_rad(_spread_deg) * 0.5
 	GameAudio.play_shoot()
 	var player_n: Node = _find_player()
-	var first_dir: Vector2 = (sorted_enemies[0].global_position - global_position).normalized()
+	var first_dir: Vector2 = (targets[0].global_position - global_position).normalized()
 	if weapon_id == "sniper_chicken" and player_n != null:
 		WeaponCameraFx.sniper_hitstop_fire_and_forget(player_n)
-		_spawn_sniper_laser_line(sorted_enemies[0])
+		_spawn_sniper_laser_line(targets[0])
 	WeaponMuzzleFx.spawn_for_shot(self, weapon_id, first_dir)
-	if ec == 1:
-		var base_dir: Vector2 = (sorted_enemies[0].global_position - global_position).normalized()
-		for i in range(n):
-			var ang: float = 0.0
-			if n > 1:
-				var u: float = float(i) / float(n - 1)
-				ang = lerpf(-half_spread, half_spread, u)
-			_spawn_projectile(container, base_dir.rotated(ang), per_pellet, _pierce_extra, _skull_flags())
-		return
+	var tc: int = targets.size()
 	for i in range(n):
-		var ei: int = (slot + i) % ec
-		var target: Node2D = sorted_enemies[ei]
+		var target: Node2D = targets[mini(i, tc - 1)]
 		var base_dir: Vector2 = (target.global_position - global_position).normalized()
 		_spawn_projectile(container, base_dir, per_pellet, _pierce_extra, _skull_flags())
 
