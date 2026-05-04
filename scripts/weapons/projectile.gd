@@ -219,7 +219,7 @@ func _spawn_magnetic_ring_at(world_pos: Vector2) -> void:
 	ring.z_index = 3
 
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	if _recycle_if_outside_viewport_canvas():
 		die()
 		return
@@ -227,7 +227,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if team == TEAM_PLAYER:
 		if source_weapon_id == "boar_grenade" and bool(_fx.get("grenade_arc", false)):
-			_physics_grenade(delta)
+			_process_grenade(delta)
 		else:
 			if shop_spiral:
 				direction = direction.rotated(2.35 * delta).normalized()
@@ -274,7 +274,7 @@ func _despawn_ghost_if_stale(delta: float) -> void:
 		die()
 
 
-func _physics_grenade(delta: float) -> void:
+func _process_grenade(delta: float) -> void:
 	if _grenade_exploded:
 		return
 	_grenade_flight += delta

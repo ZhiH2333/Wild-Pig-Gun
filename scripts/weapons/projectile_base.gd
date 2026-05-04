@@ -26,13 +26,13 @@ func _recycle_if_outside_viewport_canvas() -> bool:
 
 func reset() -> void:
 	visible = true
-	set_physics_process(true)
+	set_process(true)
 	monitoring = true
 	monitorable = true
 
 
 func deactivate_for_pool() -> void:
-	set_physics_process(false)
+	set_process(false)
 	monitoring = false
 	monitorable = false
 	visible = false

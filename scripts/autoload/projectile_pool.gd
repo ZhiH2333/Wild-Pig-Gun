@@ -2,7 +2,33 @@ extends Node
 
 ## 按场景路径分组的投射物对象池；空闲节点挂在对应 bucket 下，visible=false。
 
+const MAX_ACTIVE_PROJECTILES: int = 200
+
 var _buckets: Dictionary = {}
+
+
+func _ready() -> void:
+	## 降低全局物理步频，减轻敌人/玩家等 _physics_process 成本（任务 F）
+	Engine.physics_ticks_per_second = 30
+
+
+func _count_active_projectiles() -> int:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return 0
+	var n: int = 0
+	for arena in tree.get_nodes_in_group("arena"):
+		var pc: Node = arena.get_node_or_null("ProjectileContainer")
+		if pc == null:
+			continue
+		for c in pc.get_children():
+			if c is CanvasItem and (c as CanvasItem).visible:
+				n += 1
+	for bucket in _buckets.values():
+		for c in (bucket as Node).get_children():
+			if c is CanvasItem and (c as CanvasItem).visible:
+				n += 1
+	return n
 
 
 func _ensure_bucket(scene_path: String) -> Node:
@@ -19,6 +45,8 @@ func _ensure_bucket(scene_path: String) -> Node:
 func get_projectile(scene: PackedScene) -> Node:
 	if scene == null:
 		push_error("ProjectilePool.get_projectile: scene is null")
+		return null
+	if _count_active_projectiles() >= MAX_ACTIVE_PROJECTILES:
 		return null
 	var scene_path: String = scene.resource_path
 	var bucket: Node = _ensure_bucket(scene_path)
