@@ -2,9 +2,14 @@ extends Area2D
 class_name ProjectileBase
 
 ## 投射物基类：对象池 reset / die、屏幕外回收共享逻辑（具体弹道由子类实现）
+## 位移由 ProjectilePool 统一 tick，不在此节点上启用 _process。
 
 var _recycle_bounds_canvas: Rect2 = Rect2()
 var _recycle_bounds_ready: bool = false
+
+
+func _ready() -> void:
+	set_process(false)
 
 
 func _cache_recycle_bounds_once() -> void:
@@ -26,7 +31,7 @@ func _recycle_if_outside_viewport_canvas() -> bool:
 
 func reset() -> void:
 	visible = true
-	set_process(true)
+	set_process(false)
 	monitoring = true
 	monitorable = true
 

@@ -104,6 +104,7 @@ func die() -> void:
 
 
 func _ready() -> void:
+	super._ready()
 	_connect_signals_if_needed()
 	_cache_recycle_bounds_once()
 
@@ -122,6 +123,8 @@ func _connect_signals_if_needed() -> void:
 
 
 func _enter_tree() -> void:
+	if get_parent() != null and String(get_parent().name) == "ProjectileContainer":
+		ProjectilePool.register_active_projectile(self)
 	_connect_signals_if_needed()
 	_apply_collision_layers_for_team()
 	_sync_state_for_current_props()
@@ -195,12 +198,14 @@ func _setup_visual() -> void:
 		return
 	if team == TEAM_ENEMY:
 		_sprite.texture = ENEMY_BULLET_TEXTURE
+		_sprite.material = ProjectilePool.get_shared_bullet_canvas_material()
 		var th: float = float(ENEMY_BULLET_TEXTURE.get_height())
 		var target_h: float = 34.0
 		_sprite.scale = Vector2.ONE * (target_h / maxf(1.0, th))
 		_sprite.rotation = direction.angle()
 	else:
 		_sprite.texture = null
+		_sprite.material = null
 
 
 func _arena_layer() -> Node2D:
@@ -219,7 +224,7 @@ func _spawn_magnetic_ring_at(world_pos: Vector2) -> void:
 	ring.z_index = 3
 
 
-func _process(delta: float) -> void:
+func tick(delta: float) -> void:
 	if _recycle_if_outside_viewport_canvas():
 		die()
 		return

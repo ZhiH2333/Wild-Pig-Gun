@@ -1,15 +1,24 @@
 extends Node
 
 ## 按场景路径分组的投射物对象池；空闲节点挂在对应 bucket 下，visible=false。
+## 活跃子弹由 _active + 本节点单次 _process 统一 tick，避免每颗子弹独立 _process。
 
 const MAX_ACTIVE_PROJECTILES: int = 200
 
+const SHARED_BULLET_CANVAS_MATERIAL: CanvasItemMaterial = preload(
+	"res://resources/projectile_shared_canvas_material.tres"
+)
+
 var _buckets: Dictionary = {}
+var _active: Array[Projectile] = []
 
 
 func _ready() -> void:
-	## 降低全局物理步频，减轻敌人/玩家等 _physics_process 成本（任务 F）
 	Engine.physics_ticks_per_second = 30
+
+
+func get_shared_bullet_canvas_material() -> CanvasItemMaterial:
+	return SHARED_BULLET_CANVAS_MATERIAL
 
 
 func _count_active_projectiles() -> int:
@@ -42,6 +51,22 @@ func _ensure_bucket(scene_path: String) -> Node:
 	return bucket
 
 
+func _register_active(p: Projectile) -> void:
+	if p == null:
+		return
+	if _active.find(p) >= 0:
+		return
+	_active.append(p)
+
+
+func _unregister_active(node: Node) -> void:
+	if node is Projectile:
+		var pr: Projectile = node as Projectile
+		var i: int = _active.find(pr)
+		if i >= 0:
+			_active.remove_at(i)
+
+
 func get_projectile(scene: PackedScene) -> Node:
 	if scene == null:
 		push_error("ProjectilePool.get_projectile: scene is null")
@@ -65,9 +90,15 @@ func get_projectile(scene: PackedScene) -> Node:
 	return chosen
 
 
+## 由 Projectile 在进入 ProjectileContainer 的 _enter_tree 时调用，避免未入树就 tick
+func register_active_projectile(p: Projectile) -> void:
+	_register_active(p)
+
+
 func return_projectile(node: Node) -> void:
 	if node == null or not is_instance_valid(node):
 		return
+	_unregister_active(node)
 	var scene_path: Variant = node.get_meta("_pool_scene_path", node.scene_file_path)
 	if str(scene_path).is_empty():
 		scene_path = "res://scenes/projectile.tscn"
@@ -79,3 +110,14 @@ func return_projectile(node: Node) -> void:
 	if node.get_parent() != null:
 		node.get_parent().remove_child(node)
 	bucket.add_child(node)
+
+
+func _process(delta: float) -> void:
+	var i: int = _active.size()
+	while i > 0:
+		i -= 1
+		var p: Projectile = _active[i]
+		if p == null or not is_instance_valid(p):
+			_active.remove_at(i)
+			continue
+		p.tick(delta)

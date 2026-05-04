@@ -14,31 +14,10 @@ static func spawn_for_shot(weapon: Node2D, weapon_id: String, fire_dir: Vector2)
 		_spawn_shell(weapon, fire_dir)
 
 
-static func _spawn_smoke(host: Node2D, fire_dir: Vector2) -> void:
-	var p: CPUParticles2D = CPUParticles2D.new()
-	p.one_shot = true
-	p.emitting = true
-	p.amount = 14
-	p.lifetime = 0.42
-	p.explosiveness = 0.88
-	p.direction = -fire_dir.normalized()
-	p.spread = 32.0
-	p.initial_velocity_min = 35.0
-	p.initial_velocity_max = 105.0
-	p.gravity = Vector2(0, -42)
-	p.scale_amount_min = 2.0
-	p.scale_amount_max = 4.2
-	p.color = Color(0.52, 0.52, 0.55, 0.52)
-	host.add_child(p)
-	p.global_position = host.global_position + fire_dir.normalized() * 18.0
-	p.z_index = 5
-	var tw: Variant = host.get_tree().create_timer(0.65, false, false, true)
-	tw.timeout.connect(_free_muzzle_cpu_particles.bind(p))
-
-
-static func _free_muzzle_cpu_particles(p: Node) -> void:
-	if is_instance_valid(p):
-		p.queue_free()
+static func _spawn_smoke(_host: Node2D, _fire_dir: Vector2) -> void:
+	## 性能：原每发 CPUParticles2D.new() 会在战斗中常驻多颗 CPU 粒子节点。
+	## 若需枪口烟，可改为 GPUParticles2D 单实例对象池或合成 sprite。
+	pass
 
 
 static func _spawn_shell(host: Node2D, fire_dir: Vector2) -> void:
