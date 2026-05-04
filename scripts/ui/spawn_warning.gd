@@ -7,4 +7,9 @@ func _ready() -> void:
 	# 闪烁效果
 	var tween := create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, DURATION)
-	tween.tween_callback(queue_free)
+	tween.tween_callback(_queue_free_self)
+
+
+func _queue_free_self() -> void:
+	if is_instance_valid(self):
+		queue_free()

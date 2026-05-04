@@ -63,9 +63,8 @@ var _stun_time_left: float = 0.0
 func _ready() -> void:
 	current_hp = max_hp
 	add_to_group("enemies")
-	# Layer1 = 玩家与场地边界；Layer2 = 敌人。敌人互不硬挤，仍可碰墙与玩家。
-	collision_layer = 2
-	collision_mask = 1
+	collision_layer = GameCollisionLayers.LAYER_ENEMY
+	collision_mask = GameCollisionLayers.MASK_ENEMY_BODY
 	damage_timer.timeout.connect(_on_damage_timer_timeout)
 	var vfx: Node2D = Node2D.new()
 	vfx.name = "StatusVfxLayer"

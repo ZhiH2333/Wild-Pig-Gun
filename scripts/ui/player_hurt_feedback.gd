@@ -37,10 +37,10 @@ func play_impact() -> void:
 	_material.set_shader_parameter("intensity", 0.9)
 	_tween = create_tween()
 	_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	_tween.tween_method(
-		func(v: float) -> void:
-			_material.set_shader_parameter("intensity", v),
-		0.9,
-		0.0,
-		0.42
-	)
+	_tween.tween_method(_set_hurt_shader_intensity, 0.9, 0.0, 0.42)
+
+
+func _set_hurt_shader_intensity(v: float) -> void:
+	if _material == null or not is_instance_valid(self):
+		return
+	_material.set_shader_parameter("intensity", v)

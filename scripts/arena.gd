@@ -424,7 +424,7 @@ func _clear_enemy_projectiles() -> void:
 		if child is Projectile:
 			var pr: Projectile = child as Projectile
 			if pr.team == Projectile.TEAM_ENEMY:
-				pr.queue_free()
+				pr.die()
 
 
 func _autosave_pending_run_if_possible() -> void:
@@ -506,7 +506,10 @@ func _clear_combat_entities() -> void:
 	for c in material_container.get_children():
 		c.queue_free()
 	for c in projectile_container.get_children():
-		c.queue_free()
+		if c is Projectile:
+			(c as Projectile).die()
+		else:
+			c.queue_free()
 	for c in spawn_warning_container.get_children():
 		c.queue_free()
 	if enemy_pool != null and enemy_pool.has_method("clear_all"):
@@ -672,7 +675,9 @@ func _try_use_shop_consumable(shop_id: String) -> void:
 func _spawn_consumable_grenade() -> void:
 	if PROJECTILE_SCENE == null:
 		return
-	var proj_n: Node = PROJECTILE_SCENE.instantiate()
+	var proj_n: Node = ProjectilePool.get_projectile(PROJECTILE_SCENE)
+	if proj_n == null:
+		return
 	var proj: Projectile = proj_n as Projectile
 	if proj == null:
 		return

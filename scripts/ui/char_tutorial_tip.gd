@@ -72,9 +72,12 @@ static func try_add_to_scene_root(root: Control) -> void:
 	btn_row.add_child(confirm_btn)
 	vbox.add_child(btn_row)
 	root.add_child(layer)
-	confirm_btn.pressed.connect(func() -> void:
+	confirm_btn.pressed.connect(_on_char_tip_confirm.bind(layer))
+
+
+static func _on_char_tip_confirm(layer: CanvasLayer) -> void:
+	if is_instance_valid(layer):
 		layer.queue_free()
-	)
 
 
 static func remove_from(root: Control) -> void:

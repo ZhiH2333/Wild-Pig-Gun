@@ -1,4 +1,4 @@
-extends Area2D
+extends ProjectileBase
 class_name Projectile
 
 ## 子弹：直线/榴弹弧；按阵营命中；支持 weapon_id 驱动拖尾与链电等表现
@@ -54,14 +54,90 @@ var _grenade_vel: Vector2 = Vector2.ZERO
 var _grenade_exploded: bool = false
 var _arc_phase: float = 0.0
 var _enemy_flight_time: float = 0.0
+var _die_dispatched: bool = false
 
 @onready var _sprite: Sprite2D = $Sprite2D
 
 
+func reset() -> void:
+	super.reset()
+	_die_dispatched = false
+	direction = Vector2.RIGHT
+	damage = 10
+	team = TEAM_PLAYER
+	speed = DEFAULT_SPEED
+	pierce_extra = 0
+	_hits_remaining = 1
+	_damaged_ids.clear()
+	damage_element = &"physical"
+	source_weapon_id = ""
+	shop_ghost_mode = false
+	shop_spiral = false
+	shop_boomerang = false
+	shop_knockback_on_hit = false
+	force_skull_special = false
+	_boomerang_t = 0.0
+	_boomerang_returned = false
+	_lifetime_left = 99999.0
+	_fx = {}
+	_trail_seg_count = 0
+	_chain_done = false
+	_grenade_flight = 0.0
+	_grenade_vel = Vector2.ZERO
+	_grenade_exploded = false
+	_arc_phase = 0.0
+	_enemy_flight_time = 0.0
+	if has_meta("_magnetic_spawned_this_life"):
+		remove_meta("_magnetic_spawned_this_life")
+	_recycle_bounds_ready = false
+
+
+func deactivate_for_pool() -> void:
+	super.deactivate_for_pool()
+
+
+func die() -> void:
+	if _die_dispatched:
+		return
+	_die_dispatched = true
+	super.die()
+
+
 func _ready() -> void:
+	_connect_signals_if_needed()
+	_cache_recycle_bounds_once()
+
+
+func _connect_signals_if_needed() -> void:
+	if has_meta("_proj_signals_connected"):
+		return
+	if not tree_exiting.is_connected(_on_tree_exiting):
+		tree_exiting.connect(_on_tree_exiting)
+	if not body_entered.is_connected(_on_body_entered):
+		body_entered.connect(_on_body_entered)
+	var von: VisibleOnScreenNotifier2D = get_node_or_null("VisibleOnScreenNotifier2D") as VisibleOnScreenNotifier2D
+	if von != null and not von.screen_exited.is_connected(_on_screen_exited):
+		von.screen_exited.connect(_on_screen_exited)
+	set_meta("_proj_signals_connected", true)
+
+
+func _enter_tree() -> void:
+	_connect_signals_if_needed()
+	_apply_collision_layers_for_team()
+	_sync_state_for_current_props()
+
+
+func _apply_collision_layers_for_team() -> void:
 	if team == TEAM_PLAYER:
-		# 敌人碰撞层为 2；保留 layer1 以便与仍在 layer1 的物体交互。
-		collision_mask = 1 | 2
+		collision_layer = GameCollisionLayers.LAYER_PLAYER_BULLET
+		collision_mask = GameCollisionLayers.MASK_PLAYER_BULLET
+	else:
+		collision_layer = GameCollisionLayers.LAYER_ENEMY_BULLET
+		collision_mask = GameCollisionLayers.MASK_ENEMY_BULLET
+
+
+func _sync_state_for_current_props() -> void:
+	if team == TEAM_PLAYER:
 		_hits_remaining = 1 + maxi(0, pierce_extra)
 		_fx = WeaponFxProfiles.profile(source_weapon_id)
 		if shop_ghost_mode:
@@ -71,10 +147,9 @@ func _ready() -> void:
 			_arc_phase = 0.0
 	else:
 		_hits_remaining = 1
-	body_entered.connect(_on_body_entered)
-	$VisibleOnScreenNotifier2D.screen_exited.connect(_on_screen_exited)
 	_setup_visual()
-	if team == TEAM_PLAYER and bool(_fx.get("magnetic_ring", false)):
+	if team == TEAM_PLAYER and bool(_fx.get("magnetic_ring", false)) and not has_meta("_magnetic_spawned_this_life"):
+		set_meta("_magnetic_spawned_this_life", true)
 		_spawn_magnetic_ring_at(global_position)
 	if team == TEAM_PLAYER and source_weapon_id == "boar_grenade" and bool(_fx.get("grenade_arc", false)):
 		_register_boar_grenade_cap()
@@ -82,7 +157,8 @@ func _ready() -> void:
 		_register_enemy_projectile_alive_cap()
 
 
-func _exit_tree() -> void:
+## 用 tree_exiting 替代重写 _exit_tree，避免子类中 super._exit_tree() 的解析限制
+func _on_tree_exiting() -> void:
 	var ei: int = _enemy_projectiles_alive.find(self)
 	if ei >= 0:
 		_enemy_projectiles_alive.remove_at(ei)
@@ -92,22 +168,26 @@ func _exit_tree() -> void:
 
 
 func _register_boar_grenade_cap() -> void:
+	if _boar_grenade_live.find(self) >= 0:
+		return
 	_boar_grenade_live.append(self)
 	while _boar_grenade_live.size() > BOAR_GRENADE_MAX_ALIVE:
 		var oldest: Projectile = _boar_grenade_live.pop_front()
 		if oldest != null and is_instance_valid(oldest):
-			oldest.queue_free()
+			oldest.die()
 
 
 func _register_enemy_projectile_alive_cap() -> void:
 	var cap: int = (
 		ENEMY_PROJECTILE_MAX_ALIVE_WEB if OS.has_feature("web") else ENEMY_PROJECTILE_MAX_ALIVE
 	)
+	if _enemy_projectiles_alive.find(self) >= 0:
+		return
 	_enemy_projectiles_alive.append(self)
 	while _enemy_projectiles_alive.size() > cap:
 		var oldest: Projectile = _enemy_projectiles_alive.pop_front()
 		if oldest != null and is_instance_valid(oldest):
-			oldest.queue_free()
+			oldest.die()
 
 
 func _setup_visual() -> void:
@@ -140,6 +220,9 @@ func _spawn_magnetic_ring_at(world_pos: Vector2) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _recycle_if_outside_viewport_canvas():
+		die()
+		return
 	if team == TEAM_ENEMY and RunState != null and RunState.stopwatch_frozen:
 		return
 	if team == TEAM_PLAYER:
@@ -162,11 +245,11 @@ func _physics_process(delta: float) -> void:
 	else:
 		_enemy_flight_time += delta
 		if _enemy_flight_time >= ENEMY_PROJECTILE_MAX_FLIGHT_SEC:
-			queue_free()
+			die()
 			return
 		var outer: Rect2 = _enemy_projectile_despawn_bounds()
 		if not outer.has_point(global_position):
-			queue_free()
+			die()
 			return
 		position += direction * speed * delta
 
@@ -188,7 +271,7 @@ func _enemy_projectile_despawn_bounds() -> Rect2:
 func _despawn_ghost_if_stale(delta: float) -> void:
 	_lifetime_left -= delta
 	if _lifetime_left <= 0.0:
-		queue_free()
+		die()
 
 
 func _physics_grenade(delta: float) -> void:
@@ -223,7 +306,7 @@ func _despawn_if_beyond_player_attack_range() -> void:
 	if pl2d == null:
 		return
 	if global_position.distance_squared_to(pl2d.global_position) > lim * lim:
-		queue_free()
+		die()
 
 
 func _element_color() -> Color:
@@ -285,14 +368,14 @@ func _on_body_entered(body: Node2D) -> void:
 			_spawn_chain_lightning(body)
 		_hits_remaining -= 1
 		if _hits_remaining <= 0:
-			queue_free()
+			die()
 		return
 	if team == TEAM_ENEMY:
 		if not body.is_in_group("player"):
 			return
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
-		queue_free()
+		die()
 
 
 func _apply_player_hit_damage_and_status(body: Node2D) -> void:
@@ -465,8 +548,8 @@ func _grenade_explode_at_position() -> void:
 			if e2.has_method("take_damage"):
 				var aoe: int = maxi(1, int(round(float(damage) * 0.92)))
 				e2.take_damage(aoe, false, damage_element)
-	queue_free()
+	die()
 
 
 func _on_screen_exited() -> void:
-	queue_free()
+	die()

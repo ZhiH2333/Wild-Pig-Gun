@@ -283,7 +283,9 @@ func _skull_flags() -> Dictionary:
 
 
 func _spawn_projectile(container: Node, dir: Vector2, dmg: int, pierce: int, skull: Dictionary = {}) -> void:
-	var projectile: Node2D = projectile_scene.instantiate()
+	var projectile: Node2D = ProjectilePool.get_projectile(projectile_scene) as Node2D
+	if projectile == null:
+		return
 	projectile.direction = dir
 	projectile.damage = dmg
 	var proj: Projectile = projectile as Projectile

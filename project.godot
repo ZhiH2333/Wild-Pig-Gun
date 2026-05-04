@@ -21,6 +21,7 @@ config/version_code=10100
 
 [autoload]
 
+ProjectilePool="*res://scripts/autoload/projectile_pool.gd"
 SaveManager="*res://scripts/save/save_manager.gd"
 TutorialSession="*res://scripts/tutorial_session.gd"
 RunState="*res://scripts/upgrades/run_state.gd"
@@ -32,6 +33,14 @@ MusicNowPlaying="*res://scripts/ui/music_now_playing.gd"
 UiSoundFeedback="*res://scripts/ui/ui_sound_feedback.gd"
 DamagePopupSpawner="*res://scripts/ui/damage_popup_spawner.gd"
 RealtimePerfLogger="*res://scripts/debug/realtime_perf_logger.gd"
+
+[layer_names]
+
+2d_physics/layer_1="player"
+2d_physics/layer_2="enemy"
+2d_physics/layer_3="player_bullet"
+2d_physics/layer_4="enemy_bullet"
+2d_physics/layer_5="wall"
 
 [gui]
 

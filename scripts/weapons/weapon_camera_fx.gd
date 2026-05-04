@@ -31,10 +31,7 @@ static func punch_shake_simple(player: Node, strength: float, duration_sec: floa
 		) * strength * k
 		tw.tween_property(cam, "offset", off, 0.022)
 	tw.tween_property(cam, "offset", Vector2.ZERO, 0.05)
-	tw.finished.connect(func() -> void:
-		if is_instance_valid(host) and host.has_meta("_weapon_shake_tween"):
-			host.remove_meta("_weapon_shake_tween")
-	)
+	tw.finished.connect(_on_weapon_shake_finished.bind(host))
 
 
 static func sniper_hitstop_fire_and_forget(player: Node) -> void:
@@ -48,10 +45,16 @@ static func sniper_hitstop_fire_and_forget(player: Node) -> void:
 	var prev_scale: float = Engine.time_scale
 	Engine.time_scale = 0.38
 	tree.create_timer(0.2, true, false, true).timeout.connect(
-		func() -> void:
-			Engine.time_scale = prev_scale
-			if is_instance_valid(root):
-				root.set_meta("_sniper_hitstop_active", false)
-	,
-		CONNECT_ONE_SHOT
+		_on_sniper_hitstop_done.bind(prev_scale, root), CONNECT_ONE_SHOT
 	)
+
+
+static func _on_weapon_shake_finished(host: Node) -> void:
+	if is_instance_valid(host) and host.has_meta("_weapon_shake_tween"):
+		host.remove_meta("_weapon_shake_tween")
+
+
+static func _on_sniper_hitstop_done(prev_scale: float, root: Window) -> void:
+	Engine.time_scale = prev_scale
+	if is_instance_valid(root):
+		root.set_meta("_sniper_hitstop_active", false)

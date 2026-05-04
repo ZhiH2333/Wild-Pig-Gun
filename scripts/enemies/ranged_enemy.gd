@@ -91,7 +91,9 @@ func _fire_retaliation_burst() -> void:
 func _spawn_bullet(dir: Vector2) -> void:
 	if _bullet_scene == null:
 		return
-	var bullet: Node = _bullet_scene.instantiate()
+	var bullet: Node = ProjectilePool.get_projectile(_bullet_scene)
+	if bullet == null:
+		return
 	if bullet is Projectile:
 		var p: Projectile = bullet as Projectile
 		p.direction = dir

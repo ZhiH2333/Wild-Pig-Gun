@@ -67,7 +67,12 @@ func _on_wave_ended(wave_index: int) -> void:
 			_wave_manager.wave_timer_tick.disconnect(_on_wave_timer_tick)
 	var tw: Tween = create_tween()
 	tw.tween_property(_root, "modulate:a", 0.0, 0.45)
-	tw.finished.connect(queue_free)
+	tw.finished.connect(_fade_out_finished_free)
+
+
+func _fade_out_finished_free() -> void:
+	if is_instance_valid(self):
+		queue_free()
 
 
 func _process(delta: float) -> void:

@@ -33,10 +33,12 @@ static func _spawn_smoke(host: Node2D, fire_dir: Vector2) -> void:
 	p.global_position = host.global_position + fire_dir.normalized() * 18.0
 	p.z_index = 5
 	var tw: Variant = host.get_tree().create_timer(0.65, false, false, true)
-	tw.timeout.connect(func() -> void:
-		if is_instance_valid(p):
-			p.queue_free()
-	)
+	tw.timeout.connect(_free_muzzle_cpu_particles.bind(p))
+
+
+static func _free_muzzle_cpu_particles(p: Node) -> void:
+	if is_instance_valid(p):
+		p.queue_free()
 
 
 static func _spawn_shell(host: Node2D, fire_dir: Vector2) -> void:
