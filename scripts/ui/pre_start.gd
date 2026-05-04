@@ -4,9 +4,16 @@ const CHAR_TUTORIAL_TIP_SCRIPT: Script = preload("res://scripts/ui/char_tutorial
 const MENU_FONT: FontFile = preload("res://assets/fonts/SourceHanSansSC-Bold.otf")
 const WEAPON_CARD_WIDTH_FLOOR: float = 96.0
 const WEAPON_CARD_MIN_HEIGHT: float = 176.0
-const _P_LEFT: String = "Center/MainScroll/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"
-const _P_WEAPON_GRID: String = "Center/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll/WeaponList"
-const _P_WEAPON_STATS: String = "Center/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"
+const _P_LEFT: String = (
+	"Center/ContentVBox/MainScroll/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox"
+)
+const _P_WEAPON_GRID: String = (
+	"Center/ContentVBox/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/"
+	+ "RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll/WeaponList"
+)
+const _P_WEAPON_STATS: String = (
+	"Center/ContentVBox/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponStatsBox"
+)
 
 var char_sprite: TextureRect
 var char_name_label: Label
@@ -32,6 +39,8 @@ var _weapon_card_style_selected: StyleBoxFlat
 var _weapon_grid_resize_hooked: bool = false
 var _weapon_reflow_retry: int = 0
 
+@onready var _start_button: Button = $Center/ContentVBox/FooterRow/StartButton
+
 
 func _is_embedded_in_game_start() -> bool:
 	return bool(get_meta("game_start_embedded", false))
@@ -41,7 +50,10 @@ func _ready() -> void:
 	_bind_pre_start_ui_nodes()
 	if not get_viewport().size_changed.is_connected(_apply_safe_area_to_center):
 		get_viewport().size_changed.connect(_apply_safe_area_to_center)
+	if not get_viewport().size_changed.is_connected(_fit_start_button_width):
+		get_viewport().size_changed.connect(_fit_start_button_width)
 	call_deferred("_apply_safe_area_to_center")
+	call_deferred("_fit_start_button_width")
 	GameMusic.duck_for_subpage()
 	CharacterData.sanitize_selected_character_setting()
 	_refresh_character_panel()
@@ -73,6 +85,20 @@ func _apply_safe_area_to_center() -> void:
 	c.offset_top = 36.0 + add_top
 	c.offset_right = -28.0 - add_right
 	c.offset_bottom = -32.0 - add_bot
+	_fit_start_button_width()
+
+
+## 高 UI 缩放下限制「开始游戏」宽度，避免整体超出可视区域
+func _fit_start_button_width() -> void:
+	if _start_button == null:
+		return
+	var cv: Control = get_node_or_null("Center/ContentVBox") as Control
+	var vw: float = get_viewport().get_visible_rect().size.x
+	var avail: float = vw - 64.0
+	if cv != null and cv.is_inside_tree() and cv.size.x > 32.0:
+		avail = minf(avail, cv.size.x - 16.0)
+	avail = maxf(140.0, avail)
+	_start_button.custom_minimum_size = Vector2(minf(320.0, avail), 72.0)
 
 
 func _bind_pre_start_ui_nodes() -> void:

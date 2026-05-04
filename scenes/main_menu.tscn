@@ -191,10 +191,10 @@ anchor_bottom = 0.0
 offset_left = -300.0
 offset_top = 18.0
 offset_right = -20.0
-offset_bottom = 96.0
+offset_bottom = 112.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 2
+mouse_filter = 1
 script = ExtResource("7_acc")
 
 [node name="Margin" type="MarginContainer" parent="AccountStatusCorner" unique_id=2099123501]
@@ -207,7 +207,7 @@ grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="AccountStatusCorner/Margin" unique_id=2099123502]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 alignment = 2
 
 [node name="LoginLabel" type="Label" parent="AccountStatusCorner/Margin/VBox" unique_id=2099123503]
@@ -215,6 +215,16 @@ layout_mode = 2
 text = "已登录至
 占位用户名"
 horizontal_alignment = 2
+
+[node name="LoginButton" type="Button" parent="AccountStatusCorner/Margin/VBox" unique_id=2099123507]
+visible = false
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 8
+theme = ExtResource("5_menu_btn_theme")
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 21
+text = "登录"
 
 [node name="StatusRow" type="HBoxContainer" parent="AccountStatusCorner/Margin/VBox" unique_id=2099123504]
 layout_mode = 2

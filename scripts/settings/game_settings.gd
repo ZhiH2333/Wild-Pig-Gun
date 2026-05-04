@@ -22,6 +22,7 @@ const SFX_LINEAR_DEFAULT: float = 1.0
 const VSYNC_ENABLED_DEFAULT: bool = true
 const UI_SCALE_MIN: float = 0.75
 const UI_SCALE_MAX: float = 1.45
+## 存盘或回退用；无配置文件时由 _compute_default_ui_scale() 按屏幕 DPI 决定
 const UI_SCALE_DEFAULT: float = 1.0
 const VIEW_SCALE_MIN: float = 0.75
 const VIEW_SCALE_MAX: float = 1.45
@@ -114,6 +115,7 @@ func _ready() -> void:
 
 func load_from_disk() -> void:
 	if not FileAccess.file_exists(SETTINGS_PATH):
+		ui_scale = _compute_default_ui_scale()
 		return
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.READ)
 	if f == null:
@@ -339,7 +341,7 @@ func clear_all_settings_data() -> bool:
 	sfx_linear = SFX_LINEAR_DEFAULT
 	vsync_enabled = VSYNC_ENABLED_DEFAULT
 	vsync_fps = VSYNC_FPS_DEFAULT
-	ui_scale = UI_SCALE_DEFAULT
+	ui_scale = _compute_default_ui_scale()
 	view_scale = VIEW_SCALE_DEFAULT
 	mobile_controls_enabled = MOBILE_CONTROLS_ENABLED_DEFAULT
 	input_mode = InputMode.TOUCH
@@ -472,6 +474,15 @@ func _apply_ui_scale() -> void:
 	if win == null:
 		return
 	win.content_scale_factor = ui_scale
+
+
+## 无用户配置文件时的默认界面缩放：按当前屏幕 DPI 相对 96 推算，并夹在 UI 缩放上下限内
+func _compute_default_ui_scale() -> float:
+	var idx: int = DisplayServer.window_get_current_screen()
+	var dpi: int = DisplayServer.screen_get_dpi(idx)
+	if dpi <= 0:
+		dpi = 96
+	return clampf(float(dpi) / 96.0, UI_SCALE_MIN, UI_SCALE_MAX)
 
 
 func _apply_quality_preset() -> void:
