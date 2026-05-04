@@ -204,7 +204,7 @@ size_flags_vertical = 1
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 0.9)
 theme_override_fonts/font = ExtResource("4_font")
 theme_override_font_sizes/font_size = 18
-text = "v1.1.0"
+text = "v1.1.1"
 vertical_alignment = 1
 
 [node name="CheckUpdateButton" type="Button" parent="VersionCorner/VersionRow" unique_id=884920004]

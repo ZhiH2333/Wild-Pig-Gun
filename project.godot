@@ -11,13 +11,13 @@ config_version=5
 [application]
 
 config/name="WildPigGun"
-config/version="1.1.0"
+config/version="1.1.1"
 run/main_scene="res://scenes/first_screen.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/show_image=false
 boot_splash/image="uid://cnwkdsgj53mma"
 config/icon="res://assets/sprites/icon.png"
-config/version_code=10100
+config/version_code=10101
 
 [autoload]
 
