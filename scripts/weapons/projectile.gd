@@ -225,6 +225,8 @@ func _spawn_magnetic_ring_at(world_pos: Vector2) -> void:
 
 
 func tick(delta: float) -> void:
+	if _die_dispatched or not is_inside_tree():
+		return
 	if _recycle_if_outside_viewport_canvas():
 		die()
 		return
@@ -261,7 +263,15 @@ func tick(delta: float) -> void:
 
 func _enemy_projectile_despawn_bounds() -> Rect2:
 	var inner: Rect2 = Rect2(0.0, 0.0, 1920.0, 1080.0)
-	var arena: Node = get_tree().get_first_node_in_group("arena")
+	var tr: SceneTree = get_tree()
+	if tr == null:
+		return Rect2(
+			inner.position.x - ENEMY_PROJECTILE_ARENA_DESPAWN_MARGIN,
+			inner.position.y - ENEMY_PROJECTILE_ARENA_DESPAWN_MARGIN,
+			inner.size.x + 2.0 * ENEMY_PROJECTILE_ARENA_DESPAWN_MARGIN,
+			inner.size.y + 2.0 * ENEMY_PROJECTILE_ARENA_DESPAWN_MARGIN
+		)
+	var arena: Node = tr.get_first_node_in_group("arena")
 	if arena != null and arena.has_method("get_arena_rect"):
 		inner = arena.call("get_arena_rect") as Rect2
 	var m: float = ENEMY_PROJECTILE_ARENA_DESPAWN_MARGIN
@@ -303,7 +313,10 @@ func _push_trail() -> void:
 func _despawn_if_beyond_player_attack_range() -> void:
 	if source_weapon_id == "boar_grenade":
 		return
-	var pl: Node = get_tree().get_first_node_in_group("player")
+	var tr: SceneTree = get_tree()
+	if tr == null:
+		return
+	var pl: Node = tr.get_first_node_in_group("player")
 	if pl == null or not pl.has_method("get_attack_range_radius"):
 		return
 	var lim: float = float(pl.call("get_attack_range_radius"))

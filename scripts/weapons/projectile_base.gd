@@ -44,5 +44,12 @@ func deactivate_for_pool() -> void:
 
 
 func die() -> void:
+	## 命中等信号处于 Physics 查询刷新过程中，不能立刻改 monitoring / 改父节点；推迟到本帧末再回池。
+	call_deferred("_deferred_return_to_pool")
+
+
+func _deferred_return_to_pool() -> void:
+	if not is_instance_valid(self):
+		return
 	deactivate_for_pool()
 	ProjectilePool.return_projectile(self)
