@@ -58,6 +58,15 @@ func set_connected(value: bool) -> void:
 		refresh()
 
 
+func apply_wp_pass_login(display_name: String) -> void:
+	logged_in = true
+	username = display_name.strip_edges()
+	if username.is_empty():
+		username = "WP Pass 用户"
+	if is_node_ready():
+		refresh()
+
+
 func refresh() -> void:
 	if _login_label == null:
 		return
@@ -78,5 +87,5 @@ func refresh() -> void:
 		_status_value.text = "已连接"
 		_status_value.add_theme_color_override("font_color", Color(0.38, 0.82, 0.48, 1.0))
 	else:
-		_status_value.text = "未连接"
+		_status_value.text = "未认证"
 		_status_value.add_theme_color_override("font_color", Color(0.95, 0.32, 0.28, 1.0))

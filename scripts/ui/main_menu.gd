@@ -1,5 +1,6 @@
 extends Control
 
+const LOGIN_WPPASS_SCENE: PackedScene = preload("res://scenes/ui/login_wppass_flow.tscn")
 const MENU_BUTTON_CONTAINER_PATH: String = "MenuButtonsWrap/LeftMenuColumn/ButtonContainer"
 # const TUTORIAL_OVERLAY_SCRIPT: Script = preload("res://scripts/ui/tutorial_overlay.gd")
 
@@ -27,6 +28,7 @@ const BACKGROUND_SWAY_OVERSCALE: float = 1.14
 @onready var _update_download_link: LinkButton = $UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/LeftColumn/DownloadLink
 @onready var _update_changelog: RichTextLabel = $UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/RightColumn/ChangelogScroll/ChangelogRichText
 @onready var _update_ok: Button = $UpdateResultOverlay/Center/ResultCard/CardColumn/OkButton
+@onready var _account_status_strip: AccountStatusStrip = $AccountStatusCorner
 
 var _version_update: VersionUpdateCheck = VersionUpdateCheck.new()
 var background_sway_phase: float = 0.0
@@ -67,6 +69,7 @@ func _ready() -> void:
 	get_node("%s/SettingsButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_settings_pressed)
 	get_node("%s/AboutButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_credits_pressed)
 	get_node("%s/QuitButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_quit_pressed)
+	_account_status_strip.login_requested.connect(_on_wppass_login_requested)
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
 	_update_background_sway_pivot()
@@ -80,6 +83,19 @@ func _ready() -> void:
 	# 仅在主菜单询问键鼠/虚拟按键（首屏渐入结束后再弹；未勾选「不再提示」则每次进主菜单都会问）
 	if not GameSettings.control_mode_launch_prompt_dismissed:
 		_show_control_mode_dialog()
+
+
+func _on_wppass_login_requested() -> void:
+	for c in get_children():
+		if c is LoginWppassFlow:
+			return
+	var flow: LoginWppassFlow = LOGIN_WPPASS_SCENE.instantiate() as LoginWppassFlow
+	flow.login_completed.connect(_on_wppass_login_completed)
+	add_child(flow)
+
+
+func _on_wppass_login_completed(username: String) -> void:
+	_account_status_strip.apply_wp_pass_login(username)
 
 
 func _make_entrance_fade_cover() -> ColorRect:

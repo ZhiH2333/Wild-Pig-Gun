@@ -1,6 +1,7 @@
 extends Control
 
 const MAIN_MENU_PATH: String = "res://scenes/main_menu.tscn"
+const LOGIN_WPPASS_SCENE: PackedScene = preload("res://scenes/ui/login_wppass_flow.tscn")
 
 const BACKGROUND_SWAY_SPEED: float = 0.52
 const BACKGROUND_SWAY_AMP_RAD: float = deg_to_rad(5.2)
@@ -30,6 +31,7 @@ const BACKGROUND_SWAY_OVERSCALE: float = 1.14
 	$UpdateResultOverlay/Center/ResultCard/CardColumn/BodySplit/RightColumn/ChangelogScroll/ChangelogRichText
 )
 @onready var _update_ok: Button = $UpdateResultOverlay/Center/ResultCard/CardColumn/OkButton
+@onready var _account_status_strip: AccountStatusStrip = $AccountStatusCorner
 
 var _version_update: VersionUpdateCheck = VersionUpdateCheck.new()
 var background_sway_phase: float = 0.0
@@ -58,11 +60,25 @@ func _ready() -> void:
 	_version_update.wire()
 	_version_update.wire_ok_button(_update_ok)
 	_version_update.apply_version_label()
+	_account_status_strip.login_requested.connect(_on_wppass_login_requested)
 	_click_catcher.gui_input.connect(_on_click_catcher_gui_input)
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
 	_update_background_sway_pivot()
 	background.scale = Vector2(BACKGROUND_SWAY_OVERSCALE, BACKGROUND_SWAY_OVERSCALE)
+
+
+func _on_wppass_login_requested() -> void:
+	for c in get_children():
+		if c is LoginWppassFlow:
+			return
+	var flow: LoginWppassFlow = LOGIN_WPPASS_SCENE.instantiate() as LoginWppassFlow
+	flow.login_completed.connect(_on_wppass_login_completed)
+	add_child(flow)
+
+
+func _on_wppass_login_completed(username: String) -> void:
+	_account_status_strip.apply_wp_pass_login(username)
 
 
 func _update_background_sway_pivot() -> void:
