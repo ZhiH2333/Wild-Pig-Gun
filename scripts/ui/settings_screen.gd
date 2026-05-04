@@ -454,6 +454,11 @@ func _on_joystick_size_changed(v: float) -> void:
 
 
 func _on_custom_layout_pressed() -> void:
+	if bool(get_meta("in_game_overlay", false)):
+		var arena_node: Node = get_tree().get_first_node_in_group("arena")
+		if arena_node != null and arena_node.has_method("open_in_game_mobile_layout_editor"):
+			arena_node.open_in_game_mobile_layout_editor()
+		return
 	get_tree().change_scene_to_file("res://scenes/ui/mobile_control_layout_editor.tscn")
 
 

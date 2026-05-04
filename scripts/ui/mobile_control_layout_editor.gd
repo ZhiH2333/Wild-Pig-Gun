@@ -421,6 +421,13 @@ func _exit_to_settings() -> void:
 		layout_configured.emit()
 		queue_free()
 		return
+	if bool(get_meta("in_game_overlay", false)):
+		var arena_node: Node = get_tree().get_first_node_in_group("arena")
+		if arena_node != null and arena_node.has_method("close_in_game_mobile_layout_editor"):
+			arena_node.close_in_game_mobile_layout_editor()
+		else:
+			queue_free()
+		return
 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 

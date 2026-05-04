@@ -25,6 +25,7 @@ const ENEMY_SCENE_MAP: Dictionary = {
 const SPAWN_WARNING_SCENE: String = "res://scenes/spawn_warning.tscn"
 const RUN_SNAPSHOT_VERSION: int = 1
 const SETTINGS_SCENE_PATH: String = "res://scenes/settings.tscn"
+const MOBILE_LAYOUT_EDITOR_SCENE_PATH: String = "res://scenes/ui/mobile_control_layout_editor.tscn"
 const PROJECTILE_SCENE: PackedScene = preload("res://scenes/projectile.tscn")
 const TUTORIAL_HINT_SCENE: PackedScene = preload("res://scenes/ui/tutorial_hint_panel.tscn")
 const ConsumableHotkeySlots = preload("res://scripts/game/consumable_hotkey_slots.gd")
@@ -45,6 +46,7 @@ var _loaded_enemy_scenes: Dictionary = {}
 var _spawn_warning_scene: PackedScene = null
 var _wave_cfg: Dictionary = {}
 var _in_game_settings_layer: Control = null
+var _in_game_layout_editor_layer: Control = null
 var _pause_over_level_up: bool = false
 ## 当前波次刚开始时（`wave_started`）的整局快照，用于「放弃本波进度」写回续玩档
 var _checkpoint_at_wave_start: Dictionary = {}
@@ -348,9 +350,44 @@ func open_in_game_settings() -> void:
 	_in_game_settings_layer = settings_layer
 
 
+func close_in_game_mobile_layout_editor() -> void:
+	if pause_overlay == null:
+		return
+	if _in_game_layout_editor_layer != null and is_instance_valid(_in_game_layout_editor_layer):
+		_in_game_layout_editor_layer.queue_free()
+	_in_game_layout_editor_layer = null
+	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
+		_in_game_settings_layer.visible = true
+
+
+func open_in_game_mobile_layout_editor() -> void:
+	if pause_overlay == null:
+		return
+	if _in_game_layout_editor_layer != null and is_instance_valid(_in_game_layout_editor_layer):
+		return
+	if _in_game_settings_layer == null or not is_instance_valid(_in_game_settings_layer):
+		return
+	if not ResourceLoader.exists(MOBILE_LAYOUT_EDITOR_SCENE_PATH):
+		return
+	var scene: PackedScene = load(MOBILE_LAYOUT_EDITOR_SCENE_PATH) as PackedScene
+	if scene == null:
+		return
+	var editor_layer: Control = scene.instantiate() as Control
+	if editor_layer == null:
+		return
+	pause_overlay.visible = true
+	editor_layer.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+	editor_layer.set_meta("in_game_overlay", true)
+	editor_layer.mouse_filter = Control.MOUSE_FILTER_STOP
+	pause_overlay.add_child(editor_layer)
+	_in_game_layout_editor_layer = editor_layer
+	_in_game_settings_layer.visible = false
+
+
 func close_in_game_settings() -> void:
 	if pause_overlay == null:
 		return
+	close_in_game_mobile_layout_editor()
 	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
 		_in_game_settings_layer.queue_free()
 	_in_game_settings_layer = null
@@ -539,6 +576,9 @@ func _restore_weapon_loadout(weapon_ids: Array) -> void:
 
 
 func _on_pause_resume_pressed() -> void:
+	if _in_game_layout_editor_layer != null and is_instance_valid(_in_game_layout_editor_layer):
+		close_in_game_mobile_layout_editor()
+		return
 	if _in_game_settings_layer != null and is_instance_valid(_in_game_settings_layer):
 		close_in_game_settings()
 		return
