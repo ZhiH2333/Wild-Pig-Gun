@@ -7,6 +7,10 @@ const KEY_LAST_PLAYED_SLOT_ID: String = "last_played_slot_id"
 const KEY_TUTORIAL_COMPLETED: String = "tutorial_completed"
 const KEY_WALLET_GOLD: String = "wallet_gold"
 const KEY_PURCHASED_CHARACTER_IDS: String = "purchased_character_ids"
+## 全账号累计游玩秒数（与各存档槽 play_time 增量同步累加，兼容旧档默认 0）
+const KEY_TOTAL_PLAY_SECONDS: String = "total_play_seconds"
+## 账号首次创建时间（Unix 秒）；旧档无此字段时用存档文件修改时间近似）
+const KEY_ACCOUNT_CREATED_UNIX: String = "account_created_unix"
 const MAX_CHARACTER_ID_LENGTH: int = 48
 
 ## 当前局绑定的存档槽（由主菜单/开始页在进 Arena 前设置）
@@ -198,7 +202,10 @@ func save_run_to_slot(slot_id: String, data: Dictionary, add_play_sec: float) ->
 	slots[slot_id] = entry
 	root[KEY_RUN_SLOTS] = slots
 	root[KEY_LAST_PLAYED_SLOT_ID] = slot_id
-	return save_save_data(root)
+	var ok: bool = save_save_data(root)
+	if ok:
+		_bump_meta_total_play_seconds(add)
+	return ok
 
 
 func load_run_from_slot(slot_id: String) -> Dictionary:
@@ -253,8 +260,54 @@ func load_meta_progress() -> Dictionary:
 	var root: Dictionary = load_save_data()
 	var mp: Variant = root.get("meta_progress", {})
 	var meta: Dictionary = mp as Dictionary if mp is Dictionary else {}
+	var migrated: bool = _migrate_meta_profile_fields(meta)
 	_ensure_meta_progress_defaults(meta)
+	if migrated:
+		save_meta_progress(meta)
 	return meta
+
+
+func _sum_slot_play_time_seconds() -> int:
+	var root: Dictionary = load_save_data()
+	var slots: Dictionary = _ensure_run_slots(root)
+	var s: int = 0
+	for k in slots.keys():
+		var e: Variant = slots[k]
+		if e is Dictionary:
+			s += int((e as Dictionary).get("play_time_sec", 0))
+	return s
+
+
+func _migrate_meta_profile_fields(meta: Dictionary) -> bool:
+	var changed: bool = false
+	if not meta.has(KEY_TOTAL_PLAY_SECONDS):
+		meta[KEY_TOTAL_PLAY_SECONDS] = float(_sum_slot_play_time_seconds())
+		changed = true
+	if not meta.has(KEY_ACCOUNT_CREATED_UNIX):
+		if FileAccess.file_exists(SAVE_PATH):
+			var ts: int = FileAccess.get_modified_time(SAVE_PATH)
+			meta[KEY_ACCOUNT_CREATED_UNIX] = ts if ts > 0 else int(Time.get_unix_time_from_system())
+		else:
+			meta[KEY_ACCOUNT_CREATED_UNIX] = int(Time.get_unix_time_from_system())
+		changed = true
+	return changed
+
+
+func get_total_play_seconds() -> float:
+	return float(load_meta_progress().get(KEY_TOTAL_PLAY_SECONDS, 0.0))
+
+
+func get_account_created_unix() -> int:
+	return int(load_meta_progress().get(KEY_ACCOUNT_CREATED_UNIX, 0))
+
+
+func _bump_meta_total_play_seconds(add_sec_int: int) -> void:
+	if add_sec_int <= 0:
+		return
+	var meta: Dictionary = load_meta_progress()
+	var prev: float = float(meta.get(KEY_TOTAL_PLAY_SECONDS, 0.0))
+	meta[KEY_TOTAL_PLAY_SECONDS] = prev + float(add_sec_int)
+	save_meta_progress(meta)
 
 
 func _ensure_meta_progress_defaults(meta: Dictionary) -> void:
@@ -499,4 +552,5 @@ func add_play_time_to_slot(slot_id: String, add_sec: float) -> void:
 	entry["modified_unix"] = int(Time.get_unix_time_from_system())
 	slots[slot_id] = entry
 	root[KEY_RUN_SLOTS] = slots
-	save_save_data(root)
+	if save_save_data(root):
+		_bump_meta_total_play_seconds(add)

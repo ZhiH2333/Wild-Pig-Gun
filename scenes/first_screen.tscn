@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cnwkdsgj53mma" path="res://assets/sprites/logo.png" id="4_logo"]
 [ext_resource type="FontFile" uid="uid://c17gpxg33g3h" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="5_font"]
 [ext_resource type="Theme" uid="uid://b8dd63i2ua340" path="res://themes/black_button_theme.tres" id="6_btn"]
+[ext_resource type="Script" path="res://scripts/ui/account_status_strip.gd" id="7_acc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_hint_bg"]
 content_margin_left = 18.0
@@ -151,6 +152,55 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0)
+
+[node name="AccountStatusCorner" type="Control" parent="." unique_id=2099123456]
+z_index = 10
+layout_mode = 1
+anchors_preset = 2
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -300.0
+offset_top = 18.0
+offset_right = -20.0
+offset_bottom = 96.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("7_acc")
+
+[node name="Margin" type="MarginContainer" parent="AccountStatusCorner" unique_id=2099123457]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="AccountStatusCorner/Margin" unique_id=2099123458]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 2
+
+[node name="LoginLabel" type="Label" parent="AccountStatusCorner/Margin/VBox" unique_id=2099123459]
+layout_mode = 2
+text = "已登录至
+占位用户名"
+horizontal_alignment = 2
+
+[node name="StatusRow" type="HBoxContainer" parent="AccountStatusCorner/Margin/VBox" unique_id=2099123460]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="StatusPrefix" type="Label" parent="AccountStatusCorner/Margin/VBox/StatusRow" unique_id=2099123461]
+layout_mode = 2
+text = "状态："
+
+[node name="StatusValue" type="Label" parent="AccountStatusCorner/Margin/VBox/StatusRow" unique_id=2099123462]
+layout_mode = 2
+text = "已连接"
 
 [node name="VersionCorner" type="MarginContainer" parent="." unique_id=1402582535]
 z_index = 10

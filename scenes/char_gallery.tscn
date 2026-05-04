@@ -13,6 +13,25 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_maincard_transparent"]
 bg_color = Color(0, 0, 0, 0)
 
+[sub_resource type="StyleBoxFlat" id="StyleBox_profile_hero"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.1, 0.09, 0.14, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.72, 0.62, 0.95, 0.45)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 8
+shadow_offset = Vector2(0, 4)
+
 [node name="CharGallery" type="Control" unique_id=1820228036]
 layout_mode = 3
 anchors_preset = 15
@@ -106,7 +125,7 @@ layout_mode = 2
 size_flags_horizontal = 0
 theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
 theme_override_font_sizes/font_size = 42
-text = "个性化"
+text = "个人"
 vertical_alignment = 1
 
 [node name="MainCard" type="PanelContainer" parent="Center/MainColumn" unique_id=619115329]
@@ -169,10 +188,10 @@ size_flags_horizontal = 3
 theme = ExtResource("8_tab_theme")
 theme_override_fonts/font = ExtResource("7_menu_font")
 theme_override_font_sizes/font_size = 26
-text = "个人"
+text = "我的"
 
 [node name="GalleryTabContainer" type="TabContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn" unique_id=738039890]
-custom_minimum_size = Vector2(0, 440)
+custom_minimum_size = Vector2(0, 500)
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("9_panel_theme")
@@ -269,9 +288,40 @@ text = "选择该角色"
 visible = false
 layout_mode = 2
 horizontal_scroll_mode = 0
+vertical_scroll_mode = 1
 metadata/_tab_index = 2
 
-[node name="ProfileContents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll" unique_id=411823202]
+[node name="ProfileSplit" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll" unique_id=1316502712]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="ProfileHeroCard" type="PanelContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileSplit" unique_id=1316502713]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBox_profile_hero")
+
+[node name="HeroMargin" type="MarginContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileSplit/ProfileHeroCard" unique_id=1316502714]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="ProfileHeroVBox" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileSplit/ProfileHeroCard/HeroMargin" unique_id=1316502715]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ProfileLegacyScroll" type="ScrollContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileSplit" unique_id=1316502716]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ProfileContents" type="VBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileSplit/ProfileLegacyScroll" unique_id=411823202]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 18

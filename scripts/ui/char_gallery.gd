@@ -17,7 +17,8 @@ const SETTINGS_PATH_DISPLAY: String = "user://game_settings.json"
 @onready var char_stats_vbox: VBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/CharStatsVBox
 @onready var page_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/NavRow/PageLabel
 @onready var select_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/CharacterScroll/CharacterContents/SelectButton
-@onready var profile_contents: VBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileContents
+@onready var profile_hero_vbox: VBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileSplit/ProfileHeroCard/HeroMargin/ProfileHeroVBox
+@onready var profile_contents: VBoxContainer = $Center/MainColumn/MainCard/Margins/CardColumn/GalleryTabContainer/ProfileScroll/ProfileSplit/ProfileLegacyScroll/ProfileContents
 @onready var back_button: Button = $Center/MainColumn/HeaderMargins/HeaderRow/BackButton
 @onready var purchase_overlay: Control = $PurchaseOverlay
 @onready var purchase_message: Label = $PurchaseOverlay/CenterContainer/DialogCard/Margin/Content/PurchaseMessage
@@ -178,7 +179,7 @@ func _show_archive_source_dialog() -> void:
 	if raw.length() > 3500:
 		raw = raw.substr(0, 3500) + "\n…（已截断）"
 	var head: String = (
-		"存档资源名：\n%s\n\n存档绝对路径：\n%s\n\n设置资源名：\n%s\n\n设置绝对路径：\n%s\n\n长按「个人」%.1f 秒可再次打开本窗口。"
+		"存档资源名：\n%s\n\n存档绝对路径：\n%s\n\n设置资源名：\n%s\n\n设置绝对路径：\n%s\n\n长按「我的」%.1f 秒可再次打开本窗口。"
 		% [save_logical, save_abs, SETTINGS_PATH_DISPLAY, settings_abs, PROFILE_TAB_HOLD_SECONDS]
 	)
 	lbl.text = head + "\n\n—— 存档 JSON 原文（节选）——\n" + (raw if not raw.is_empty() else "（无文件）")
@@ -496,7 +497,170 @@ func _stat_line(label: String, value: String) -> HBoxContainer:
 	return row
 
 
+func _format_join_date_cn(unix_sec: int) -> String:
+	if unix_sec <= 0:
+		return "—"
+	var dict: Dictionary = Time.get_datetime_dict_from_unix_time(unix_sec)
+	return "%d年%02d月%02d日" % [int(dict.get("year", 0)), int(dict.get("month", 0)), int(dict.get("day", 0))]
+
+
+func _build_profile_hero_section() -> void:
+	for c in profile_hero_vbox.get_children():
+		c.queue_free()
+	var font_bold: Font = load("res://assets/fonts/SourceHanSansSC-Bold.otf") as Font
+	var banner: Label = Label.new()
+	banner.text = "PLAYER PROFILE"
+	banner.add_theme_font_size_override("font_size", 13)
+	banner.add_theme_color_override("font_color", Color(0.65, 0.58, 0.82, 0.95))
+	if font_bold:
+		banner.add_theme_font_override("font", font_bold)
+	profile_hero_vbox.add_child(banner)
+	var crown_line: ColorRect = ColorRect.new()
+	crown_line.custom_minimum_size = Vector2(0, 2)
+	crown_line.color = Color(0.85, 0.7, 0.35, 0.75)
+	profile_hero_vbox.add_child(crown_line)
+	var avatar_row: HBoxContainer = HBoxContainer.new()
+	avatar_row.add_theme_constant_override("separation", 16)
+	profile_hero_vbox.add_child(avatar_row)
+	var av_wrap: PanelContainer = PanelContainer.new()
+	av_wrap.custom_minimum_size = Vector2(108, 108)
+	var av_box: StyleBoxFlat = StyleBoxFlat.new()
+	av_box.bg_color = Color(0.16, 0.14, 0.22, 1)
+	av_box.set_corner_radius_all(54)
+	av_box.border_color = Color(0.75, 0.65, 0.95, 0.5)
+	av_box.set_border_width_all(2)
+	av_wrap.add_theme_stylebox_override("panel", av_box)
+	var av_hint: Label = Label.new()
+	av_hint.text = "默认\n头像"
+	av_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	av_hint.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	av_hint.add_theme_font_size_override("font_size", 16)
+	av_hint.add_theme_color_override("font_color", Color(0.75, 0.72, 0.85, 0.9))
+	if font_bold:
+		av_hint.add_theme_font_override("font", font_bold)
+	av_wrap.add_child(av_hint)
+	avatar_row.add_child(av_wrap)
+	var name_block: VBoxContainer = VBoxContainer.new()
+	name_block.add_theme_constant_override("separation", 4)
+	name_block.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	avatar_row.add_child(name_block)
+	var mock_name: Label = Label.new()
+	mock_name.text = "占位昵称"
+	mock_name.add_theme_font_size_override("font_size", 26)
+	mock_name.add_theme_color_override("font_color", Color(0.98, 0.95, 0.9, 1))
+	if font_bold:
+		mock_name.add_theme_font_override("font", font_bold)
+	name_block.add_child(mock_name)
+	var sub: Label = Label.new()
+	sub.text = "UID · MOCK-8F2A"
+	sub.add_theme_font_size_override("font_size", 15)
+	sub.add_theme_color_override("font_color", Color(0.65, 0.7, 0.78, 0.88))
+	name_block.add_child(sub)
+	var bio: Label = Label.new()
+	bio.text = "个人签名占位：之后可接账号服务；界面为静态 mock。"
+	bio.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	bio.add_theme_font_size_override("font_size", 17)
+	bio.add_theme_color_override("font_color", Color(0.88, 0.86, 0.82, 0.92))
+	profile_hero_vbox.add_child(bio)
+	var join_u: int = SaveManager.get_account_created_unix()
+	var total_s: float = SaveManager.get_total_play_seconds()
+	var stat_card: PanelContainer = PanelContainer.new()
+	var st_inner: StyleBoxFlat = StyleBoxFlat.new()
+	st_inner.bg_color = Color(0, 0, 0, 0.22)
+	st_inner.set_corner_radius_all(10)
+	st_inner.content_margin_left = 12.0
+	st_inner.content_margin_top = 10.0
+	st_inner.content_margin_right = 12.0
+	st_inner.content_margin_bottom = 10.0
+	stat_card.add_theme_stylebox_override("panel", st_inner)
+	var stat_v: VBoxContainer = VBoxContainer.new()
+	stat_v.add_theme_constant_override("separation", 8)
+	stat_card.add_child(stat_v)
+	var row1: HBoxContainer = HBoxContainer.new()
+	row1.add_theme_constant_override("separation", 8)
+	var lj: Label = Label.new()
+	lj.text = "加入时间"
+	lj.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lj.add_theme_font_size_override("font_size", 16)
+	lj.add_theme_color_override("font_color", Color(0.7, 0.68, 0.64, 0.85))
+	var lj_v: Label = Label.new()
+	lj_v.text = _format_join_date_cn(join_u)
+	lj_v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	lj_v.add_theme_font_size_override("font_size", 16)
+	lj_v.add_theme_color_override("font_color", Color(0.95, 0.92, 0.86, 1))
+	if font_bold:
+		lj_v.add_theme_font_override("font", font_bold)
+	row1.add_child(lj)
+	row1.add_child(lj_v)
+	stat_v.add_child(row1)
+	var row2: HBoxContainer = HBoxContainer.new()
+	row2.add_theme_constant_override("separation", 8)
+	var tj: Label = Label.new()
+	tj.text = "总游玩时间"
+	tj.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tj.add_theme_font_size_override("font_size", 16)
+	tj.add_theme_color_override("font_color", Color(0.7, 0.68, 0.64, 0.85))
+	var tj_v: Label = Label.new()
+	tj_v.text = SaveDisplay.format_hms(int(floorf(total_s)))
+	tj_v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	tj_v.add_theme_font_size_override("font_size", 16)
+	tj_v.add_theme_color_override("font_color", Color(0.55, 0.9, 0.65, 1))
+	if font_bold:
+		tj_v.add_theme_font_override("font", font_bold)
+	row2.add_child(tj)
+	row2.add_child(tj_v)
+	stat_v.add_child(row2)
+	profile_hero_vbox.add_child(stat_card)
+	var own_title: Label = Label.new()
+	own_title.text = "拥有的角色"
+	own_title.add_theme_font_size_override("font_size", 20)
+	own_title.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 1))
+	if font_bold:
+		own_title.add_theme_font_override("font", font_bold)
+	profile_hero_vbox.add_child(own_title)
+	var flow: HFlowContainer = HFlowContainer.new()
+	flow.add_theme_constant_override("h_separation", 8)
+	flow.add_theme_constant_override("v_separation", 8)
+	for c in CharacterData.list_characters():
+		if not c is Dictionary:
+			continue
+		var cd: Dictionary = c as Dictionary
+		if not CharacterData.is_character_unlocked(cd):
+			continue
+		var chip: PanelContainer = _make_profile_hero_chip(str(cd.get("display_name", "—")))
+		flow.add_child(chip)
+	if flow.get_child_count() == 0:
+		var empty: Label = Label.new()
+		empty.text = "暂无可展示角色"
+		empty.add_theme_font_size_override("font_size", 16)
+		empty.add_theme_color_override("font_color", Color(0.65, 0.62, 0.58, 0.9))
+		profile_hero_vbox.add_child(empty)
+	else:
+		profile_hero_vbox.add_child(flow)
+
+
+func _make_profile_hero_chip(text: String) -> PanelContainer:
+	var p: PanelContainer = PanelContainer.new()
+	var sb: StyleBoxFlat = StyleBoxFlat.new()
+	sb.bg_color = Color(0.2, 0.32, 0.58, 0.45)
+	sb.border_color = Color(0.55, 0.72, 1.0, 0.42)
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(12)
+	sb.content_margin_left = 12.0
+	sb.content_margin_top = 6.0
+	sb.content_margin_right = 12.0
+	sb.content_margin_bottom = 6.0
+	p.add_theme_stylebox_override("panel", sb)
+	var l: Label = Label.new()
+	l.text = text
+	l.add_theme_font_size_override("font_size", 16)
+	l.add_theme_color_override("font_color", Color(0.92, 0.94, 0.98, 1))
+	p.add_child(l)
+	return p
+
+
 func _build_profile_sections() -> void:
+	_build_profile_hero_section()
 	for c in profile_contents.get_children():
 		c.queue_free()
 	var meta: Dictionary = SaveManager.load_meta_progress()

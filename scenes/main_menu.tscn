@@ -6,6 +6,7 @@
 [ext_resource type="FontFile" path="res://assets/fonts/SourceHanSansSC-Bold.otf" id="4_font"]
 [ext_resource type="Theme" path="res://themes/black_button_theme.tres" id="5_menu_btn_theme"]
 [ext_resource type="Texture2D" uid="uid://cnwkdsgj53mma" path="res://assets/sprites/logo.png" id="6_logo"]
+[ext_resource type="Script" path="res://scripts/ui/account_status_strip.gd" id="7_acc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_normal"]
 bg_color = Color(0, 0, 0, 0.65)
@@ -141,7 +142,7 @@ custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_font")
 theme = ExtResource("5_menu_btn_theme")
-text = "个性化"
+text = "个人"
 alignment = 1
 
 [node name="SettingsButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1954588758]
@@ -178,6 +179,55 @@ custom_minimum_size = Vector2(420, 110)
 texture = ExtResource("6_logo")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="AccountStatusCorner" type="Control" parent="." unique_id=2099123500]
+z_index = 10
+layout_mode = 1
+anchors_preset = 2
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -300.0
+offset_top = 18.0
+offset_right = -20.0
+offset_bottom = 96.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("7_acc")
+
+[node name="Margin" type="MarginContainer" parent="AccountStatusCorner" unique_id=2099123501]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="AccountStatusCorner/Margin" unique_id=2099123502]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 2
+
+[node name="LoginLabel" type="Label" parent="AccountStatusCorner/Margin/VBox" unique_id=2099123503]
+layout_mode = 2
+text = "已登录至
+占位用户名"
+horizontal_alignment = 2
+
+[node name="StatusRow" type="HBoxContainer" parent="AccountStatusCorner/Margin/VBox" unique_id=2099123504]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="StatusPrefix" type="Label" parent="AccountStatusCorner/Margin/VBox/StatusRow" unique_id=2099123505]
+layout_mode = 2
+text = "状态："
+
+[node name="StatusValue" type="Label" parent="AccountStatusCorner/Margin/VBox/StatusRow" unique_id=2099123506]
+layout_mode = 2
+text = "已连接"
 
 [node name="VersionCorner" type="MarginContainer" parent="." unique_id=884920001]
 layout_mode = 1
