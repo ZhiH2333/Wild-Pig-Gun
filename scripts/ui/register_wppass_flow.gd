@@ -1,8 +1,7 @@
 extends Control
-class_name LoginWppassFlow
-## WP Pass 登录流程：两步弹窗 → 加载 → 右上角成功卡片（进度条 2s）→ 收回
+class_name RegisterWppassFlow
 
-signal login_completed(username: String)
+signal register_completed(username: String)
 signal flow_cancelled
 
 const FONT_PATH: String = "res://assets/fonts/SourceHanSansSC-Bold.otf"
@@ -21,7 +20,9 @@ var _dim: ColorRect
 var _vignette: ColorRect
 var _step1: Control
 var _step2: Control
-var _loading: Control
+var _step3: Control
+var _error_popup: Control
+var _error_label: Label
 var _success_card: Control
 var _success_close_btn: Button
 var _success_label: Label
@@ -32,12 +33,19 @@ var _success_y: float = 22.0
 var _success_user_closed: bool = false
 var _success_sliding_out: bool = false
 var _success_slide_tw: Tween
-var _ident_edit: LineEdit
-var _pass_edit: LineEdit
-var _loading_bar: ProgressBar
-var _loading_tween: Tween
-var _busy: bool = false
 
+var _email_edit: LineEdit
+var _username_edit: LineEdit
+var _pass_edit: LineEdit
+var _pass_confirm_edit: LineEdit
+
+var _code_inputs: Array[LineEdit] = []
+var _timer_bar: ProgressBar
+var _resend_btn: Button
+var _code_time_left: float = 300.0
+var _code_timer_active: bool = false
+
+var _busy: bool = false
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -51,6 +59,15 @@ func _ready() -> void:
 	_build_ui()
 	call_deferred("_fade_in_step1")
 
+func _process(delta: float) -> void:
+	if _code_timer_active:
+		_code_time_left -= delta
+		if _code_time_left <= 0.0:
+			_code_time_left = 0.0
+			_code_timer_active = false
+			_resend_btn.visible = true
+		if _timer_bar:
+			_timer_bar.value = 300.0 - _code_time_left
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _busy:
@@ -58,7 +75,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		_on_cancel_pressed()
-
 
 func _build_ui() -> void:
 	_dim = ColorRect.new()
@@ -71,23 +87,31 @@ func _build_ui() -> void:
 	_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_vignette.color = Color(0, 0, 0, 0.0)
 	add_child(_vignette)
+	
 	_step1 = _make_step1()
 	_step1.modulate.a = 0.0
 	add_child(_step1)
+	
 	_step2 = _make_step2()
 	_step2.visible = false
 	_step2.modulate.a = 0.0
 	add_child(_step2)
-	_loading = _make_loading()
-	_loading.visible = false
-	add_child(_loading)
+	
+	_step3 = _make_step3()
+	_step3.visible = false
+	_step3.modulate.a = 0.0
+	add_child(_step3)
+	
 	_success_card = _make_success_card()
 	_success_card.visible = false
 	_success_card.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	add_child(_success_card)
+	
+	_error_popup = _make_error_popup()
+	_error_popup.visible = false
+	_error_popup.modulate.a = 0.0
+	add_child(_error_popup)
 
-
-## 与首屏 `UpdateResultOverlay/Center/ResultCard` 的 `StyleBox_update_result_card` 一致
 func _create_update_result_card_panel_style() -> StyleBoxFlat:
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
 	sb.content_margin_left = 22.0
@@ -103,13 +127,11 @@ func _create_update_result_card_panel_style() -> StyleBoxFlat:
 	sb.corner_radius_bottom_left = 8
 	return sb
 
-
 func _make_modal_card() -> PanelContainer:
 	var card: PanelContainer = PanelContainer.new()
 	card.custom_minimum_size = Vector2(540, 10)
 	card.add_theme_stylebox_override("panel", _create_update_result_card_panel_style())
 	return card
-
 
 func _make_step1() -> Control:
 	var wrap: CenterContainer = CenterContainer.new()
@@ -121,40 +143,30 @@ func _make_step1() -> Control:
 	col.add_theme_constant_override("separation", 14)
 	card.add_child(col)
 	var title: Label = Label.new()
-	title.text = "登录您的 WP Pass"
+	title.text = "输入您的邮箱"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 1))
 	_apply_font(title, 28)
 	col.add_child(title)
-	_ident_edit = LineEdit.new()
-	_ident_edit.theme = GAME_UI_THEME
-	_ident_edit.placeholder_text = "邮箱 / 用户名"
-	_ident_edit.custom_minimum_size = Vector2(0, 54)
-	_ident_edit.secret = false
-	_apply_font(_ident_edit, 22)
-	col.add_child(_ident_edit)
-	var links: HBoxContainer = HBoxContainer.new()
-	links.alignment = BoxContainer.ALIGNMENT_CENTER
-	links.add_theme_constant_override("separation", 14)
-	col.add_child(links)
-	var forgot: Button = _make_tab_button("忘记密码？")
-	forgot.pressed.connect(_on_forgot_pressed)
-	links.add_child(forgot)
-	var reg: Button = _make_tab_button("没有 Pass ？注册一个")
-	reg.pressed.connect(_on_register_pressed)
-	links.add_child(reg)
+	
+	_email_edit = LineEdit.new()
+	_email_edit.theme = GAME_UI_THEME
+	_email_edit.placeholder_text = "邮箱"
+	_email_edit.custom_minimum_size = Vector2(0, 54)
+	_apply_font(_email_edit, 22)
+	col.add_child(_email_edit)
+	
 	var row: HBoxContainer = HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_END
 	row.add_theme_constant_override("separation", 16)
 	col.add_child(row)
-	var cancel: Button = _make_text_button("取消")
-	cancel.pressed.connect(_on_cancel_pressed)
-	row.add_child(cancel)
-	var go: Button = _make_text_button("继续")
+	var back: Button = _make_text_button("上一步")
+	back.pressed.connect(_on_cancel_pressed)
+	row.add_child(back)
+	var go: Button = _make_text_button("下一步")
 	go.pressed.connect(_on_step1_continue_pressed)
 	row.add_child(go)
 	return wrap
-
 
 func _make_step2() -> Control:
 	var wrap: CenterContainer = CenterContainer.new()
@@ -166,11 +178,19 @@ func _make_step2() -> Control:
 	col.add_theme_constant_override("separation", 14)
 	card.add_child(col)
 	var title: Label = Label.new()
-	title.text = "输入您的密码"
+	title.text = "输入您的信息"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 1))
 	_apply_font(title, 28)
 	col.add_child(title)
+	
+	_username_edit = LineEdit.new()
+	_username_edit.theme = GAME_UI_THEME
+	_username_edit.placeholder_text = "用户名"
+	_username_edit.custom_minimum_size = Vector2(0, 54)
+	_apply_font(_username_edit, 22)
+	col.add_child(_username_edit)
+	
 	_pass_edit = LineEdit.new()
 	_pass_edit.theme = GAME_UI_THEME
 	_pass_edit.placeholder_text = "密码"
@@ -178,6 +198,15 @@ func _make_step2() -> Control:
 	_pass_edit.custom_minimum_size = Vector2(0, 54)
 	_apply_font(_pass_edit, 22)
 	col.add_child(_pass_edit)
+	
+	_pass_confirm_edit = LineEdit.new()
+	_pass_confirm_edit.theme = GAME_UI_THEME
+	_pass_confirm_edit.placeholder_text = "确认密码"
+	_pass_confirm_edit.secret = true
+	_pass_confirm_edit.custom_minimum_size = Vector2(0, 54)
+	_apply_font(_pass_confirm_edit, 22)
+	col.add_child(_pass_confirm_edit)
+	
 	var row: HBoxContainer = HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_END
 	row.add_theme_constant_override("separation", 16)
@@ -185,37 +214,94 @@ func _make_step2() -> Control:
 	var back: Button = _make_text_button("上一步")
 	back.pressed.connect(_on_step2_back_pressed)
 	row.add_child(back)
-	var go: Button = _make_text_button("继续")
+	var go: Button = _make_text_button("下一步")
 	go.pressed.connect(_on_step2_continue_pressed)
 	row.add_child(go)
 	return wrap
 
-
-func _make_loading() -> Control:
+func _make_step3() -> Control:
 	var wrap: CenterContainer = CenterContainer.new()
 	wrap.set_anchors_preset(Control.PRESET_FULL_RECT)
-	wrap.mouse_filter = Control.MOUSE_FILTER_STOP
-	var card: PanelContainer = PanelContainer.new()
-	card.custom_minimum_size = Vector2(440, 10)
-	card.add_theme_stylebox_override("panel", _create_update_result_card_panel_style())
+	wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var card: PanelContainer = _make_modal_card()
+	card.custom_minimum_size = Vector2(640, 10)
 	wrap.add_child(card)
-	var inner: VBoxContainer = VBoxContainer.new()
-	inner.add_theme_constant_override("separation", 22)
-	card.add_child(inner)
-	var lbl: Label = Label.new()
-	lbl.text = "正在验证…"
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.add_theme_color_override("font_color", Color(0.95, 0.92, 0.88, 1))
-	_apply_font(lbl, 26)
-	inner.add_child(lbl)
-	_loading_bar = ProgressBar.new()
-	_loading_bar.custom_minimum_size = Vector2(280, 18)
-	_loading_bar.max_value = 100.0
-	_loading_bar.value = 0.0
-	_loading_bar.show_percentage = false
-	inner.add_child(_loading_bar)
+	var col: VBoxContainer = VBoxContainer.new()
+	col.add_theme_constant_override("separation", 14)
+	card.add_child(col)
+	
+	var title: Label = Label.new()
+	title.text = "输入验证码"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 1))
+	_apply_font(title, 28)
+	col.add_child(title)
+	
+	var subtitle: Label = Label.new()
+	subtitle.text = "请输入发送至您邮箱的8位验证码"
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 1))
+	_apply_font(subtitle, 16)
+	col.add_child(subtitle)
+	
+	var code_row: HBoxContainer = HBoxContainer.new()
+	code_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	code_row.add_theme_constant_override("separation", 8)
+	col.add_child(code_row)
+	
+	_code_inputs.clear()
+	for i in range(8):
+		if i == 4:
+			var dash: Label = Label.new()
+			dash.text = "-"
+			dash.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			_apply_font(dash, 28)
+			code_row.add_child(dash)
+		
+		var input: LineEdit = LineEdit.new()
+		input.theme = GAME_UI_THEME
+		input.custom_minimum_size = Vector2(48, 64)
+		input.max_length = 1
+		input.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_apply_font(input, 28)
+		code_row.add_child(input)
+		_code_inputs.append(input)
+		
+		var current_idx = i
+		input.text_changed.connect(func(new_text: String):
+			if new_text.length() > 0 and current_idx < 7:
+				_code_inputs[current_idx + 1].grab_focus()
+		)
+	
+	var progress_col: VBoxContainer = VBoxContainer.new()
+	progress_col.add_theme_constant_override("separation", 8)
+	col.add_child(progress_col)
+	
+	_timer_bar = ProgressBar.new()
+	_timer_bar.custom_minimum_size = Vector2(0, 4)
+	_timer_bar.max_value = 300.0
+	_timer_bar.value = 0.0
+	_timer_bar.show_percentage = false
+	_timer_bar.add_theme_color_override("fill", Color(0.95, 0.78, 0.32, 0.95))
+	progress_col.add_child(_timer_bar)
+	
+	_resend_btn = _make_tab_button("重新发送")
+	_resend_btn.visible = false
+	_resend_btn.pressed.connect(_on_resend_pressed)
+	progress_col.add_child(_resend_btn)
+	
+	var row: HBoxContainer = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_END
+	row.add_theme_constant_override("separation", 16)
+	col.add_child(row)
+	var back: Button = _make_text_button("上一步")
+	back.pressed.connect(_on_step3_back_pressed)
+	row.add_child(back)
+	var go: Button = _make_text_button("下一步")
+	go.pressed.connect(_on_step3_continue_pressed)
+	row.add_child(go)
+	
 	return wrap
-
 
 func _make_success_card() -> Control:
 	var root: Control = Control.new()
@@ -265,6 +351,32 @@ func _make_success_card() -> Control:
 	root.add_child(_success_close_btn)
 	return root
 
+func _make_error_popup() -> Control:
+	var wrap: CenterContainer = CenterContainer.new()
+	wrap.set_anchors_preset(Control.PRESET_FULL_RECT)
+	wrap.mouse_filter = Control.MOUSE_FILTER_STOP
+	var card: PanelContainer = _make_modal_card()
+	card.custom_minimum_size = Vector2(400, 10)
+	wrap.add_child(card)
+	var col: VBoxContainer = VBoxContainer.new()
+	col.add_theme_constant_override("separation", 24)
+	card.add_child(col)
+	
+	_error_label = Label.new()
+	_error_label.text = "密码不符合"
+	_error_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_error_label.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 1))
+	_apply_font(_error_label, 24)
+	col.add_child(_error_label)
+	
+	var row: HBoxContainer = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.add_child(row)
+	var ok_btn: Button = _make_text_button("确定")
+	ok_btn.pressed.connect(_on_error_ok_pressed)
+	row.add_child(ok_btn)
+	
+	return wrap
 
 func _make_text_button(txt: String) -> Button:
 	var b: Button = Button.new()
@@ -276,7 +388,6 @@ func _make_text_button(txt: String) -> Button:
 		b.add_theme_font_override("font", _font)
 	b.add_theme_font_size_override("font_size", 22)
 	return b
-
 
 func _make_tab_button(txt: String) -> Button:
 	var b: Button = Button.new()
@@ -290,27 +401,18 @@ func _make_tab_button(txt: String) -> Button:
 	b.add_theme_font_size_override("font_size", 20)
 	return b
 
-
 func _apply_font(l: Control, px: int) -> void:
 	if _font != null and l is Control:
 		l.add_theme_font_override("font", _font)
 		l.add_theme_font_size_override("font_size", px)
 
-
 func _fade_in_step1() -> void:
-	_ident_edit.grab_focus()
+	_email_edit.grab_focus()
 	var tw: Tween = create_tween()
 	tw.set_parallel(true)
-	tw.tween_property(_dim, "color:a", 0.62, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_OUT
-	)
-	tw.tween_property(_vignette, "color:a", 0.18, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_OUT
-	)
-	tw.tween_property(_step1, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_OUT
-	)
-
+	tw.tween_property(_dim, "color:a", 0.62, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_vignette, "color:a", 0.18, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_step1, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 func _on_cancel_pressed() -> void:
 	if _busy:
@@ -318,93 +420,133 @@ func _on_cancel_pressed() -> void:
 	_busy = true
 	var tw: Tween = create_tween()
 	tw.set_parallel(true)
-	tw.tween_property(_dim, "color:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_IN
-	)
-	tw.tween_property(_vignette, "color:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_IN
-	)
+	tw.tween_property(_dim, "color:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tw.tween_property(_vignette, "color:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	tw.tween_property(_step1, "modulate:a", 0.0, MODAL_FADE_SEC)
 	tw.tween_property(_step2, "modulate:a", 0.0, MODAL_FADE_SEC)
+	tw.tween_property(_step3, "modulate:a", 0.0, MODAL_FADE_SEC)
 	await tw.finished
 	flow_cancelled.emit()
 	queue_free()
 
-
 func _on_step1_continue_pressed() -> void:
 	if _busy:
 		return
-	var id: String = _ident_edit.text.strip_edges()
-	if id.is_empty():
+	var email: String = _email_edit.text.strip_edges()
+	if email.is_empty():
 		return
 	_busy = true
 	var tw: Tween = create_tween()
-	tw.tween_property(_step1, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_IN
-	)
+	tw.tween_property(_step1, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	await tw.finished
 	_step1.visible = false
 	_step2.visible = true
-	_pass_edit.text = ""
-	_pass_edit.grab_focus()
+	_username_edit.grab_focus()
 	var tw2: Tween = create_tween()
-	tw2.tween_property(_step2, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_OUT
-	)
+	tw2.tween_property(_step2, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	await tw2.finished
 	_busy = false
-
 
 func _on_step2_back_pressed() -> void:
 	if _busy:
 		return
 	_busy = true
 	var tw: Tween = create_tween()
-	tw.tween_property(_step2, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_IN
-	)
+	tw.tween_property(_step2, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	await tw.finished
 	_step2.visible = false
 	_step1.visible = true
 	var tw2: Tween = create_tween()
-	tw2.tween_property(_step1, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_OUT
-	)
+	tw2.tween_property(_step1, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	await tw2.finished
-	_ident_edit.grab_focus()
+	_email_edit.grab_focus()
 	_busy = false
-
 
 func _on_step2_continue_pressed() -> void:
 	if _busy:
 		return
-	if _pass_edit.text.is_empty():
+	if _username_edit.text.is_empty() or _pass_edit.text.is_empty() or _pass_confirm_edit.text.is_empty():
+		return
+	if _pass_edit.text != _pass_confirm_edit.text:
+		_show_error("密码不符合")
 		return
 	_busy = true
-	var username: String = _ident_edit.text.strip_edges()
 	var tw: Tween = create_tween()
-	tw.tween_property(_step2, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
-		Tween.EASE_IN
-	)
+	tw.tween_property(_step2, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	await tw.finished
 	_step2.visible = false
-	_loading.visible = true
-	_start_loading_bar_anim()
-	await get_tree().process_frame
-	await get_tree().create_timer(LOADING_MIN_SEC).timeout
-	_kill_loading_bar_anim()
-	_loading.visible = false
+	_step3.visible = true
+	
+	_code_time_left = 300.0
+	_code_timer_active = true
+	_resend_btn.visible = false
+	_timer_bar.value = 0.0
+	
+	for input in _code_inputs:
+		input.text = ""
+	_code_inputs[0].grab_focus()
+	
+	var tw2: Tween = create_tween()
+	tw2.tween_property(_step3, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await tw2.finished
+	_busy = false
+
+func _on_step3_back_pressed() -> void:
+	if _busy:
+		return
+	_busy = true
+	_code_timer_active = false
+	var tw: Tween = create_tween()
+	tw.tween_property(_step3, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	await tw.finished
+	_step3.visible = false
+	_step2.visible = true
+	var tw2: Tween = create_tween()
+	tw2.tween_property(_step2, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await tw2.finished
+	_username_edit.grab_focus()
+	_busy = false
+
+func _on_resend_pressed() -> void:
+	_code_time_left = 300.0
+	_code_timer_active = true
+	_resend_btn.visible = false
+	_timer_bar.value = 0.0
+	for input in _code_inputs:
+		input.text = ""
+	_code_inputs[0].grab_focus()
+
+func _on_step3_continue_pressed() -> void:
+	if _busy:
+		return
+	var code = ""
+	for input in _code_inputs:
+		code += input.text
+	if code.length() < 8:
+		return
+		
+	_busy = true
+	_code_timer_active = false
+	var username: String = _username_edit.text.strip_edges()
+	
+	var tw: Tween = create_tween()
+	tw.tween_property(_step3, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	await tw.finished
+	_step3.visible = false
+	
 	_dim.color.a = 0.0
 	_vignette.color.a = 0.0
-	await _play_success_card(username)
-	login_completed.emit(username)
+	
+	await _play_success_card("已注册到", username)
+	await _play_success_card("已登录至", username)
+	
+	register_completed.emit(username)
 	queue_free()
 
-
-func _play_success_card(username: String) -> void:
+func _play_success_card(prefix: String, username: String) -> void:
 	_success_user_closed = false
 	_success_sliding_out = false
-	_success_label.text = "已登录至\n%s" % username
+	_success_label.text = "%s\n%s" % [prefix, username]
 	_success_bar.value = 0.0
 	_success_close_btn.visible = false
 	_success_card.visible = true
@@ -420,9 +562,7 @@ func _play_success_card(username: String) -> void:
 	_success_card.position = Vector2(_success_x_start, _success_y)
 	_success_card.size = Vector2(card_w, h)
 	var tw_in: Tween = create_tween()
-	tw_in.tween_property(_success_card, "position:x", _success_x_end, CARD_SLIDE_IN_SEC).set_trans(
-		Tween.TRANS_CUBIC
-	).set_ease(Tween.EASE_OUT)
+	tw_in.tween_property(_success_card, "position:x", _success_x_end, CARD_SLIDE_IN_SEC).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await tw_in.finished
 	_success_close_btn.visible = true
 	var elapsed: float = 0.0
@@ -434,10 +574,8 @@ func _play_success_card(username: String) -> void:
 		_success_bar.value = 100.0
 	await _slide_out_success_card()
 
-
 func _on_success_close_pressed() -> void:
 	_success_user_closed = true
-
 
 func _slide_out_success_card() -> void:
 	if not _success_card.visible:
@@ -460,56 +598,19 @@ func _slide_out_success_card() -> void:
 	_success_card.visible = false
 	_success_sliding_out = false
 
-
-func _start_loading_bar_anim() -> void:
-	if _loading_bar == null:
-		return
-	_kill_loading_bar_anim()
-	_loading_bar.value = 12.0
-	_loading_tween = create_tween().set_loops()
-	_loading_tween.tween_property(_loading_bar, "value", 96.0, 0.72).set_trans(Tween.TRANS_QUAD).set_ease(
-		Tween.EASE_IN_OUT
-	)
-	_loading_tween.tween_property(_loading_bar, "value", 14.0, 0.72).set_trans(Tween.TRANS_QUAD).set_ease(
-		Tween.EASE_IN_OUT
-	)
-
-
-func _kill_loading_bar_anim() -> void:
-	if _loading_tween != null and is_instance_valid(_loading_tween):
-		_loading_tween.kill()
-	_loading_tween = null
-	if _loading_bar != null:
-		_loading_bar.value = 0.0
-
-
-func _on_forgot_pressed() -> void:
-	pass
-
-
-func _on_register_pressed() -> void:
-	if _busy:
-		return
+func _show_error(msg: String) -> void:
 	_busy = true
+	_error_label.text = msg
+	_error_popup.visible = true
 	var tw: Tween = create_tween()
-	tw.set_parallel(true)
-	tw.tween_property(_dim, "color:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	tw.tween_property(_vignette, "color:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	tw.tween_property(_step1, "modulate:a", 0.0, MODAL_FADE_SEC)
+	tw.tween_property(_error_popup, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	await tw.finished
-	
-	var reg_scene = load("res://scenes/ui/register_wppass_flow.tscn")
-	var reg = reg_scene.instantiate()
-	get_parent().add_child(reg)
-	reg.flow_cancelled.connect(func():
-		_busy = false
-		_fade_in_step1()
-	)
-	reg.register_completed.connect(func(username):
-		login_completed.emit(username)
-		queue_free()
-	)
 
-
-func _exit_tree() -> void:
-	_kill_loading_bar_anim()
+func _on_error_ok_pressed() -> void:
+	if not _error_popup.visible or _error_popup.modulate.a < 1.0:
+		return
+	var tw: Tween = create_tween()
+	tw.tween_property(_error_popup, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	await tw.finished
+	_error_popup.visible = false
+	_busy = false
