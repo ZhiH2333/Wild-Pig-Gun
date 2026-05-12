@@ -19,6 +19,8 @@ const BLACK_BUTTON_THEME: Theme = preload("res://themes/black_button_theme.tres"
 func _ready() -> void:
 	if not AccountDevState.overrides_changed.is_connected(_on_account_dev_overrides_changed):
 		AccountDevState.overrides_changed.connect(_on_account_dev_overrides_changed)
+	if not CloudAPI.login_state_changed.is_connected(_on_cloud_login_state_changed):
+		CloudAPI.login_state_changed.connect(_on_cloud_login_state_changed)
 	var f: Font = load(FONT_PATH) as Font
 	if f != null:
 		_login_label.add_theme_font_override("font", f)
@@ -35,11 +37,38 @@ func _ready() -> void:
 	_status_value.add_theme_font_size_override("font_size", 19)
 	_login_label.add_theme_color_override("font_color", Color(0.98, 0.94, 0.86, 0.95))
 	_status_prefix.add_theme_color_override("font_color", Color(0.82, 0.78, 0.72, 0.88))
+	if CloudAPI.is_logged_in():
+		logged_in = true
+		_load_profile_display_name()
 	refresh()
 
 
 func _on_account_dev_overrides_changed() -> void:
 	refresh()
+
+
+func _on_cloud_login_state_changed(is_logged_in: bool) -> void:
+	logged_in = is_logged_in
+	if is_logged_in:
+		_load_profile_display_name()
+	else:
+		username = ""
+	if is_node_ready():
+		refresh()
+
+
+func _load_profile_display_name() -> void:
+	var uid: String = CloudAPI.get_user_id()
+	if uid.is_empty():
+		return
+	var result: Dictionary = await CloudAPI.get_profile(uid)
+	if result["ok"]:
+		var data: Dictionary = result["data"]
+		var name_str: String = str(data.get("username", data.get("email", "")))
+		if not name_str.is_empty():
+			username = name_str
+			if is_node_ready():
+				refresh()
 
 
 func _on_login_button_pressed() -> void:

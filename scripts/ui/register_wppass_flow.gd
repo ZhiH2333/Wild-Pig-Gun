@@ -46,6 +46,8 @@ var _code_time_left: float = 300.0
 var _code_timer_active: bool = false
 
 var _busy: bool = false
+var _loading_overlay: Control = null
+
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -111,6 +113,9 @@ func _build_ui() -> void:
 	_error_popup.visible = false
 	_error_popup.modulate.a = 0.0
 	add_child(_error_popup)
+	_loading_overlay = _make_loading_overlay()
+	_loading_overlay.visible = false
+	add_child(_loading_overlay)
 
 func _create_update_result_card_panel_style() -> StyleBoxFlat:
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
@@ -351,6 +356,55 @@ func _make_success_card() -> Control:
 	root.add_child(_success_close_btn)
 	return root
 
+func _make_loading_overlay() -> Control:
+	var wrap: CenterContainer = CenterContainer.new()
+	wrap.set_anchors_preset(Control.PRESET_FULL_RECT)
+	wrap.mouse_filter = Control.MOUSE_FILTER_STOP
+	var card: PanelContainer = PanelContainer.new()
+	card.custom_minimum_size = Vector2(440, 10)
+	card.add_theme_stylebox_override("panel", _create_update_result_card_panel_style())
+	wrap.add_child(card)
+	var inner: VBoxContainer = VBoxContainer.new()
+	inner.add_theme_constant_override("separation", 22)
+	card.add_child(inner)
+	var lbl: Label = Label.new()
+	lbl.text = "正在处理…"
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.add_theme_color_override("font_color", Color(0.95, 0.92, 0.88, 1))
+	_apply_font(lbl, 26)
+	inner.add_child(lbl)
+	var bar: ProgressBar = ProgressBar.new()
+	bar.custom_minimum_size = Vector2(280, 18)
+	bar.max_value = 100.0
+	bar.value = 0.0
+	bar.show_percentage = false
+	inner.add_child(bar)
+	var loading_tween: Tween = null
+	wrap.set_meta("bar", bar)
+	wrap.set_meta("tween_ref", loading_tween)
+	return wrap
+
+
+func _show_loading_overlay() -> void:
+	if _loading_overlay == null:
+		return
+	_loading_overlay.visible = true
+	var bar: ProgressBar = _loading_overlay.get_meta("bar") as ProgressBar
+	var tw: Tween = create_tween().set_loops()
+	tw.tween_property(bar, "value", 96.0, 0.72).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(bar, "value", 14.0, 0.72).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	_loading_overlay.set_meta("tween_ref", tw)
+
+
+func _hide_loading_overlay() -> void:
+	if _loading_overlay == null:
+		return
+	var tw_ref: Variant = _loading_overlay.get_meta("tween_ref", null)
+	if tw_ref is Tween and is_instance_valid(tw_ref as Tween):
+		(tw_ref as Tween).kill()
+	_loading_overlay.visible = false
+
+
 func _make_error_popup() -> Control:
 	var wrap: CenterContainer = CenterContainer.new()
 	wrap.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -465,29 +519,43 @@ func _on_step2_back_pressed() -> void:
 func _on_step2_continue_pressed() -> void:
 	if _busy:
 		return
-	if _username_edit.text.is_empty() or _pass_edit.text.is_empty() or _pass_confirm_edit.text.is_empty():
+	var any_empty: bool = (
+		_username_edit.text.is_empty()
+		or _pass_edit.text.is_empty()
+		or _pass_confirm_edit.text.is_empty()
+	)
+	if any_empty:
 		return
 	if _pass_edit.text != _pass_confirm_edit.text:
-		_show_error("密码不符合")
+		_show_error("两次输入的密码不一致")
 		return
 	_busy = true
+	var email: String = _email_edit.text.strip_edges()
+	var password: String = _pass_edit.text
+	_show_loading_overlay()
+	var result: Dictionary = await CloudAPI.register(email, password)
+	_hide_loading_overlay()
+	if not result["ok"]:
+		_show_error(result["error"] if not result["error"].is_empty() else "注册失败，请稍后重试")
+		return
 	var tw: Tween = create_tween()
-	tw.tween_property(_step2, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tw.tween_property(_step2, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(
+		Tween.TRANS_SINE
+	).set_ease(Tween.EASE_IN)
 	await tw.finished
 	_step2.visible = false
 	_step3.visible = true
-	
 	_code_time_left = 300.0
 	_code_timer_active = true
 	_resend_btn.visible = false
 	_timer_bar.value = 0.0
-	
 	for input in _code_inputs:
 		input.text = ""
 	_code_inputs[0].grab_focus()
-	
 	var tw2: Tween = create_tween()
-	tw2.tween_property(_step3, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw2.tween_property(_step3, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(
+		Tween.TRANS_SINE
+	).set_ease(Tween.EASE_OUT)
 	await tw2.finished
 	_busy = false
 
@@ -508,6 +576,10 @@ func _on_step3_back_pressed() -> void:
 	_busy = false
 
 func _on_resend_pressed() -> void:
+	_resend_btn.disabled = true
+	var email: String = _email_edit.text.strip_edges()
+	await CloudAPI.resend_code(email)
+	_resend_btn.disabled = false
 	_code_time_left = 300.0
 	_code_timer_active = true
 	_resend_btn.visible = false
@@ -519,28 +591,36 @@ func _on_resend_pressed() -> void:
 func _on_step3_continue_pressed() -> void:
 	if _busy:
 		return
-	var code = ""
+	var code: String = ""
 	for input in _code_inputs:
 		code += input.text
 	if code.length() < 8:
 		return
-		
 	_busy = true
 	_code_timer_active = false
+	var email: String = _email_edit.text.strip_edges()
 	var username: String = _username_edit.text.strip_edges()
-	
+	_show_loading_overlay()
+	var result: Dictionary = await CloudAPI.verify_code(email, code)
+	_hide_loading_overlay()
+	if not result["ok"]:
+		_show_error(result["error"] if not result["error"].is_empty() else "验证码错误或已过期")
+		return
+	if not username.is_empty():
+		await CloudAPI.update_profile({"username": username})
 	var tw: Tween = create_tween()
-	tw.tween_property(_step3, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tw.tween_property(_step3, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(
+		Tween.TRANS_SINE
+	).set_ease(Tween.EASE_IN)
 	await tw.finished
 	_step3.visible = false
-	
 	_dim.color.a = 0.0
 	_vignette.color.a = 0.0
-	
-	await _play_success_card("已注册到", username)
-	await _play_success_card("已登录至", username)
-	
-	register_completed.emit(username)
+	CloudSync.sync_on_launch()
+	var display_name: String = username if not username.is_empty() else email
+	await _play_success_card("已注册", display_name)
+	await _play_success_card("已登录至", display_name)
+	register_completed.emit(display_name)
 	queue_free()
 
 func _play_success_card(prefix: String, username: String) -> void:
