@@ -30,11 +30,13 @@ func get_user_id() -> String:
 # ── 认证 ────────────────────────────────────────────────────────────────────
 
 func register(email: String, password: String) -> Dictionary:
-	return await _post("/auth/register", {"email": email, "password": password}, false)
+	return await _http_post("/auth/register", {"email": email, "password": password}, false)
 
 
 func verify_code(email: String, code: String) -> Dictionary:
-	var result: Dictionary = await _post("/auth/verify", {"email": email, "code": code}, false)
+	var result: Dictionary = await _http_post(
+		"/auth/verify-code", {"email": email, "code": code}, false
+	)
 	if result["ok"]:
 		var data: Dictionary = result["data"]
 		var token: String = str(data.get("token", ""))
@@ -46,11 +48,13 @@ func verify_code(email: String, code: String) -> Dictionary:
 
 
 func resend_code(email: String) -> Dictionary:
-	return await _post("/auth/resend-code", {"email": email}, false)
+	return await _http_post("/auth/resend-code", {"email": email}, false)
 
 
 func login(email: String, password: String) -> Dictionary:
-	var result: Dictionary = await _post("/auth/login", {"email": email, "password": password}, false)
+	var result: Dictionary = await _http_post(
+		"/auth/login", {"email": email, "password": password}, false
+	)
 	if result["ok"]:
 		var data: Dictionary = result["data"]
 		var token: String = str(data.get("token", ""))
@@ -63,7 +67,7 @@ func login(email: String, password: String) -> Dictionary:
 
 func logout() -> void:
 	if is_logged_in():
-		_post("/auth/logout", {}, true)
+		_http_post("/auth/logout", {}, true)
 	_clear_credentials()
 	login_state_changed.emit(false)
 
@@ -71,74 +75,74 @@ func logout() -> void:
 # ── 名片 ────────────────────────────────────────────────────────────────────
 
 func get_profile(user_id: String) -> Dictionary:
-	return await _get("/profile/" + user_id, true)
+	return await _http_get("/profile/" + user_id, true)
 
 
 func update_profile(data: Dictionary) -> Dictionary:
-	return await _put("/profile", data, true)
+	return await _http_put("/profile", data, true)
 
 
 func heartbeat(status: String) -> Dictionary:
-	return await _post("/heartbeat", {"status": status}, true)
+	return await _http_post("/heartbeat", {"status": status}, true)
 
 
 # ── 元进度 ──────────────────────────────────────────────────────────────────
 
 func get_player_meta() -> Dictionary:
-	return await _get("/meta", true)
+	return await _http_get("/meta", true)
 
 
 func update_player_meta(data: Dictionary) -> Dictionary:
-	return await _put("/meta", data, true)
+	return await _http_put("/meta", data, true)
 
 
 # ── 存档槽 ──────────────────────────────────────────────────────────────────
 
 func get_slots() -> Dictionary:
-	return await _get("/slots", true)
+	return await _http_get("/slots", true)
 
 
 func get_slot(slot_id: String) -> Dictionary:
-	return await _get("/slots/" + slot_id, true)
+	return await _http_get("/slots/" + slot_id, true)
 
 
 func put_slot(slot_id: String, data: Dictionary) -> Dictionary:
-	return await _put("/slots/" + slot_id, data, true)
+	return await _http_put("/slots/" + slot_id, data, true)
 
 
 # ── 社区 ────────────────────────────────────────────────────────────────────
 
 func record_run(data: Dictionary) -> Dictionary:
-	return await _post("/runs", data, true)
+	return await _http_post("/runs", data, true)
 
 
 func get_feed(page: int, limit: int) -> Dictionary:
-	return await _get("/feed?page=%d&limit=%d" % [page, limit], true)
+	return await _http_get("/feed?page=%d&limit=%d" % [page, limit], true)
 
 
 func get_leaderboard(type: String, limit: int) -> Dictionary:
-	return await _get("/leaderboard?type=%s&limit=%d" % [type, limit], true)
+	return await _http_get("/leaderboard?type=%s&limit=%d" % [type, limit], true)
 
 
 func get_history(user_id: String, page: int) -> Dictionary:
-	return await _get("/history/%s?page=%d" % [user_id, page], true)
+	return await _http_get("/history/%s?page=%d" % [user_id, page], true)
 
 
 func like_run(run_id: String) -> Dictionary:
-	return await _post("/runs/" + run_id + "/like", {}, true)
+	return await _http_post("/runs/" + run_id + "/like", {}, true)
 
 
 # ── 内部：HTTP 便捷封装 ──────────────────────────────────────────────────────
 
-func _get(path: String, auth: bool) -> Dictionary:
+func _http_get(path: String, auth: bool) -> Dictionary:
 	return await _request(HTTPClient.METHOD_GET, path, {}, auth)
 
 
-func _post(path: String, body: Dictionary, auth: bool) -> Dictionary:
+func _http_post(path: String, body: Dictionary, auth: bool) -> Dictionary:
 	return await _request(HTTPClient.METHOD_POST, path, body, auth)
 
 
-func _put(path: String, body: Dictionary, auth: bool) -> Dictionary:
+func _http_put(path: String, body: Dictionary, auth: bool) -> Dictionary:
 	return await _request(HTTPClient.METHOD_PUT, path, body, auth)
 
 
