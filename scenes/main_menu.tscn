@@ -153,6 +153,14 @@ theme = ExtResource("5_menu_btn_theme")
 text = "选项"
 alignment = 1
 
+[node name="CommunityButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1111222333]
+custom_minimum_size = Vector2(280, 70)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font")
+theme = ExtResource("5_menu_btn_theme")
+text = "社区"
+alignment = 1
+
 [node name="AboutButton" type="Button" parent="MenuButtonsWrap/LeftMenuColumn/ButtonContainer" unique_id=1792550266]
 custom_minimum_size = Vector2(280, 70)
 layout_mode = 2
