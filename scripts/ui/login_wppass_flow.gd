@@ -34,6 +34,7 @@ var _success_sliding_out: bool = false
 var _success_slide_tw: Tween
 var _ident_edit: LineEdit
 var _pass_edit: LineEdit
+var _step2_error_label: Label
 var _loading_bar: ProgressBar
 var _loading_tween: Tween
 var _busy: bool = false
@@ -178,6 +179,13 @@ func _make_step2() -> Control:
 	_pass_edit.custom_minimum_size = Vector2(0, 54)
 	_apply_font(_pass_edit, 22)
 	col.add_child(_pass_edit)
+	_step2_error_label = Label.new()
+	_step2_error_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_step2_error_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_step2_error_label.add_theme_color_override("font_color", Color(0.95, 0.38, 0.32, 1))
+	_apply_font(_step2_error_label, 18)
+	_step2_error_label.visible = false
+	col.add_child(_step2_error_label)
 	var row: HBoxContainer = HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_END
 	row.add_theme_constant_override("separation", 16)
@@ -381,7 +389,9 @@ func _on_step2_continue_pressed() -> void:
 	if _pass_edit.text.is_empty():
 		return
 	_busy = true
-	var username: String = _ident_edit.text.strip_edges()
+	_step2_error_label.visible = false
+	var email: String = _ident_edit.text.strip_edges()
+	var password: String = _pass_edit.text
 	var tw: Tween = create_tween()
 	tw.tween_property(_step2, "modulate:a", 0.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
 		Tween.EASE_IN
@@ -390,15 +400,34 @@ func _on_step2_continue_pressed() -> void:
 	_step2.visible = false
 	_loading.visible = true
 	_start_loading_bar_anim()
-	await get_tree().process_frame
-	await get_tree().create_timer(LOADING_MIN_SEC).timeout
+	var result: Dictionary = await CloudAPI.login(email, password)
 	_kill_loading_bar_anim()
 	_loading.visible = false
+	if not result["ok"]:
+		_show_step2_error(result["error"])
+		return
 	_dim.color.a = 0.0
 	_vignette.color.a = 0.0
-	await _play_success_card(username)
-	login_completed.emit(username)
+	CloudSync.sync_on_launch()
+	var data: Dictionary = result["data"]
+	var display_name: String = str(data.get("username", data.get("email", email)))
+	await _play_success_card(display_name)
+	login_completed.emit(display_name)
 	queue_free()
+
+
+func _show_step2_error(msg: String) -> void:
+	_step2_error_label.text = msg if not msg.is_empty() else "登录失败，请检查邮箱与密码"
+	_step2_error_label.visible = true
+	_step2.visible = true
+	var tw: Tween = create_tween()
+	tw.tween_property(_step2, "modulate:a", 1.0, MODAL_FADE_SEC).set_trans(Tween.TRANS_SINE).set_ease(
+		Tween.EASE_OUT
+	)
+	await tw.finished
+	_pass_edit.text = ""
+	_pass_edit.grab_focus()
+	_busy = false
 
 
 func _play_success_card(username: String) -> void:
