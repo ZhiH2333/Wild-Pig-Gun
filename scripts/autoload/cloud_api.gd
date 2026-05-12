@@ -4,6 +4,7 @@ extends Node
 ## 所有公开方法均为异步，返回 { ok: bool, data: Dictionary, error: String }。
 
 signal login_state_changed(logged_in: bool)
+signal api_reachability_changed(reachable: bool)
 
 const BASE_URL: String = "https://api.wpgun.qzz.io"
 const TOKEN_PATH: String = "user://cloud_token.dat"
@@ -15,6 +16,7 @@ var _user_id: String = ""
 
 func _ready() -> void:
 	_load_credentials()
+	call_deferred("_run_startup_ping")
 
 
 # ── 状态查询 ────────────────────────────────────────────────────────────────
@@ -25,6 +27,25 @@ func is_logged_in() -> bool:
 
 func get_user_id() -> String:
 	return _user_id
+
+
+func _ping_server() -> bool:
+	var http: HTTPRequest = HTTPRequest.new()
+	http.timeout = 8.0
+	add_child(http)
+	var headers: PackedStringArray = PackedStringArray(["Accept: application/json"])
+	var err: Error = http.request(BASE_URL + "/", headers, HTTPClient.METHOD_GET, "")
+	if err != OK:
+		http.queue_free()
+		return false
+	var response: Array = await http.request_completed
+	http.queue_free()
+	return int(response[0]) == HTTPRequest.RESULT_SUCCESS
+
+
+func _run_startup_ping() -> void:
+	var reachable: bool = await _ping_server()
+	api_reachability_changed.emit(reachable)
 
 
 # ── 认证 ────────────────────────────────────────────────────────────────────

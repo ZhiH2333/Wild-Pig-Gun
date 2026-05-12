@@ -6,9 +6,9 @@ signal login_requested
 const FONT_PATH: String = "res://assets/fonts/SourceHanSansSC-Bold.otf"
 const BLACK_BUTTON_THEME: Theme = preload("res://themes/black_button_theme.tres")
 
-@export var username: String = "占位用户名"
-@export var connected: bool = true
-@export var logged_in: bool = true
+@export var username: String = ""
+@export var connected: bool = false
+@export var logged_in: bool = false
 
 @onready var _login_label: Label = $Margin/VBox/LoginLabel
 @onready var _login_button: Button = $Margin/VBox/LoginButton
@@ -21,6 +21,8 @@ func _ready() -> void:
 		AccountDevState.overrides_changed.connect(_on_account_dev_overrides_changed)
 	if not CloudAPI.login_state_changed.is_connected(_on_cloud_login_state_changed):
 		CloudAPI.login_state_changed.connect(_on_cloud_login_state_changed)
+	if not CloudAPI.api_reachability_changed.is_connected(_on_api_reachable_changed):
+		CloudAPI.api_reachability_changed.connect(_on_api_reachable_changed)
 	var f: Font = load(FONT_PATH) as Font
 	if f != null:
 		_login_label.add_theme_font_override("font", f)
@@ -45,6 +47,10 @@ func _ready() -> void:
 
 func _on_account_dev_overrides_changed() -> void:
 	refresh()
+
+
+func _on_api_reachable_changed(reachable: bool) -> void:
+	set_connected(reachable)
 
 
 func _on_cloud_login_state_changed(is_logged_in: bool) -> void:
@@ -116,5 +122,5 @@ func refresh() -> void:
 		_status_value.text = "已连接"
 		_status_value.add_theme_color_override("font_color", Color(0.38, 0.82, 0.48, 1.0))
 	else:
-		_status_value.text = "未认证"
+		_status_value.text = "未连接"
 		_status_value.add_theme_color_override("font_color", Color(0.95, 0.32, 0.28, 1.0))
