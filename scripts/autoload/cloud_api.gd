@@ -84,11 +84,11 @@ func heartbeat(status: String) -> Dictionary:
 
 # ── 元进度 ──────────────────────────────────────────────────────────────────
 
-func get_meta() -> Dictionary:
+func get_player_meta() -> Dictionary:
 	return await _get("/meta", true)
 
 
-func update_meta(data: Dictionary) -> Dictionary:
+func update_player_meta(data: Dictionary) -> Dictionary:
 	return await _put("/meta", data, true)
 
 

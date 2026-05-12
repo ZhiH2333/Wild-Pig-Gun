@@ -88,7 +88,7 @@ func _pull_and_merge_all() -> bool:
 
 
 func _pull_and_merge_meta() -> bool:
-	var result: Dictionary = await CloudAPI.get_meta()
+	var result: Dictionary = await CloudAPI.get_player_meta()
 	if not result["ok"]:
 		sync_error.emit("拉取云端进度失败：" + result["error"])
 		return false
@@ -121,7 +121,7 @@ func _pull_and_merge_slots() -> bool:
 
 func _push_meta() -> bool:
 	var local_meta: Dictionary = SaveManager.load_meta_progress()
-	var result: Dictionary = await CloudAPI.update_meta(local_meta)
+	var result: Dictionary = await CloudAPI.update_player_meta(local_meta)
 	if not result["ok"]:
 		sync_error.emit("推送进度失败：" + result["error"])
 		return false
