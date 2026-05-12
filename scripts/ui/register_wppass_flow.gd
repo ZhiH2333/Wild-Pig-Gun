@@ -14,6 +14,7 @@ const LOADING_MIN_SEC: float = 1.15
 const CARD_PROGRESS_SEC: float = 2.0
 const CARD_SLIDE_IN_SEC: float = 0.48
 const CARD_SLIDE_OUT_SEC: float = 0.42
+const CODE_RESEND_COOLDOWN_SEC: float = 300.0
 
 var _font: Font
 var _dim: ColorRect
@@ -42,7 +43,7 @@ var _pass_confirm_edit: LineEdit
 var _code_inputs: Array[LineEdit] = []
 var _timer_bar: ProgressBar
 var _resend_btn: Button
-var _code_time_left: float = 300.0
+var _code_time_left: float = CODE_RESEND_COOLDOWN_SEC
 var _code_timer_active: bool = false
 
 var _busy: bool = false
@@ -59,17 +60,20 @@ func _ready() -> void:
 	z_index = 300
 	_font = load(FONT_PATH) as Font
 	_build_ui()
+	set_process(true)
 	call_deferred("_fade_in_step1")
 
 func _process(delta: float) -> void:
-	if _code_timer_active:
-		_code_time_left -= delta
-		if _code_time_left <= 0.0:
-			_code_time_left = 0.0
-			_code_timer_active = false
+	if not _code_timer_active:
+		return
+	_code_time_left -= delta
+	if _code_time_left <= 0.0:
+		_code_time_left = 0.0
+		_code_timer_active = false
+		if _resend_btn != null:
 			_resend_btn.visible = true
-		if _timer_bar:
-			_timer_bar.value = 300.0 - _code_time_left
+	if _timer_bar != null:
+		_timer_bar.value = _code_time_left
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _busy:
@@ -284,8 +288,8 @@ func _make_step3() -> Control:
 	
 	_timer_bar = ProgressBar.new()
 	_timer_bar.custom_minimum_size = Vector2(0, 4)
-	_timer_bar.max_value = 300.0
-	_timer_bar.value = 0.0
+	_timer_bar.max_value = CODE_RESEND_COOLDOWN_SEC
+	_timer_bar.value = CODE_RESEND_COOLDOWN_SEC
 	_timer_bar.show_percentage = false
 	_timer_bar.add_theme_color_override("fill", Color(0.95, 0.78, 0.32, 0.95))
 	progress_col.add_child(_timer_bar)
@@ -545,10 +549,10 @@ func _on_step2_continue_pressed() -> void:
 	await tw.finished
 	_step2.visible = false
 	_step3.visible = true
-	_code_time_left = 300.0
+	_code_time_left = CODE_RESEND_COOLDOWN_SEC
 	_code_timer_active = true
 	_resend_btn.visible = false
-	_timer_bar.value = 0.0
+	_timer_bar.value = CODE_RESEND_COOLDOWN_SEC
 	for input in _code_inputs:
 		input.text = ""
 	_code_inputs[0].grab_focus()
@@ -580,10 +584,10 @@ func _on_resend_pressed() -> void:
 	var email: String = _email_edit.text.strip_edges()
 	await CloudAPI.resend_code(email)
 	_resend_btn.disabled = false
-	_code_time_left = 300.0
+	_code_time_left = CODE_RESEND_COOLDOWN_SEC
 	_code_timer_active = true
 	_resend_btn.visible = false
-	_timer_bar.value = 0.0
+	_timer_bar.value = CODE_RESEND_COOLDOWN_SEC
 	for input in _code_inputs:
 		input.text = ""
 	_code_inputs[0].grab_focus()
