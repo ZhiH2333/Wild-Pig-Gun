@@ -67,6 +67,7 @@ func _ready() -> void:
 	get_node("%s/StartButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_start_pressed)
 	get_node("%s/CustomizeButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_character_pressed)
 	get_node("%s/SettingsButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_settings_pressed)
+	get_node("%s/CommunityButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_community_pressed)
 	get_node("%s/AboutButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_credits_pressed)
 	get_node("%s/QuitButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_quit_pressed)
 	_account_status_strip.login_requested.connect(_on_wppass_login_requested)
@@ -268,6 +269,11 @@ func _on_settings_pressed() -> void:
 	GameMusic.duck_for_subpage()
 	RunState.settings_return_scene_path = "res://scenes/main_menu.tscn"
 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
+
+func _on_community_pressed() -> void:
+	GameMusic.duck_for_subpage()
+	get_tree().change_scene_to_file("res://scenes/community.tscn")
+
 
 func _on_credits_pressed() -> void:
 	GameMusic.duck_for_subpage()
