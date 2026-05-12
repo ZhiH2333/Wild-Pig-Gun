@@ -16,7 +16,7 @@ var _user_id: String = ""
 
 func _ready() -> void:
 	_load_credentials()
-	call_deferred("_run_startup_ping")
+	call_deferred("_run_reachability_ping")
 
 
 # ── 状态查询 ────────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ func _ping_server() -> bool:
 	return int(response[0]) == HTTPRequest.RESULT_SUCCESS
 
 
-func _run_startup_ping() -> void:
+func _run_reachability_ping() -> void:
 	var reachable: bool = await _ping_server()
 	api_reachability_changed.emit(reachable)
 

@@ -71,6 +71,7 @@ func _ready() -> void:
 	get_node("%s/AboutButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_credits_pressed)
 	get_node("%s/QuitButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_quit_pressed)
 	_account_status_strip.login_requested.connect(_on_wppass_login_requested)
+	CloudAPI.call_deferred("_run_reachability_ping")
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
 	_update_background_sway_pivot()
