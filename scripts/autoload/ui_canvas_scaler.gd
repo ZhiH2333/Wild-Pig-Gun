@@ -48,7 +48,7 @@ func _apply_all_ui_scales() -> void:
 		_reset_canvas_layers_under(control_root)
 	_apply_canvas_layers(control_root, xf)
 	if control_root != null:
-		control_root.transform = xf
+		_apply_control_root_scale(control_root, eff)
 
 
 func _apply_canvas_layers(skip_descendants_of: Control, xf: Transform2D) -> void:
@@ -72,6 +72,15 @@ func _reset_canvas_layers_under(root_node: Node) -> void:
 		(root_node as CanvasLayer).transform = Transform2D.IDENTITY
 	for ch: Node in root_node.get_children():
 		_reset_canvas_layers_under(ch)
+
+
+## Control 不能使用 transform 赋值（与布局冲突），用 pivot + scale 实现绕中心缩放。
+func _apply_control_root_scale(ctrl: Control, eff: float) -> void:
+	var sz: Vector2 = ctrl.size
+	if sz.x < 2.0 or sz.y < 2.0:
+		sz = get_viewport().get_visible_rect().size
+	ctrl.pivot_offset = sz * 0.5
+	ctrl.scale = Vector2(eff, eff)
 
 
 func _scale_transform_about_viewport_center(scale: float) -> Transform2D:
