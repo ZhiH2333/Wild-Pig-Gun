@@ -14,7 +14,8 @@ const LOADING_MIN_SEC: float = 1.15
 const CARD_PROGRESS_SEC: float = 2.0
 const CARD_SLIDE_IN_SEC: float = 0.48
 const CARD_SLIDE_OUT_SEC: float = 0.42
-const CODE_RESEND_COOLDOWN_SEC: float = 300.0
+const CODE_VERIFICATION_DIGIT_COUNT: int = 6
+const CODE_RESEND_COOLDOWN_SEC: float = 60.0
 
 var _font: Font
 var _dim: ColorRect
@@ -247,7 +248,7 @@ func _make_step3() -> Control:
 	col.add_child(title)
 	
 	var subtitle: Label = Label.new()
-	subtitle.text = "请输入发送至您邮箱的8位验证码"
+	subtitle.text = "请输入发送至您邮箱的6位验证码"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 1))
 	_apply_font(subtitle, 16)
@@ -259,14 +260,14 @@ func _make_step3() -> Control:
 	col.add_child(code_row)
 	
 	_code_inputs.clear()
-	for i in range(8):
-		if i == 4:
+	var last_digit_idx: int = CODE_VERIFICATION_DIGIT_COUNT - 1
+	for i in range(CODE_VERIFICATION_DIGIT_COUNT):
+		if i == 3:
 			var dash: Label = Label.new()
 			dash.text = "-"
 			dash.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			_apply_font(dash, 28)
 			code_row.add_child(dash)
-		
 		var input: LineEdit = LineEdit.new()
 		input.theme = GAME_UI_THEME
 		input.custom_minimum_size = Vector2(48, 64)
@@ -275,10 +276,9 @@ func _make_step3() -> Control:
 		_apply_font(input, 28)
 		code_row.add_child(input)
 		_code_inputs.append(input)
-		
-		var current_idx = i
+		var current_idx: int = i
 		input.text_changed.connect(func(new_text: String):
-			if new_text.length() > 0 and current_idx < 7:
+			if new_text.length() > 0 and current_idx < last_digit_idx:
 				_code_inputs[current_idx + 1].grab_focus()
 		)
 	
@@ -598,7 +598,7 @@ func _on_step3_continue_pressed() -> void:
 	var code: String = ""
 	for input in _code_inputs:
 		code += input.text
-	if code.length() < 8:
+	if code.length() < CODE_VERIFICATION_DIGIT_COUNT:
 		return
 	_busy = true
 	_code_timer_active = false
