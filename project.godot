@@ -26,6 +26,7 @@ SaveManager="*res://scripts/save/save_manager.gd"
 TutorialSession="*res://scripts/tutorial_session.gd"
 RunState="*res://scripts/upgrades/run_state.gd"
 GameSettings="*res://scripts/settings/game_settings.gd"
+UiCanvasScaler="*res://scripts/autoload/ui_canvas_scaler.gd"
 GameFlow="*res://scripts/game_flow.gd"
 GameAudio="*res://scripts/audio/game_audio.gd"
 GameMusic="*res://scripts/audio/game_music.gd"
@@ -36,6 +37,12 @@ CloudSync="*res://scripts/autoload/cloud_sync.gd"
 UiSoundFeedback="*res://scripts/ui/ui_sound_feedback.gd"
 DamagePopupSpawner="*res://scripts/ui/damage_popup_spawner.gd"
 RealtimePerfLogger="*res://scripts/debug/realtime_perf_logger.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
 
 [gui]
 

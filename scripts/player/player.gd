@@ -76,8 +76,6 @@ func _ready() -> void:
 	collision_layer = GameCollisionLayers.LAYER_PLAYER
 	collision_mask = GameCollisionLayers.MASK_PLAYER_BODY
 	invincibility_timer.timeout.connect(_on_invincibility_timer_timeout)
-	if not GameSettings.ui_scale_changed.is_connected(_on_ui_scale_setting_changed):
-		GameSettings.ui_scale_changed.connect(_on_ui_scale_setting_changed)
 	if not GameSettings.view_scale_changed.is_connected(_on_view_scale_setting_changed):
 		GameSettings.view_scale_changed.connect(_on_view_scale_setting_changed)
 	_apply_camera_view_scale()
@@ -449,10 +447,6 @@ func _get_arena_rect() -> Rect2:
 	return Rect2(0.0, 0.0, 1920.0, 1080.0)
 
 
-func _on_ui_scale_setting_changed(_new_value: float) -> void:
-	_apply_camera_view_scale()
-
-
 func _on_view_scale_setting_changed(_new_value: float) -> void:
 	_apply_camera_view_scale()
 
@@ -460,12 +454,7 @@ func _on_view_scale_setting_changed(_new_value: float) -> void:
 func _apply_camera_view_scale() -> void:
 	if follow_camera == null:
 		return
-	var ui_s: float = maxf(0.01, GameSettings.ui_scale)
-	var view_s: float = maxf(0.01, GameSettings.view_scale)
-	# content_scale_factor = ui_s 会让整个画面等比放大，
-	# 用 1/ui_s 抵消其对世界视野的影响，使 UI 缩放不再干扰游戏视野。
-	# view_s 越大 → zoom 越小 → 相机视野越广。
-	var zoom_val: float = 1.0 / (ui_s * view_s)
+	var zoom_val: float = 1.0 / view_s
 	follow_camera.zoom = Vector2(zoom_val, zoom_val)
 
 

@@ -16,13 +16,16 @@ signal mobile_control_layout_changed
 signal audio_float_enabled_changed(enabled: bool)
 
 const SETTINGS_PATH: String = "user://game_settings.json"
+## 界面设计基准分辨率（用于计算「适配 100%」的缩放，与 project 默认窗口一致）
+const UI_DESIGN_WIDTH: float = 1920.0
+const UI_DESIGN_HEIGHT: float = 1080.0
 const MASTER_LINEAR_DEFAULT: float = 1.0
 const MUSIC_LINEAR_DEFAULT: float = 1.0
 const SFX_LINEAR_DEFAULT: float = 1.0
 const VSYNC_ENABLED_DEFAULT: bool = true
+## 用户相对「屏幕适配基准」的倍率：0.75=75% … 1.5=150%，默认 1.0=100%（即纯适配值）
 const UI_SCALE_MIN: float = 0.75
-const UI_SCALE_MAX: float = 1.45
-## 存盘或回退用；无配置文件时由 _compute_default_ui_scale() 按屏幕 DPI 决定
+const UI_SCALE_MAX: float = 1.5
 const UI_SCALE_DEFAULT: float = 1.0
 const VIEW_SCALE_MIN: float = 0.75
 const VIEW_SCALE_MAX: float = 1.45
@@ -115,7 +118,7 @@ func _ready() -> void:
 
 func load_from_disk() -> void:
 	if not FileAccess.file_exists(SETTINGS_PATH):
-		ui_scale = _compute_default_ui_scale()
+		ui_scale = UI_SCALE_DEFAULT
 		return
 	var f: FileAccess = FileAccess.open(SETTINGS_PATH, FileAccess.READ)
 	if f == null:
@@ -132,7 +135,8 @@ func load_from_disk() -> void:
 	sfx_linear = clampf(float(dict.get("sfx_linear", SFX_LINEAR_DEFAULT)), 0.0, 1.0)
 	vsync_enabled = bool(dict.get("vsync_enabled", VSYNC_ENABLED_DEFAULT))
 	vsync_fps = clampi(int(dict.get("vsync_fps", VSYNC_FPS_DEFAULT)), VSYNC_FPS_MIN, VSYNC_FPS_MAX)
-	ui_scale = clampf(float(dict.get("ui_scale", UI_SCALE_DEFAULT)), UI_SCALE_MIN, UI_SCALE_MAX)
+	var loaded_ui: float = float(dict.get("ui_scale", UI_SCALE_DEFAULT))
+	ui_scale = clampf(loaded_ui, UI_SCALE_MIN, UI_SCALE_MAX)
 	view_scale = clampf(
 		float(dict.get("view_scale", VIEW_SCALE_DEFAULT)), VIEW_SCALE_MIN, VIEW_SCALE_MAX)
 	if dict.has("input_mode"):
@@ -240,6 +244,25 @@ func set_ui_scale(value: float) -> void:
 	ui_scale_changed.emit(ui_scale)
 
 
+## min(视口宽/1920, 视口高/1080)，保证按基准设计稿完整落入屏幕。
+func _get_ui_fit_scale() -> float:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return 1.0
+	var win: Window = tree.root as Window
+	if win == null:
+		return 1.0
+	var sz: Vector2 = win.get_visible_rect().size
+	if sz.x <= 1.0 or sz.y <= 1.0:
+		return 1.0
+	return minf(sz.x / UI_DESIGN_WIDTH, sz.y / UI_DESIGN_HEIGHT)
+
+
+## 实际用于 CanvasLayer / 菜单 Control 的缩放 = 适配基准 × 用户倍率。
+func _get_effective_ui_canvas_scale() -> float:
+	return maxf(0.01, _get_ui_fit_scale() * ui_scale)
+
+
 func set_view_scale(value: float) -> void:
 	view_scale = clampf(value, VIEW_SCALE_MIN, VIEW_SCALE_MAX)
 	save_to_disk()
@@ -341,7 +364,7 @@ func clear_all_settings_data() -> bool:
 	sfx_linear = SFX_LINEAR_DEFAULT
 	vsync_enabled = VSYNC_ENABLED_DEFAULT
 	vsync_fps = VSYNC_FPS_DEFAULT
-	ui_scale = _compute_default_ui_scale()
+	ui_scale = UI_SCALE_DEFAULT
 	view_scale = VIEW_SCALE_DEFAULT
 	mobile_controls_enabled = MOBILE_CONTROLS_ENABLED_DEFAULT
 	input_mode = InputMode.TOUCH
@@ -473,16 +496,8 @@ func _apply_ui_scale() -> void:
 	var win: Window = get_tree().root as Window
 	if win == null:
 		return
-	win.content_scale_factor = ui_scale
-
-
-## 无用户配置文件时的默认界面缩放：按当前屏幕 DPI 相对 96 推算，并夹在 UI 缩放上下限内
-func _compute_default_ui_scale() -> float:
-	var idx: int = DisplayServer.window_get_current_screen()
-	var dpi: int = DisplayServer.screen_get_dpi(idx)
-	if dpi <= 0:
-		dpi = 96
-	return clampf(float(dpi) / 96.0, UI_SCALE_MIN, UI_SCALE_MAX)
+	## 不再用整窗 content_scale_factor 放大世界；仅由 UiCanvasScaler 缩放 UI 层。
+	win.content_scale_factor = 1.0
 
 
 func _apply_quality_preset() -> void:
