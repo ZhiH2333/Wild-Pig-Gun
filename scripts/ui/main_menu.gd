@@ -67,11 +67,19 @@ func _ready() -> void:
 	get_node("%s/StartButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_start_pressed)
 	get_node("%s/CustomizeButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_character_pressed)
 	get_node("%s/SettingsButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_settings_pressed)
-	get_node("%s/CommunityButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_community_pressed)
+	var community_btn: Button = get_node(
+		"%s/CommunityButton" % MENU_BUTTON_CONTAINER_PATH
+	) as Button
+	if community_btn != null:
+		community_btn.pressed.connect(_on_community_pressed)
 	get_node("%s/AboutButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_credits_pressed)
 	get_node("%s/QuitButton" % MENU_BUTTON_CONTAINER_PATH).pressed.connect(_on_quit_pressed)
-	_account_status_strip.login_requested.connect(_on_wppass_login_requested)
-	CloudAPI.call_deferred("_run_reachability_ping")
+	_apply_online_entry_visibility()
+	if not OnlineFeaturesUI.entry_visibility_changed.is_connected(_apply_online_entry_visibility):
+		OnlineFeaturesUI.entry_visibility_changed.connect(_apply_online_entry_visibility)
+	if OnlineFeaturesUI.should_show_entry_points():
+		_account_status_strip.login_requested.connect(_on_wppass_login_requested)
+		CloudAPI.call_deferred("_run_reachability_ping")
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
 	_update_background_sway_pivot()
@@ -85,6 +93,16 @@ func _ready() -> void:
 	# 仅在主菜单询问键鼠/虚拟按键（首屏渐入结束后再弹；未勾选「不再提示」则每次进主菜单都会问）
 	if not GameSettings.control_mode_launch_prompt_dismissed:
 		_show_control_mode_dialog()
+
+
+func _apply_online_entry_visibility() -> void:
+	var show_online: bool = OnlineFeaturesUI.should_show_entry_points()
+	var community_btn: Button = get_node_or_null(
+		"%s/CommunityButton" % MENU_BUTTON_CONTAINER_PATH
+	) as Button
+	if community_btn != null:
+		community_btn.visible = show_online
+	_account_status_strip.visible = show_online
 
 
 func _on_wppass_login_requested() -> void:
@@ -272,6 +290,8 @@ func _on_settings_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 func _on_community_pressed() -> void:
+	if not OnlineFeaturesUI.should_show_entry_points():
+		return
 	GameMusic.duck_for_subpage()
 	get_tree().change_scene_to_file("res://scenes/community.tscn")
 
@@ -285,4 +305,6 @@ func _show_info_dialog(message: String) -> void:
 	info_dialog.popup_centered()
 
 func _on_quit_pressed() -> void:
+	if GameFlow.try_request_host_close():
+		return
 	get_tree().quit()

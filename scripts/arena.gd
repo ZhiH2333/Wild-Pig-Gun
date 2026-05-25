@@ -487,6 +487,8 @@ func save_run_and_return_to_menu() -> void:
 
 
 func quit_to_menu_without_saving() -> void:
+	if GameFlow.try_request_host_close():
+		return
 	if _checkpoint_at_wave_start.is_empty():
 		SaveManager.clear_pending_run()
 	else:

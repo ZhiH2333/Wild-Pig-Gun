@@ -60,12 +60,20 @@ func _ready() -> void:
 	_version_update.wire()
 	_version_update.wire_ok_button(_update_ok)
 	_version_update.apply_version_label()
-	_account_status_strip.login_requested.connect(_on_wppass_login_requested)
+	_apply_online_entry_visibility()
+	if not OnlineFeaturesUI.entry_visibility_changed.is_connected(_apply_online_entry_visibility):
+		OnlineFeaturesUI.entry_visibility_changed.connect(_apply_online_entry_visibility)
+	if OnlineFeaturesUI.should_show_entry_points():
+		_account_status_strip.login_requested.connect(_on_wppass_login_requested)
 	_click_catcher.gui_input.connect(_on_click_catcher_gui_input)
 	background.resized.connect(_update_background_sway_pivot)
 	await get_tree().process_frame
 	_update_background_sway_pivot()
 	background.scale = Vector2(BACKGROUND_SWAY_OVERSCALE, BACKGROUND_SWAY_OVERSCALE)
+
+
+func _apply_online_entry_visibility() -> void:
+	_account_status_strip.visible = OnlineFeaturesUI.should_show_entry_points()
 
 
 func _on_wppass_login_requested() -> void:

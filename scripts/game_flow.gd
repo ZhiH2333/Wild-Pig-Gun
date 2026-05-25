@@ -71,6 +71,22 @@ func _web_is_user_activation_event(event: InputEvent) -> bool:
 	return false
 
 
+## WildArea 等宿主 App 内嵌 WebView 时，通知宿主关闭游戏层（不切换 Godot 主菜单场景）
+static func try_request_host_close() -> bool:
+	if not OS.has_feature("web"):
+		return false
+	var jsb: Object = Engine.get_singleton("JavaScriptBridge")
+	if jsb == null or not jsb.has_method("eval"):
+		return false
+	var ok: Variant = jsb.eval(
+		"(function(){try{if(typeof wildAreaCloseGame==='function'){wildAreaCloseGame();return true;}" +
+		"if(typeof WildAreaGameHost!=='undefined'&&WildAreaGameHost.postMessage){" +
+		"WildAreaGameHost.postMessage('close');return true;}}catch(e){}return false;})()",
+		true
+	)
+	return bool(ok)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("pause_game"):
 		return

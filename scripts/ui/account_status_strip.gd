@@ -17,6 +17,9 @@ const BLACK_BUTTON_THEME: Theme = preload("res://themes/black_button_theme.tres"
 
 
 func _ready() -> void:
+	if not OnlineFeaturesUI.should_show_entry_points():
+		visible = false
+		return
 	if not AccountDevState.overrides_changed.is_connected(_on_account_dev_overrides_changed):
 		AccountDevState.overrides_changed.connect(_on_account_dev_overrides_changed)
 	if not CloudAPI.login_state_changed.is_connected(_on_cloud_login_state_changed):
