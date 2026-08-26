@@ -682,6 +682,49 @@ theme_override_font_sizes/font_size = 18
 text = "当前数据：加载中..."
 autowrap_mode = 3
 
+[node name="DataSectionBackupTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005021]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 30
+text = "备份与恢复"
+
+[node name="DataSectionBackupSep" type="ColorRect" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005022]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+color = Color(1, 1, 1, 0.38)
+
+[node name="BackupHintLabel" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005023]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.72, 0.55, 1)
+theme_override_font_sizes/font_size = 18
+text = "导出数据为zip文件"
+autowrap_mode = 3
+
+[node name="BackupButtonRow" type="HBoxContainer" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005024]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ExportBackupButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/BackupButtonRow" unique_id=501005025]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 22
+text = "导出全部数据"
+
+[node name="ImportBackupButton" type="Button" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/BackupButtonRow" unique_id=501005026]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 22
+text = "导入备份"
+
 [node name="DataSectionDangerTitle" type="Label" parent="Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents" unique_id=501005011]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.45, 0.45, 1)
@@ -739,6 +782,83 @@ theme_override_font_sizes/font_size = 24
 text = "清除所有数据"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ImportConfirmOverlay" type="Control" parent="." unique_id=501005030]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackdropDim" type="ColorRect" parent="ImportConfirmOverlay" unique_id=501005031]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.62)
+
+[node name="CenterContainer" type="CenterContainer" parent="ImportConfirmOverlay" unique_id=501005032]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DialogCard" type="PanelContainer" parent="ImportConfirmOverlay/CenterContainer" unique_id=501005033]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="ImportConfirmOverlay/CenterContainer/DialogCard" unique_id=501005034]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Content" type="VBoxContainer" parent="ImportConfirmOverlay/CenterContainer/DialogCard/Margin" unique_id=501005035]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TitleLabel" type="Label" parent="ImportConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=501005036]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 28
+text = "导入备份"
+
+[node name="MessageLabel" type="Label" parent="ImportConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=501005037]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "导入会覆盖本地存档与设置，且无法撤销。登录凭证不会被替换。"
+autowrap_mode = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="ImportConfirmOverlay/CenterContainer/DialogCard/Margin/Content" unique_id=501005038]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="ImportConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow" unique_id=501005039]
+custom_minimum_size = Vector2(160, 48)
+layout_mode = 2
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 22
+text = "取消"
+
+[node name="ConfirmButton" type="Button" parent="ImportConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow" unique_id=501005040]
+custom_minimum_size = Vector2(160, 48)
+layout_mode = 2
+theme = ExtResource("7_black_btn")
+theme_override_fonts/font = ExtResource("8_menu_font")
+theme_override_font_sizes/font_size = 22
+text = "继续导入"
 
 [node name="DeleteConfirmOverlay" type="Control" parent="." unique_id=332576334]
 visible = false

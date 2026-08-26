@@ -337,6 +337,11 @@ func has_settings_file() -> bool:
 	return FileAccess.file_exists(SETTINGS_PATH)
 
 
+func reload_from_disk() -> void:
+	load_from_disk()
+	_apply_all()
+
+
 func clear_all_settings_data() -> bool:
 	master_linear = MASTER_LINEAR_DEFAULT
 	music_linear = MUSIC_LINEAR_DEFAULT

@@ -57,6 +57,11 @@ const COMMON_RESOLUTIONS: Array[Vector2i] = [
 @onready var joystick_size_value: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/JoystickSizeRow/JoystickSizeValue
 @onready var custom_layout_btn: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/ControlScroll/Contents/CustomLayoutBtn
 @onready var data_summary_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/DataSummaryLabel
+@onready var export_backup_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/BackupButtonRow/ExportBackupButton
+@onready var import_backup_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/BackupButtonRow/ImportBackupButton
+@onready var import_confirm_overlay: Control = $ImportConfirmOverlay
+@onready var import_confirm_button: Button = $ImportConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/ConfirmButton
+@onready var import_cancel_button: Button = $ImportConfirmOverlay/CenterContainer/DialogCard/Margin/Content/ButtonRow/CancelButton
 @onready var clear_hint_label: Label = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearHintLabel
 @onready var clear_all_data_button: Button = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton
 @onready var clear_hold_progress: ProgressBar = $Center/MainColumn/MainCard/Margins/CardColumn/SettingsTabContainer/DataScroll/Contents/ClearAllDataButton/ClearHoldProgress
@@ -92,6 +97,10 @@ var _style_active_normal: StyleBoxFlat
 var _style_active_hover: StyleBoxFlat
 var _style_inactive_normal: StyleBoxFlat
 var _style_inactive_hover: StyleBoxFlat
+var _backup_file_dialog: FileDialog
+var _backup_dialog_is_export: bool = true
+var _js_import_callback: Variant
+var _result_returns_to_menu: bool = true
 
 
 func _ready() -> void:
@@ -124,6 +133,11 @@ func _ready() -> void:
 	mobile_controls_check.toggled.connect(_on_mobile_controls_toggled)
 	joystick_size_slider.value_changed.connect(_on_joystick_size_changed)
 	custom_layout_btn.pressed.connect(_on_custom_layout_pressed)
+	export_backup_button.pressed.connect(_on_export_backup_pressed)
+	import_backup_button.pressed.connect(_on_import_backup_pressed)
+	import_confirm_button.pressed.connect(_on_import_confirm_pressed)
+	import_cancel_button.pressed.connect(_on_import_cancel_pressed)
+	_setup_backup_file_dialog()
 	clear_all_data_button.pressed.connect(_on_clear_all_button_pressed)
 	clear_all_data_button.button_down.connect(_on_clear_all_button_down)
 	clear_all_data_button.button_up.connect(_on_clear_all_button_up)
@@ -146,6 +160,7 @@ func _ready() -> void:
 	_sync_clear_hold_label_theme()
 	_refresh_clear_button_idle_text()
 	_apply_web_visibility()
+	_apply_backup_availability()
 	_apply_tutorial_mode()
 	_refresh_tab_separator_visibility()
 
@@ -753,8 +768,205 @@ func _execute_clear_all_data() -> void:
 func _on_clear_result_back_pressed() -> void:
 	is_clear_confirmed = false
 	clear_all_data_button.disabled = false
+	clear_result_overlay.visible = false
+	if not _result_returns_to_menu:
+		_result_returns_to_menu = true
+		clear_result_back_button.text = "返回主菜单"
+		return
 	RunState.settings_return_scene_path = MAIN_MENU_SCENE_PATH
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
+
+
+func _apply_backup_availability() -> void:
+	var in_game: bool = bool(get_meta("in_game_overlay", false))
+	export_backup_button.disabled = in_game
+	import_backup_button.disabled = in_game
+
+
+func _setup_backup_file_dialog() -> void:
+	if OS.get_name() == "Web":
+		return
+	_backup_file_dialog = FileDialog.new()
+	_backup_file_dialog.use_native_dialog = true
+	_backup_file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	_backup_file_dialog.add_filter("*.zip", "WildPigGun 备份")
+	_backup_file_dialog.current_dir = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+	_backup_file_dialog.unresizable = false
+	_backup_file_dialog.min_size = Vector2i(960, 640)
+	_backup_file_dialog.size = Vector2i(1100, 720)
+	_backup_file_dialog.file_selected.connect(_on_backup_file_selected)
+	add_child(_backup_file_dialog)
+
+
+func _in_game_blocks_backup() -> bool:
+	if bool(get_meta("in_game_overlay", false)):
+		_show_backup_result("对局中不能导出或导入数据。请回到主菜单后再试。", false)
+		return true
+	return false
+
+
+func _on_export_backup_pressed() -> void:
+	if _in_game_blocks_backup():
+		return
+	if OS.get_name() == "Web":
+		_export_backup_web()
+		return
+	_backup_dialog_is_export = true
+	_backup_file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	_backup_file_dialog.title = "导出全部数据"
+	_backup_file_dialog.current_file = GameDataBackup.suggested_filename()
+	_popup_backup_file_dialog()
+
+
+func _on_import_backup_pressed() -> void:
+	if _in_game_blocks_backup():
+		return
+	import_confirm_overlay.visible = true
+
+
+func _on_import_cancel_pressed() -> void:
+	import_confirm_overlay.visible = false
+
+
+func _on_import_confirm_pressed() -> void:
+	import_confirm_overlay.visible = false
+	if OS.get_name() == "Web":
+		_import_backup_web()
+		return
+	_backup_dialog_is_export = false
+	_backup_file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	_backup_file_dialog.title = "导入备份"
+	_backup_file_dialog.current_file = ""
+	_popup_backup_file_dialog()
+
+
+func _popup_backup_file_dialog() -> void:
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	var w: int = clampi(int(vp.x * 0.78), 960, maxi(960, int(vp.x) - 80))
+	var h: int = clampi(int(vp.y * 0.78), 640, maxi(640, int(vp.y) - 80))
+	_backup_file_dialog.min_size = Vector2i(960, 640)
+	_backup_file_dialog.size = Vector2i(w, h)
+	_backup_file_dialog.popup_centered(Vector2i(w, h))
+
+
+func _on_backup_file_selected(path: String) -> void:
+	if _backup_dialog_is_export:
+		_export_backup_to_path(path)
+	else:
+		_import_backup_from_path(path)
+
+
+func _export_backup_to_path(path: String) -> void:
+	var packed: Dictionary = GameDataBackup.pack_to_bytes()
+	if not bool(packed.get("ok", false)):
+		_show_backup_result(str(packed.get("error", "导出失败。")), false)
+		return
+	var packed_bytes: PackedByteArray = PackedByteArray()
+	if packed.get("bytes") is PackedByteArray:
+		packed_bytes = packed["bytes"]
+	var written: Dictionary = GameDataBackup.write_bytes_to_path(packed_bytes, path)
+	if not bool(written.get("ok", false)):
+		_show_backup_result(str(written.get("error", "保存失败。")), false)
+		return
+	_show_backup_result("已导出备份。", false)
+
+
+func _import_backup_from_path(path: String) -> void:
+	var f: FileAccess = FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		_show_backup_result("无法读取所选文件。", false)
+		return
+	var bytes: PackedByteArray = f.get_buffer(f.get_length())
+	_finish_import_bytes(bytes)
+
+
+func _finish_import_bytes(bytes: PackedByteArray) -> void:
+	var applied: Dictionary = GameDataBackup.apply_from_bytes(bytes)
+	if not bool(applied.get("ok", false)):
+		_show_backup_result(str(applied.get("error", "导入失败。")), false)
+		return
+	_refresh_data_summary()
+	_sync_all_controls_from_settings()
+	_show_backup_result("导入完成。将返回主菜单以刷新界面。", true)
+
+
+func _export_backup_web() -> void:
+	var packed: Dictionary = GameDataBackup.pack_to_bytes()
+	if not bool(packed.get("ok", false)):
+		_show_backup_result(str(packed.get("error", "导出失败。")), false)
+		return
+	var bytes: PackedByteArray = PackedByteArray()
+	if packed.get("bytes") is PackedByteArray:
+		bytes = packed["bytes"]
+	var name: String = GameDataBackup.suggested_filename()
+	if not _web_download_bytes(bytes, name):
+		_show_backup_result("浏览器未能开始下载。请允许本页下载文件后重试。", false)
+		return
+	_show_backup_result("已开始下载备份。若没有弹出文件，请检查浏览器下载栏。", false)
+
+
+func _import_backup_web() -> void:
+	var jsb: Object = Engine.get_singleton("JavaScriptBridge")
+	if jsb == null or not jsb.has_method("create_callback"):
+		_show_backup_result("当前网页环境不支持选文件。", false)
+		return
+	_js_import_callback = jsb.create_callback(_on_web_import_file)
+	var window_obj: Variant = jsb.get_interface("window")
+	if window_obj == null:
+		_show_backup_result("无法访问浏览器窗口。", false)
+		return
+	window_obj._wpgOnImportZip = _js_import_callback
+	var js_pick: String = "(function(){var i=document.createElement('input');i.type='file';i.accept='.zip,application/zip';"
+	js_pick += "i.onchange=function(e){var f=e.target.files&&e.target.files[0];if(!f){return;}"
+	js_pick += "var r=new FileReader();r.onload=function(){var u=new Uint8Array(r.result);var a=[];"
+	js_pick += "for(var n=0;n<u.length;n++){a.push(u[n]);}if(window._wpgOnImportZip){window._wpgOnImportZip(a);}};"
+	js_pick += "r.readAsArrayBuffer(f);};i.click();return true;})()"
+	var ok: Variant = jsb.eval(js_pick, true)
+	if ok != true:
+		_show_backup_result("无法打开文件选择器。", false)
+
+
+func _on_web_import_file(args: Array) -> void:
+	if args.is_empty():
+		_show_backup_result("未选择文件。", false)
+		return
+	var raw: Variant = args[0]
+	var bytes: PackedByteArray = PackedByteArray()
+	if raw is PackedByteArray:
+		bytes = raw
+	elif raw is Array:
+		for v in raw:
+			bytes.append(int(v) & 255)
+	else:
+		_show_backup_result("无法读取所选文件。", false)
+		return
+	_finish_import_bytes(bytes)
+
+
+func _web_download_bytes(bytes: PackedByteArray, filename: String) -> bool:
+	var jsb: Object = Engine.get_singleton("JavaScriptBridge")
+	if jsb == null or not jsb.has_method("eval"):
+		return false
+	var b64: String = Marshalls.raw_to_base64(bytes)
+	var safe_name: String = filename.replace("/", "_").replace("\\", "_").replace("'", "")
+	var js: String = "(function(b64,name){try{var bin=atob(b64);var arr=new Uint8Array(bin.length);"
+	js += "for(var i=0;i<bin.length;i++){arr[i]=bin.charCodeAt(i);}"
+	js += "var blob=new Blob([arr],{type:'application/zip'});var a=document.createElement('a');"
+	js += "a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();"
+	js += "setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1200);return true;}"
+	js += "catch(e){return false;}})('%s','%s')" % [b64, safe_name]
+	var ok: Variant = jsb.eval(js, true)
+	return ok == true
+
+
+func _show_backup_result(message: String, return_to_menu: bool) -> void:
+	_result_returns_to_menu = return_to_menu
+	clear_result_message_label.text = message
+	if return_to_menu:
+		clear_result_back_button.text = "返回主菜单"
+	else:
+		clear_result_back_button.text = "确定"
+	clear_result_overlay.visible = true
 
 
 func _on_back_pressed() -> void:
