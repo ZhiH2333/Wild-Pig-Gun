@@ -172,6 +172,8 @@ func _switch_tab(index: int) -> void:
 	_journey_page.visible = (_current_tab == 1)
 	if _current_tab == 0:
 		_refresh_slot_cards()
+	elif _pre_start_instance != null and _pre_start_instance.has_method("reset_wizard"):
+		_pre_start_instance.reset_wizard()
 
 
 func _refresh_slot_cards() -> void:

@@ -16,22 +16,22 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_weapon_scroll_inner"]
-bg_color = Color(0.1, 0.09, 0.14, 0.52)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.35, 0.3, 0.45, 0.7)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+bg_color = Color(0, 0, 0, 0.38)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.22)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
 [node name="PreStart" type="Control" unique_id=59679379]
 layout_mode = 3
@@ -100,7 +100,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 follow_focus = true
 scroll_horizontal_enabled = false
-scroll_vertical_enabled = true
+scroll_vertical_enabled = false
 
 [node name="MainColumn" type="VBoxContainer" parent="Center/ContentVBox/MainScroll" unique_id=1092818598]
 layout_mode = 2
@@ -130,7 +130,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 20
 
 [node name="LeftColumn" type="MarginContainer" parent="Center/ContentVBox/MainScroll/MainColumn/MainCard/Margins/MainRow" unique_id=1441399402]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(268, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 3
@@ -170,7 +170,7 @@ theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 14
 
 [node name="CharSprite" type="TextureRect" parent="Center/ContentVBox/MainScroll/MainColumn/MainCard/Margins/MainRow/LeftColumn/LeftVBox/PortraitPanel/PortraitMargins" unique_id=1537478073]
-custom_minimum_size = Vector2(220, 220)
+custom_minimum_size = Vector2(160, 160)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
@@ -226,7 +226,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="WeaponHeaderRow" type="VBoxContainer" parent="Center/ContentVBox/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox" unique_id=1910940981]
-custom_minimum_size = Vector2(0, 320)
+custom_minimum_size = Vector2(0, 0)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
@@ -252,6 +252,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("8_panel_theme")
 horizontal_scroll_mode = 0
+vertical_scroll_mode = 0
 script = ExtResource("9_touch_scroll")
 
 [node name="WeaponList" type="GridContainer" parent="Center/ContentVBox/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox/WeaponHeaderRow/WeaponScrollPanel/WeaponScroll" unique_id=1098523234]
@@ -259,7 +260,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
-columns = 6
+columns = 3
 
 [node name="StatsSectionSep" type="ColorRect" parent="Center/ContentVBox/MainScroll/MainColumn/MainCard/Margins/MainRow/RightColumn/RightVBox" unique_id=576149888]
 custom_minimum_size = Vector2(0, 1)
