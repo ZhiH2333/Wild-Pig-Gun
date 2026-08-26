@@ -22,8 +22,10 @@ const SFX_LINEAR_DEFAULT: float = 1.0
 const VSYNC_ENABLED_DEFAULT: bool = true
 const UI_SCALE_MIN: float = 0.75
 const UI_SCALE_MAX: float = 1.45
-## 存盘或回退用；无配置文件时由 _compute_default_ui_scale() 按屏幕 DPI 决定
+## 存盘或回退用；无配置文件时默认为 1.0，避免高 DPI 把整窗再放大一档
 const UI_SCALE_DEFAULT: float = 1.0
+const UI_DESIGN_WIDTH: float = 1920.0
+const UI_DESIGN_HEIGHT: float = 1080.0
 const VIEW_SCALE_MIN: float = 0.75
 const VIEW_SCALE_MAX: float = 1.45
 const VIEW_SCALE_DEFAULT: float = 0.88
@@ -439,6 +441,14 @@ func _apply_window_and_resolution() -> void:
 			DisplayServer.window_set_size(Vector2i(resolution_width, resolution_height))
 			_center_window_on_current_screen()
 
+	_notify_ui_canvas_scaler()
+
+
+
+func _notify_ui_canvas_scaler() -> void:
+	var n: Node = get_node_or_null("/root/UiCanvasScaler")
+	if n != null and n.has_method("_schedule_refresh"):
+		n.call("_schedule_refresh")
 
 func _center_window_on_current_screen() -> void:
 	var screen_idx: int = DisplayServer.window_get_current_screen()
@@ -470,19 +480,41 @@ func _apply_max_fps() -> void:
 
 
 func _apply_ui_scale() -> void:
+	apply_window_content_scale()
+
+
+## 逻辑画布固定 1920x1080；expand 按较长边放大以铺满窗口（超出部分裁切）。
+## 用户「界面缩放」只乘在 content_scale_factor 上，不再把放大限制为 1。
+func apply_window_content_scale() -> void:
 	var win: Window = get_tree().root as Window
 	if win == null:
 		return
+	win.content_scale_size = Vector2i(int(UI_DESIGN_WIDTH), int(UI_DESIGN_HEIGHT))
+	win.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+	win.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
 	win.content_scale_factor = ui_scale
 
 
-## 无用户配置文件时的默认界面缩放：按当前屏幕 DPI 相对 96 推算，并夹在 UI 缩放上下限内
+func get_ui_fit_scale() -> float:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return 1.0
+	var win: Window = tree.root as Window
+	if win == null:
+		return 1.0
+	var sz: Vector2 = Vector2(win.size)
+	if sz.x <= 1.0 or sz.y <= 1.0:
+		return 1.0
+	return minf(1.0, minf(sz.x / UI_DESIGN_WIDTH, sz.y / UI_DESIGN_HEIGHT))
+
+
+func get_effective_ui_canvas_scale() -> float:
+	return maxf(0.01, get_ui_fit_scale() * ui_scale)
+
+
+## 无用户配置文件时的默认界面缩放：固定 1.0（可用设置里的「界面缩放」再调）
 func _compute_default_ui_scale() -> float:
-	var idx: int = DisplayServer.window_get_current_screen()
-	var dpi: int = DisplayServer.screen_get_dpi(idx)
-	if dpi <= 0:
-		dpi = 96
-	return clampf(float(dpi) / 96.0, UI_SCALE_MIN, UI_SCALE_MAX)
+	return UI_SCALE_DEFAULT
 
 
 func _apply_quality_preset() -> void:
